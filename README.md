@@ -1,5 +1,11 @@
 <!--
 
+Can inspect print the source for a func?  Make the docs literate!
+
+Why do periods have preceding space?  Why are bullets so spaced out?
+
+Add docstrings for reshape, unshape, dstack, dsplit that show the entire src.
+
 add README examples of:
   adding alpha to cut out a circle
   combining R G B planes
@@ -22,6 +28,8 @@ ops
 
 travis
 
+open graph tags and thumbnail
+
 blog entry
   Use filament to draw reflective sphere with and without HDR
 
@@ -43,7 +51,7 @@ post-blog entry
 # Snowy
 
 This is a tiny Python 3 module for manipulating and generating images.
-- Simple and flat API. See the [documentation](http://github.prideout.net/snowy/).
+- Simple and flat API. See the [documentation](https://github.prideout.net/snowy/).
 - Supports [resize and blur](#resize-and-blur) with a variety of filters.
 - Honors the [wrap mode]() for proper boundary behavior.
 - Supports simple OpenEXR images (never clamps colors).
@@ -57,9 +65,13 @@ Painting and 2D paths are outside the scope of the library. See
   [pycairo](https://pycairo.readthedocs.io/en/latest/) or
   [skia-pathops](https://github.com/fonttools/skia-pathops).
 
-With snowy, all images are three-dimensional numpy arrays. For example, an RGB image has shape
-`[height,width,3]` and a grayscale image has shape `[height,width,1]`. To make it easy to add or
-remove the trailing "1" for grayscale images, snowy provides [shape]() and [unshape]().
+With snowy, all images are three-dimensional numpy arrays. For example, RGB images have shape
+`[height,width,3]` and grayscale images have shape `[height,width,1]`. Snowy provides some
+convenient unary functions to make it easy to interop with other libraries:
+- To add or remove the trailing "1" for grayscale images, use [shape](#shape) and
+[unshape](#unshape).
+- To switch an array in or out of planar format (color channels are in the leading dimension), use
+[dsplit](#dsplit) and [dstack](#dstack).
 
 ## Installing
 

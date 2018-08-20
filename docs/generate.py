@@ -113,6 +113,7 @@ for comment in comments:
 
 # Remove the bulleted list seen on the GitHub README.
 soup.find_all('ul')[0].extract()
+soup.find_all('p')[1].extract()
 
 formatter = HtmlFormatter(style='tango')
 snippets = soup.findAll("code", {"class": "language-python"})
@@ -152,8 +153,8 @@ for member in inspect.getmembers(snowy):
         htmlfile.write('\n</p>\n')
 
 htmlfile.write('''
-<a href="http://github.prideout.net/">
-<img src="http://github.prideout.net/assets/PublishedLogo.svg"
+<a href="https://github.prideout.net/">
+<img src="https://github.prideout.net/assets/PublishedLogo.svg"
     width="175px">
 </a>
 </main>
@@ -173,7 +174,7 @@ for tag in 'h2 h3 h4'.split():
         anchor = soup.new_tag('a', href='#' + id)
         anchor.string = content
         heading.contents[0].replace_with(anchor)
-open(qualify('index.html'), 'w').write(soup.prettify())
+open(qualify('index.html'), 'w').write(str(soup))
 
 n = snowy.generate_noise(100, 100, frequency=4, seed=42, wrapx=True)
 n = np.hstack([n, n])
