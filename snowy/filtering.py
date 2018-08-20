@@ -164,8 +164,6 @@ def convolve(target, source, rowops: RowOps):
     tindices, sindices, fweights = rowops
     assert len(tindices) == len(sindices) == len(fweights)
     assert len(target) == len(source)
-    target = io.unshape(target)
-    source = io.unshape(source)
     jit_convolve(target, source,
                  np.int32(tindices), np.int32(sindices),
                  np.double(fweights))

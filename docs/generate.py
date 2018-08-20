@@ -1,3 +1,5 @@
+#!/usr/bin/env python3 -m pytest -s
+
 import os
 import sys
 sys.path.append('../snowy')
@@ -173,17 +175,18 @@ for tag in 'h2 h3 h4'.split():
         heading.contents[0].replace_with(anchor)
 open(qualify('index.html'), 'w').write(soup.prettify())
 
-quit()
-
 n = snowy.generate_noise(100, 100, frequency=4, seed=42, wrapx=True)
 n = np.hstack([n, n])
 n = 0.5 + 0.5 * n
 snowy.show(n)
 snowy.save(n, qualify('noise.png'))
 
+# First try minifying grayscale
+
 gibbons = snowy.load(qualify('gibbons.jpg'))
 gibbons = np.swapaxes(gibbons, 0, 2)
 gibbons = np.swapaxes(gibbons[0], 0, 1)
+gibbons = snowy.reshape(gibbons)
 
 source = snowy.resize(gibbons, 200, 200)
 blurry = snowy.blur(source, radius=4.0)
@@ -191,6 +194,19 @@ diptych_filename = qualify('diptych.png')
 snowy.save(snowy.hstack([source, blurry]), diptych_filename)
 os.system('optipng ' + diptych_filename)
 snowy.show(diptych_filename)
+
+# Next try color
+
+gibbons = snowy.load(qualify('gibbons.jpg'))
+
+source = snowy.resize(gibbons, 200, 200)
+blurry = snowy.blur(source, radius=4.0)
+diptych_filename = qualify('diptych.png')
+snowy.save(snowy.hstack([source, blurry]), diptych_filename)
+os.system('optipng ' + diptych_filename)
+snowy.show(diptych_filename)
+
+# Moving on to magnification...
 
 parrot = snowy.load(qualify('parrot.png'))
 scale = 6
@@ -269,6 +285,9 @@ def create_island(seed, freq=3):
     mask = np.where(elevation < 0, 1, 0)
     el = 128 + 127 * elevation / np.amax(elevation)
     return applyColorGradient(el, STEPPED_PALETTE)
+
+# flake = snowy.load(qualify('snowflake64.png'))
+# snowy.show(flake)
 
 isles = []
 for i in range(6):

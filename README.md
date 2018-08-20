@@ -1,7 +1,5 @@
 <!--
 
-rename to snowy
-
 add README examples of:
   adding alpha to cut out a circle
   combining R G B planes
@@ -45,7 +43,7 @@ post-blog entry
 # Snowy
 
 This is a tiny Python 3 module for manipulating and generating images.
-- Simple and flat API. See the [documentation]().
+- Simple and flat API. See the [documentation](http://github.prideout.net/snowy/).
 - Supports [resize and blur](#resize-and-blur) with a variety of filters.
 - Honors the [wrap mode]() for proper boundary behavior.
 - Supports simple OpenEXR images (never clamps colors).

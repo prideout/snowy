@@ -30,7 +30,8 @@ def load(filename: str):
     """Create a numpy array from the given image file."""
     if filename.endswith('.exr'):
         imageio.plugins.freeimage.download()
-    return np.float64(imageio.imread(filename))
+    imgarray = imageio.imread(filename)
+    return np.float64(imgarray)
 
 def save(image: np.ndarray, filename: str, image_format: str=None):
     """Save a numpy array as an image file at the given path."""
