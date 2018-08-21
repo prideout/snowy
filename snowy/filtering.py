@@ -75,7 +75,7 @@ def resize(source, width=None, height=None, filter=None, radius=1,
     aspect = source.shape[1] / source.shape[0]
     if width == None: width = height * aspect
     if height == None: height = width / aspect
-    magnifying = width > source.shape[0]
+    magnifying = width > source.shape[1]
     if filter == None: filter = MITCHELL if magnifying else LANCZOS
     return resample(source, width, height, filter, radius, wrapx, wrapy)
 

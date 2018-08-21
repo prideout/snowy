@@ -6,7 +6,7 @@ features, like the ability to specify boundary behavior during filtering.
 
 With snowy, all images are three-dimensional numpy arrays. For example, RGB images have shape
 `[height,width,3]` and grayscale images have shape `[height,width,1]`. Snowy provides some
-convenience functions to make it easy to interoperate with other modules (see [#interop](interop)).
+utility functions that make it easy to work with other modules (see [interop](#interop)).
 
 ## Installing
 
@@ -108,26 +108,19 @@ TBD
 
 ## Interop
 
-Remember, in snowy all images are three-dimensional numpy arrays with color channels living in the
-trailing dimension. Snowy provides some unary functions to make it easy to interoperate with other
-libraries.
+Remember, with snowy, images are *always* three-dimensional numpy arrays, and color channels live
+in the trailing dimension. If you're working with another module that does not follow this
+convention, consider using one of the following interop functions.
 
-- To add or remove the trailing "1" for grayscale images, use [reshape](#reshape) and
+- To add or remove the trailing 1 from the shape of grayscale images, use [reshape](#reshape) and
 [unshape](#unshape).
-- To move color channels in or out of the leading dimension (e.g. `[3,height,width]`), use
-[to_planar](#to_planar) and [from_planar](#from_planar).
+- To swap color channels in or out of the leading dimension, use [to_planar](#to_planar) and
+[from_planar](#from_planar).
 
 ## Quick Reference
 
 <table>
-<tr>
-<td><a href="#resize">resize</a></td>
-<td>Create a new numpy image with the desired size.</td>
-</tr>
-<tr>
-<td><a href="#save">save</a></td>
-<td>Save a numpy array as an image file at the given path.</td>
-</tr>
+$quickref$
 </table>
 
 ## Reference

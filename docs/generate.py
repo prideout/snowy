@@ -2,7 +2,12 @@
 
 import os
 import sys
+import subprocess
 sys.path.append('../snowy')
+
+result = subprocess.run('git rev-parse HEAD'.split(), stdout=subprocess.PIPE)
+sha = result.stdout.strip().decode("utf-8") 
+version = f'<small>v0.0.1 ~ {sha}</small>'
 
 def qualify(filename: str):
     scriptdir = os.path.dirname(os.path.realpath(__file__))
@@ -39,7 +44,12 @@ body {
     -webkit-font-smoothing:auto;
     background-color: #e2e2e2;
 }
+small {
+    color: #6ba268;
+    margin-top: 26px;
+}
 h1 {
+    margin-top: 0;
     font-family: 'Alegreya', serif;
     font-size: 40px;
 }
@@ -132,6 +142,7 @@ htmlfile.write(forkme)
 htmlfile.write(str(soup))
 
 import inspect
+quickref = ''
 for member in inspect.getmembers(snowy):
     name, value = member
     if name.startswith('__'):
@@ -150,8 +161,13 @@ for member in inspect.getmembers(snowy):
 
     highlighted_src = highlight(src, PythonLexer(), formatter)
     if doc:
+        doclines = doc.split('\n')
+        quickref += '<tr>\n'
+        quickref += f'<td><a href="#{name}">{name}</a></td>\n'
+        quickref += f'<td>{doclines[0]}</td>\n'
+        quickref += '<tr>\n'
         htmlfile.write(f'<h3>{name}</h3>\n<p>\n')
-        htmlfile.write(' '.join(doc.split('\n')))
+        htmlfile.write(' '.join(doclines))
         htmlfile.write('\n</p>\n')
         htmlfile.write(highlighted_src)
 
@@ -167,6 +183,8 @@ htmlfile.close()
 
 # Post process HTML (add anchors)
 htmldoc = open(qualify('index.html')).read()
+htmldoc = htmldoc.replace('$quickref$', quickref)
+htmldoc = htmldoc.replace('<h1>', version + '\n<h1>')
 soup = BeautifulSoup(htmldoc, 'html.parser')
 for tag in 'h2 h3 h4'.split():
     headings = soup.find_all(tag)
