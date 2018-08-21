@@ -158,15 +158,15 @@ C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
  This is a tiny Python 3 module for manipulating and generating images.
 </p>
 <p>
- With snowy, all images are three-dimensional numpy arrays. For example, an RGB image has shape
+ With snowy, all images are three-dimensional numpy arrays. For example, RGB images have shape
  <code>
   [height,width,3]
  </code>
- and a grayscale image has shape
+ and grayscale images have shape
  <code>
   [height,width,1]
  </code>
- . However there are some
+ . Snowy provides some
 convenient unary functions to make it easy to interop with other libraries:
 </p>
 <ul>
@@ -182,13 +182,17 @@ convenient unary functions to make it easy to interop with other libraries:
   .
  </li>
 <li>
-  To switch an array in or out of planar format (color channels are in the leading dimension), use
-  <a href="#dsplit">
-   dsplit
+  To move color channels in or out of the leading dimension (e.g.
+  <code>
+   [3,height,width]
+  </code>
+  ), use
+  <a href="#to_planar">
+   to_planar
   </a>
   and
-  <a href="#dstack">
-   dstack
+  <a href="#from_planar">
+   from_planar
   </a>
   .
  </li>
@@ -203,6 +207,15 @@ convenient unary functions to make it easy to interop with other libraries:
  </code>
 </p>
 <h2 id="examples"><a href="#examples">Examples</a></h2>
+<p>
+<em>
+  If you want, you can skip the examples and
+  <a href="file:///Users/prideout/github/snowy/docs/index.html#reference">
+   jump to the API reference
+  </a>
+  .
+ </em>
+</p>
 <h3 id="resize_and_blur"><a href="#resize_and_blur">Resize and blur</a></h3>
 <p>
  This snippet downsamples an image, blurs it, and stacks it up against the original.
@@ -263,56 +276,225 @@ Mitchell filter.
 <h2 id="reference"><a href="#reference">Reference</a></h2>
 <h3 id="add_border"><a href="#add_border">add_border</a></h3>
 <p>
-Extend the size of an image by adding borders.  <p> The <code>sides</code> argument defaults to <code>"LTRB"</code>, which enables borders for all four sides: Left, Top, Right, and Bottom. This can be used to select which borders you wish to add. </p> <p> Also takes a <code>width</code> argument which defaults to 2. This can control the thickness of the border. </p> <p> The <code>value</code> argument (defaults to 0) controls the fill color used for the border. For example: </p> <pre class="highlight"> image = snowy.add_border(image, width=3, value=1, sides='LTR') </pre>
+Extend the size of an image by adding borders.  <p> The <code>sides</code> argument defaults to <code>"LTRB"</code>, which enables borders for all four sides: Left, Top, Right, and Bottom. This can be used to select which borders you wish to add. </p>
 </p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">add_border</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sides</span><span class="o">=</span><span class="s1">'ltrb'</span><span class="p">):</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">image</span>
+    <span class="n">sides</span> <span class="o">=</span> <span class="n">sides</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
+    <span class="k">if</span> <span class="s1">'L'</span> <span class="ow">in</span> <span class="n">sides</span><span class="p">:</span> <span class="n">result</span> <span class="o">=</span> <span class="n">add_left</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">'T'</span> <span class="ow">in</span> <span class="n">sides</span><span class="p">:</span> <span class="n">result</span> <span class="o">=</span> <span class="n">add_top</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">'R'</span> <span class="ow">in</span> <span class="n">sides</span><span class="p">:</span> <span class="n">result</span> <span class="o">=</span> <span class="n">add_right</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">if</span> <span class="s1">'B'</span> <span class="ow">in</span> <span class="n">sides</span><span class="p">:</span> <span class="n">result</span> <span class="o">=</span> <span class="n">add_bottom</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
 <h3 id="blur"><a href="#blur">blur</a></h3>
 <p>
 Create a filtered numpy image with same size as the original.
 </p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">blur</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">GAUSSIAN</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">wrapx</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+         <span class="n">wrapy</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">resize</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="n">radius</span><span class="p">)</span>
+</pre></div>
 <h3 id="generate_noise"><a href="#generate_noise">generate_noise</a></h3>
 <p>
 Generate a single-channel gradient noise image.  A frequency of 1.0 creates a single surflet across the width of the image, while a frequency of 4.0 creates a 4x4 grid such that the (2,2) surflet is centered. Noise values live within the [-1,+1] range.
 </p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">generate_noise</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">wrapx</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                   <span class="n">wrapy</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="n">nrows</span><span class="p">,</span> <span class="n">ncols</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">height</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
+    <span class="n">table</span> <span class="o">=</span> <span class="n">Noise</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+
+    <span class="c1"># Compute the span of U texcoords in [0,+1] such that 0 is at the</span>
+    <span class="c1"># left edge of the left-most texel, and +1 is at the right edge of</span>
+    <span class="c1"># the right-most pixel.</span>
+    <span class="n">maxx</span> <span class="o">=</span> <span class="n">frequency</span>
+    <span class="n">hw</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">maxx</span> <span class="o">/</span> <span class="n">width</span>
+    <span class="n">u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">hw</span><span class="p">,</span> <span class="n">maxx</span> <span class="o">-</span> <span class="n">hw</span><span class="p">,</span> <span class="n">ncols</span><span class="p">)</span> <span class="o">+</span> <span class="n">offset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># Compute the span of V texcoords according to the aspect ratio.</span>
+    <span class="n">maxy</span> <span class="o">=</span> <span class="n">frequency</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">height</span><span class="p">)</span> <span class="o">/</span> <span class="n">width</span>
+    <span class="n">hh</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">maxy</span> <span class="o">/</span> <span class="n">height</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">hh</span><span class="p">,</span> <span class="n">maxy</span> <span class="o">-</span> <span class="n">hh</span><span class="p">,</span> <span class="n">nrows</span><span class="p">)</span> <span class="o">+</span> <span class="n">offset</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="c1"># Generate floating point texture coordinates, then split them into</span>
+    <span class="c1"># integer and fractional components.</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">u</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">i0</span><span class="p">,</span> <span class="n">j0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">u</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="n">v</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">i1</span><span class="p">,</span> <span class="n">j1</span> <span class="o">=</span> <span class="n">i0</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">j0</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">x0</span><span class="p">,</span> <span class="n">y0</span> <span class="o">=</span> <span class="n">u</span> <span class="o">-</span> <span class="n">i0</span><span class="p">,</span> <span class="n">v</span> <span class="o">-</span> <span class="n">j0</span>
+    <span class="n">x1</span><span class="p">,</span> <span class="n">y1</span> <span class="o">=</span> <span class="n">x0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">y0</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="c1"># Find the 2D vectors at the nearest grid cell corners.</span>
+    <span class="k">if</span> <span class="n">wrapx</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">math</span><span class="o">.</span><span class="n">modf</span><span class="p">(</span><span class="n">frequency</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">,</span> \
+            <span class="s2">"wrapx requires an integer frequency"</span>
+        <span class="n">i0</span> <span class="o">=</span> <span class="n">i0</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">frequency</span><span class="p">)</span>
+        <span class="n">i1</span> <span class="o">=</span> <span class="n">i1</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">frequency</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">wrapy</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="n">math</span><span class="o">.</span><span class="n">modf</span><span class="p">(</span><span class="n">maxy</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">,</span> \
+            <span class="s2">"wrapy requires frequency*width/height to be an integer"</span>
+        <span class="n">j0</span> <span class="o">=</span> <span class="n">j0</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">maxy</span><span class="p">)</span>
+        <span class="n">j1</span> <span class="o">=</span> <span class="n">j1</span> <span class="o">%</span> <span class="nb">int</span><span class="p">(</span><span class="n">maxy</span><span class="p">)</span>
+    <span class="n">grad00</span> <span class="o">=</span> <span class="n">gradient</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">i0</span><span class="p">,</span> <span class="n">j0</span><span class="p">)</span>
+    <span class="n">grad01</span> <span class="o">=</span> <span class="n">gradient</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">i0</span><span class="p">,</span> <span class="n">j1</span><span class="p">)</span>
+    <span class="n">grad10</span> <span class="o">=</span> <span class="n">gradient</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="n">j0</span><span class="p">)</span>
+    <span class="n">grad11</span> <span class="o">=</span> <span class="n">gradient</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">i1</span><span class="p">,</span> <span class="n">j1</span><span class="p">)</span>
+
+    <span class="n">va</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">grad00</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">grad00</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">vb</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y0</span><span class="p">,</span> <span class="n">grad10</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">grad10</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">vc</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">x0</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">grad01</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">grad01</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+    <span class="n">vd</span> <span class="o">=</span> <span class="n">dot</span><span class="p">(</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">grad11</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">grad11</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="c1"># Lerp the neighboring 4 surflets</span>
+    <span class="n">t0</span> <span class="o">=</span> <span class="n">x0</span><span class="o">*</span><span class="n">x0</span><span class="o">*</span><span class="n">x0</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">*</span><span class="p">(</span><span class="n">x0</span><span class="o">*</span><span class="mf">6.0</span> <span class="o">-</span> <span class="mf">15.0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">10.0</span><span class="p">)</span>
+    <span class="n">t1</span> <span class="o">=</span> <span class="n">y0</span><span class="o">*</span><span class="n">y0</span><span class="o">*</span><span class="n">y0</span><span class="o">*</span><span class="p">(</span><span class="n">y0</span><span class="o">*</span><span class="p">(</span><span class="n">y0</span><span class="o">*</span><span class="mf">6.0</span> <span class="o">-</span> <span class="mf">15.0</span><span class="p">)</span> <span class="o">+</span> <span class="mf">10.0</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">va</span> <span class="o">+</span> <span class="n">t0</span> <span class="o">*</span> <span class="p">(</span><span class="n">vb</span><span class="o">-</span><span class="n">va</span><span class="p">)</span> <span class="o">+</span> <span class="n">t1</span> <span class="o">*</span> <span class="p">(</span><span class="n">vc</span><span class="o">-</span><span class="n">va</span><span class="p">)</span> <span class="o">+</span> <span class="n">t0</span> <span class="o">*</span> <span class="n">t1</span> <span class="o">*</span> <span class="p">(</span><span class="n">va</span><span class="o">-</span><span class="n">vb</span><span class="o">-</span><span class="n">vc</span><span class="o">+</span><span class="n">vd</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
 <h3 id="generate_sdf"><a href="#generate_sdf">generate_sdf</a></h3>
 <p>
 Create a signed distance field from a field of booleans.
 </p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">generate_sdf</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">wrapx</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">wrapy</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">generate_udf</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">wrapx</span><span class="p">,</span> <span class="n">wrapy</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">generate_udf</span><span class="p">(</span><span class="n">image</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">wrapx</span><span class="p">,</span> <span class="n">wrapy</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span>
+</pre></div>
 <h3 id="generate_udf"><a href="#generate_udf">generate_udf</a></h3>
 <p>
 Create an unsigned distance field from a field of booleans.
 </p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">generate_udf</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">wrapx</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">wrapy</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+
+    <span class="k">assert</span> <span class="n">image</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s1">'bool'</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="k">assert</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
+
+    <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span>
+
+    <span class="n">capacity</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">wrapx</span> <span class="ow">or</span> <span class="n">wrapy</span><span class="p">:</span> <span class="n">capacity</span> <span class="o">*=</span> <span class="mi">2</span>
+
+    <span class="n">d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">capacity</span><span class="p">])</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">capacity</span> <span class="o">+</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">capacity</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">'i4'</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">INF</span><span class="p">)</span>
+
+    <span class="n">_generate_udf</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">v</span><span class="p">,</span> <span class="n">result</span><span class="p">,</span> <span class="n">wrapx</span><span class="p">,</span> <span class="n">wrapy</span><span class="p">)</span>
+
+    <span class="c1"># Post-process by square-rooting and normalizing</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
 <h3 id="hstack"><a href="#hstack">hstack</a></h3>
 <p>
 Horizontally concatenate a list of images with a border.  This is similar to numpy's <code>hstack</code> except that it adds a border around each image. The borders can be controlled with the optional <code>border_width</code> and <code>border_value</code> arguments.
 </p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hstack</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">border_width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">border_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">border_width</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+    <span class="n">T</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">border_width</span><span class="p">,</span> <span class="n">border_value</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">add_border</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="s1">'LTB'</span><span class="p">))</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">add_border</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
 <h3 id="load"><a href="#load">load</a></h3>
 <p>
 Create a numpy array from the given image file.
 </p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.exr'</span><span class="p">):</span>
+        <span class="n">imageio</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">freeimage</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
+    <span class="n">imgarray</span> <span class="o">=</span> <span class="n">imageio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">imgarray</span><span class="p">)</span>
+</pre></div>
 <h3 id="reshape"><a href="#reshape">reshape</a></h3>
 <p>
 Add a trailing dimension to single-channel 2D images.
 </p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">reshape</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span>
+    <span class="k">return</span> <span class="n">image</span>
+</pre></div>
 <h3 id="resize"><a href="#resize">resize</a></h3>
 <p>
 Create a new numpy image with the desired size.  Either width or height can be null, in which case its value is inferred from the aspect ratio of the source image.
 </p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">resize</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+           <span class="n">wrapx</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">wrapy</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">io</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">source</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
+    <span class="n">nchans</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">assert</span> <span class="n">width</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">height</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">,</span>  <span class="s1">'Missing target size'</span>
+    <span class="n">aspect</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="n">width</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span> <span class="n">width</span> <span class="o">=</span> <span class="n">height</span> <span class="o">*</span> <span class="n">aspect</span>
+    <span class="k">if</span> <span class="n">height</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span> <span class="n">height</span> <span class="o">=</span> <span class="n">width</span> <span class="o">/</span> <span class="n">aspect</span>
+    <span class="n">magnifying</span> <span class="o">=</span> <span class="n">width</span> <span class="o">&gt;</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="nb">filter</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span> <span class="nb">filter</span> <span class="o">=</span> <span class="n">MITCHELL</span> <span class="k">if</span> <span class="n">magnifying</span> <span class="k">else</span> <span class="n">LANCZOS</span>
+    <span class="k">def</span> <span class="nf">fn</span><span class="p">(</span><span class="n">t</span><span class="p">):</span> <span class="k">return</span> <span class="nb">filter</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">t</span> <span class="o">/</span> <span class="n">radius</span><span class="p">)</span>
+    <span class="n">scaled_filter</span> <span class="o">=</span> <span class="n">Filter</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">radius</span> <span class="o">*</span> <span class="nb">filter</span><span class="o">.</span><span class="n">radius</span><span class="p">)</span>
+    <span class="n">srows</span><span class="p">,</span> <span class="n">scols</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">trows</span><span class="p">,</span> <span class="n">tcols</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">height</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">width</span><span class="p">)</span>
+    <span class="n">vresult</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">srows</span><span class="p">,</span> <span class="n">tcols</span><span class="p">,</span> <span class="n">nchans</span><span class="p">])</span>
+    <span class="n">rowops</span> <span class="o">=</span> <span class="n">create_ops</span><span class="p">(</span><span class="n">tcols</span><span class="p">,</span> <span class="n">scols</span><span class="p">,</span> <span class="n">scaled_filter</span><span class="p">,</span> <span class="n">wrapx</span><span class="p">)</span>
+    <span class="n">convolve</span><span class="p">(</span><span class="n">vresult</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">rowops</span><span class="p">)</span>
+    <span class="n">vresult</span> <span class="o">=</span> <span class="n">transpose</span><span class="p">(</span><span class="n">vresult</span><span class="p">)</span>
+    <span class="n">hresult</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">tcols</span><span class="p">,</span> <span class="n">trows</span><span class="p">,</span> <span class="n">nchans</span><span class="p">])</span>
+    <span class="n">rowops</span> <span class="o">=</span> <span class="n">create_ops</span><span class="p">(</span><span class="n">trows</span><span class="p">,</span> <span class="n">srows</span><span class="p">,</span> <span class="n">scaled_filter</span><span class="p">,</span> <span class="n">wrapy</span><span class="p">)</span>
+    <span class="n">convolve</span><span class="p">(</span><span class="n">hresult</span><span class="p">,</span> <span class="n">vresult</span><span class="p">,</span> <span class="n">rowops</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">transpose</span><span class="p">(</span><span class="n">hresult</span><span class="p">)</span>
+</pre></div>
 <h3 id="save"><a href="#save">save</a></h3>
 <p>
 Save a numpy array as an image file at the given path.
 </p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image_format</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.exr'</span><span class="p">):</span>
+        <span class="n">imageio</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">freeimage</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
+        <span class="n">image_format</span> <span class="o">=</span> <span class="s1">'EXR-FI'</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">unshape</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">imageio</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">image</span><span class="p">,</span> <span class="n">image_format</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
 <h3 id="show"><a href="#show">show</a></h3>
 <p>
 Display an image in a platform-specific way.
 </p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+        <span class="n">show_array</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="n">show_filename</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Unsupported type'</span><span class="p">)</span>
+</pre></div>
 <h3 id="unshape"><a href="#unshape">unshape</a></h3>
 <p>
 Remove the trailing dimension from single-channel 3D images.
 </p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">unshape</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">image</span>
+</pre></div>
 <h3 id="vstack"><a href="#vstack">vstack</a></h3>
 <p>
 Vertically concatenate a list of images with a border.  This is similar to numpy's <code>vstack</code> except that it adds a border around each image. The borders can be controlled with the optional <code>border_width</code> and <code>border_value</code> arguments.
 </p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">vstack</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">border_width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">border_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">border_width</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
+    <span class="n">T</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">border_width</span><span class="p">,</span> <span class="n">border_value</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">add_border</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="s1">'LTR'</span><span class="p">))</span>
+    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">add_border</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</pre></div>
 <a href="https://github.prideout.net/">
 <img src="https://github.prideout.net/assets/PublishedLogo.svg" width="175px"/>
 </a>

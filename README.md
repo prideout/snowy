@@ -1,6 +1,6 @@
 <!--
 
-Can inspect print the source for a func?  Make the docs literate!
+Make the README sep from the docs.
 
 Why do periods have preceding space?  Why are bullets so spaced out?
 
@@ -17,7 +17,7 @@ add README examples of:
 ops
   add_border should be more efficient
   blit
-  snowy dstack dsplit (join / split aliases)
+  to_planar / from_planar (dstack / dsplit aliases)
   docstrings for all funcs
   add tests for color images
   hstack, vstack
@@ -30,12 +30,11 @@ travis
 
 open graph tags and thumbnail
 
-blog entry
-  Use filament to draw reflective sphere with and without HDR
-
 post-blog entry
 
-  add fractal.py with the mandelbrot example from numba
+  add fractal.py
+    mandelbrot example from numba
+    also this: https://en.wikipedia.org/wiki/Buddhabrot
 
   variable radius blur (radius multiplier is a fn not a constant)
     use numba to help speed this
@@ -70,8 +69,8 @@ With snowy, all images are three-dimensional numpy arrays. For example, RGB imag
 convenient unary functions to make it easy to interop with other libraries:
 - To add or remove the trailing "1" for grayscale images, use [shape](#shape) and
 [unshape](#unshape).
-- To switch an array in or out of planar format (color channels are in the leading dimension), use
-[dsplit](#dsplit) and [dstack](#dstack).
+- To move color channels in or out of the leading dimension (e.g. `[3,height,width]`), use
+[to_planar](#to_planar) and [from_planar](#from_planar).
 
 ## Installing
 
@@ -80,6 +79,10 @@ To install and update snowy, do this:
 `pip3 install -U snowy`
 
 ## Examples
+
+*If you want, you can skip the examples and
+<a href='file:///Users/prideout/github/snowy/docs/index.html#reference'>
+jump to the API reference</a>.*
 
 ### Resize and blur
 

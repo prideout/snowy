@@ -147,15 +147,26 @@ for member in inspect.getmembers(snowy):
     if not inspect.isfunction(value):
         continue
     doc = inspect.getdoc(value)
+    src = inspect.getsource(value)
+
+    dsbegin = src.find(r'"""')
+    dsend = src.rfind(r'"""') + 4
+    dsbegin = src[:dsbegin].rfind('\n') + 1
+    src = src[:dsbegin] + src[dsend:]
+    nlines = len(src.split('\n'))
+    print(name, nlines, dsbegin, dsend)
+
+    highlighted_src = highlight(src, PythonLexer(), formatter)
     if doc:
         htmlfile.write(f'<h3>{name}</h3>\n<p>\n')
         htmlfile.write(' '.join(doc.split('\n')))
         htmlfile.write('\n</p>\n')
+        htmlfile.write(highlighted_src)
 
 htmlfile.write('''
 <a href="https://github.prideout.net/">
 <img src="https://github.prideout.net/assets/PublishedLogo.svg"
-    width="175px">
+width="175px">
 </a>
 </main>
 ''')
@@ -175,6 +186,8 @@ for tag in 'h2 h3 h4'.split():
         anchor.string = content
         heading.contents[0].replace_with(anchor)
 open(qualify('index.html'), 'w').write(str(soup))
+
+quit()
 
 n = snowy.generate_noise(100, 100, frequency=4, seed=42, wrapx=True)
 n = np.hstack([n, n])

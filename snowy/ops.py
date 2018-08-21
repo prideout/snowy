@@ -40,20 +40,6 @@ def add_border(image: np.ndarray, width=2, value=0, sides='ltrb'):
     Top, Right, and Bottom. This can be used to select which borders you
     wish to add.
     </p>
-    
-    <p>
-    Also takes a <code>width</code> argument which defaults to 2. This
-    can control the thickness of the border.
-    </p>
-
-    <p>
-    The <code>value</code> argument (defaults to 0) controls the fill
-    color used for the border. For example:
-    </p>
-
-    <pre class="highlight">
-    image = snowy.add_border(image, width=3, value=1, sides='LTR')
-    </pre>
 
     """
     result = image
