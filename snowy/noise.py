@@ -11,6 +11,9 @@ def generate_noise(width, height, frequency, seed=1, wrapx=False,
     (2,2) surflet is centered. Noise values live within the [-1,+1]
     range.
     """
+    return _noise(width, height, frequency, seed, wrapx, wrapy, offset)
+
+def _noise(width, height, frequency, seed, wrapx, wrapy, offset):
     nrows, ncols = int(height), int(width)
     table = Noise(seed)
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3 -m pytest -s
+#!/usr/bin/env python3
 
 import os
 import sys
@@ -64,9 +64,6 @@ pre {
 code {
     font-family: 'Inconsolata', monospace;
 }
-li {
-    margin-bottom: 1em;
-}
 a {
     text-decoration: none;
     color: #2962ad;
@@ -101,7 +98,7 @@ class="octo-body"></path></svg></a>
 
 '''
 
-markdown = open(qualify('../README.md')).read()
+markdown = open(qualify('intro.md')).read()
 htmldoc = CommonMark.commonmark(markdown)
 
 # https://www.crummy.com/software/BeautifulSoup/bs4/doc/
@@ -110,10 +107,6 @@ soup = BeautifulSoup(htmldoc, 'html.parser')
 comments = soup.find_all(string=lambda text:isinstance(text,Comment))
 for comment in comments:
     comment.extract()
-
-# Remove the bulleted list seen on the GitHub README.
-soup.find_all('ul')[0].extract()
-soup.find_all('p')[1].extract()
 
 formatter = HtmlFormatter(style='tango')
 snippets = soup.findAll("code", {"class": "language-python"})
@@ -136,8 +129,7 @@ htmlfile.write('''
 htmlfile.write('</style>')
 htmlfile.write('<main>\n')
 htmlfile.write(forkme)
-htmlfile.write(soup.prettify())
-htmlfile.write('<h2>Reference</h2>\n')
+htmlfile.write(str(soup))
 
 import inspect
 for member in inspect.getmembers(snowy):
@@ -187,8 +179,6 @@ for tag in 'h2 h3 h4'.split():
         heading.contents[0].replace_with(anchor)
 open(qualify('index.html'), 'w').write(str(soup))
 
-quit()
-
 n = snowy.generate_noise(100, 100, frequency=4, seed=42, wrapx=True)
 n = np.hstack([n, n])
 n = 0.5 + 0.5 * n
@@ -197,12 +187,12 @@ snowy.save(n, qualify('noise.png'))
 
 # First try minifying grayscale
 
-gibbons = snowy.load(qualify('gibbons.jpg'))
+gibbons = snowy.load(qualify('snowy.jpg'))
 gibbons = np.swapaxes(gibbons, 0, 2)
 gibbons = np.swapaxes(gibbons[0], 0, 1)
 gibbons = snowy.reshape(gibbons)
 
-source = snowy.resize(gibbons, 200, 200)
+source = snowy.resize(gibbons, height=200)
 blurry = snowy.blur(source, radius=4.0)
 diptych_filename = qualify('diptych.png')
 snowy.save(snowy.hstack([source, blurry]), diptych_filename)
@@ -211,9 +201,9 @@ snowy.show(diptych_filename)
 
 # Next try color
 
-gibbons = snowy.load(qualify('gibbons.jpg'))
+gibbons = snowy.load(qualify('snowy.jpg'))
 
-source = snowy.resize(gibbons, 200, 200)
+source = snowy.resize(gibbons, height=200)
 blurry = snowy.blur(source, radius=4.0)
 diptych_filename = qualify('diptych.png')
 snowy.save(snowy.hstack([source, blurry]), diptych_filename)
@@ -269,14 +259,11 @@ SMOOTH_PALETTE = [
 
 from scipy import interpolate
 
-def applyColorGradient(img, pal):
-    inds = pal[0::2]
-    cols = np.array(pal[1::2])
-    red, grn, blu = cols >> 16, cols >> 8, cols
-    cols = [c & 0xff for c in [red, grn, blu]]
-    cols = [interpolate.interp1d(inds, c) for c in cols]
-    img = np.clip(img, 0, 255)
-    return np.dstack([fn(img) for fn in cols])
+def applyColorGradient(elevation_image, gradient_image):
+    xvals = np.arange(256)
+    yvals = gradient_image[0]
+    apply_lut = interpolate.interp1d(xvals, yvals, axis=0)
+    return apply_lut(snowy.unshape(np.clip(elevation_image, 0, 255)))
 
 def create_falloff(w, h, radius=0.4, cx=0.5, cy=0.5):
     hw, hh = 0.5 / w, 0.5 / h
@@ -287,25 +274,64 @@ def create_falloff(w, h, radius=0.4, cx=0.5, cy=0.5):
     d2 = (u-cx)**2 + (v-cy)**2
     return 1-snowy.unitize(snowy.reshape(d2))
 
-def create_island(seed, freq=3):
-    falloff = create_falloff(500, 500)
-    n1 = 1.000 * snowy.generate_noise(500, 500, freq*1, seed+0)
-    n2 = 0.500 * snowy.generate_noise(500, 500, freq*2, seed+1)
-    n3 = 0.250 * snowy.generate_noise(500, 500, freq*4, seed+2)
-    n4 = 0.125 * snowy.generate_noise(500, 500, freq*8, seed+3)
+def smoothstep(edge0, edge1, x):
+    t = np.clip((x - edge0) / (edge1 - edge0), 0.0, 1.0)
+    return t * t * (3.0 - 2.0 * t)
+
+def create_circle(w, h, radius=0.4, cx=0.5, cy=0.5):
+    hw, hh = 0.5 / w, 0.5 / h
+    dp = max(hw, hh)
+    x = np.linspace(hw, 1 - hw, w)
+    y = np.linspace(hh, 1 - hh, h)
+    u, v = np.meshgrid(x, y, sparse=True)
+    d2, r2 = (u-cx)**2 + (v-cy)**2, radius**2
+    result = 1 - smoothstep(radius-dp, radius+dp, np.sqrt(d2))
+    return snowy.reshape(result)
+
+c0 = create_circle(200, 200, 0.3)
+c1 = create_circle(200, 200, 0.08, 0.8, 0.8)
+c0 = np.clip(c0 + c1, 0, 1)
+circles = snowy.add_border(c0, value=1)
+sdf = snowy.unitize(snowy.generate_sdf(circles != 0.0))
+stack = snowy.hstack([circles, sdf])
+snowy.save(stack, qualify('sdf.png'))
+snowy.show(stack)
+
+def create_island(seed, gradient, freq=3):
+    w, h = 750, 512
+    falloff = create_falloff(w, h)
+    n1 = 1.000 * snowy.generate_noise(w, h, freq*1, seed+0)
+    n2 = 0.500 * snowy.generate_noise(w, h, freq*2, seed+1)
+    n3 = 0.250 * snowy.generate_noise(w, h, freq*4, seed+2)
+    n4 = 0.125 * snowy.generate_noise(w, h, freq*8, seed+3)
     elevation = falloff * (falloff / 2 + n1 + n2 + n3 + n4)
     mask = elevation < 0.4
     elevation = snowy.generate_sdf(mask) - 100 * n4
     mask = np.where(elevation < 0, 1, 0)
     el = 128 + 127 * elevation / np.amax(elevation)
-    return applyColorGradient(el, STEPPED_PALETTE)
+    return applyColorGradient(el, gradient)
 
-# flake = snowy.load(qualify('snowflake64.png'))
-# snowy.show(flake)
+def createColorGradient(pal):
+    inds = pal[0::2]
+    cols = np.array(pal[1::2])
+    red, grn, blu = cols >> 16, cols >> 8, cols
+    cols = [c & 0xff for c in [red, grn, blu]]
+    cols = [interpolate.interp1d(inds, c) for c in cols]
+    img = np.arange(0, 255)
+    img = np.dstack([fn(img) for fn in cols])
+    return snowy.resize(img, 256, 32)
+
+gradient = createColorGradient(STEPPED_PALETTE)
+snowy.save(snowy.add_border(gradient), qualify('gradient.png'))
+snowy.show(gradient)
 
 isles = []
 for i in range(6):
-    isle = snowy.resize(create_island(i * 5), 200, 200)
+    isle = create_island(i * 5, gradient)
     isles.append(isle)
+snowy.save(isles[2], qualify('island.png'))
 isles = snowy.hstack(isles)
 snowy.show(isles)
+
+# flake = snowy.load(qualify('snowflake64.png'))
+# snowy.show(flake)

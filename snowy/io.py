@@ -15,13 +15,19 @@ def show(image):
         raise ValueError('Unsupported type')
 
 def reshape(image):
-    """Add a trailing dimension to single-channel 2D images."""
+    """Add a trailing dimension to single-channel 2D images.
+    
+    See also <a href="#unshape">unshape</a>.
+    """
     if len(image.shape) == 2:
         return np.reshape(image, image.shape + (1,))
     return image
 
 def unshape(image):
-    """Remove the trailing dimension from single-channel 3D images."""
+    """Remove the trailing dimension from single-channel 3D images.
+    
+    See also <a href="#reshape">reshape</a>.
+    """
     if len(image.shape) == 3 and image.shape[2] == 1:
         return np.reshape(image, image.shape[:2])
     return image
@@ -31,7 +37,7 @@ def load(filename: str):
     if filename.endswith('.exr'):
         imageio.plugins.freeimage.download()
     imgarray = imageio.imread(filename)
-    return np.float64(imgarray)
+    return reshape(np.float64(imgarray))
 
 def save(image: np.ndarray, filename: str, image_format: str=None):
     """Save a numpy array as an image file at the given path."""
@@ -39,8 +45,7 @@ def save(image: np.ndarray, filename: str, image_format: str=None):
         imageio.plugins.freeimage.download()
         image_format = 'EXR-FI'
         image = np.float32(image)
-    image = unshape(image)
-    result = imageio.imwrite(filename, image, image_format)
+    result = imageio.imwrite(filename, unshape(image), image_format)
     return result
 
 def show_array(image: np.ndarray):

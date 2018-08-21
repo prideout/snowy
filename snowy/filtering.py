@@ -66,16 +66,21 @@ def resize(source, width=None, height=None, filter=None, radius=1,
 
     Either width or height can be null, in which case its value
     is inferred from the aspect ratio of the source image.
+
+    Filter can be HERMITE, TRIANGLE, GAUSSIAN, NEAREST, LANCZOS, or
+    MITCHELL.
     """
-    source = io.reshape(source)
     assert len(source.shape) == 3, 'Shape is not rows x cols x channels'
-    nchans = source.shape[2]
     assert width != None or height != None,  'Missing target size'
-    aspect = float(source.shape[1]) / source.shape[0]
+    aspect = source.shape[1] / source.shape[0]
     if width == None: width = height * aspect
     if height == None: height = width / aspect
     magnifying = width > source.shape[0]
     if filter == None: filter = MITCHELL if magnifying else LANCZOS
+    return resample(source, width, height, filter, radius, wrapx, wrapy)
+
+def resample(source, width, height, filter, radius, wrapx, wrapy):
+    nchans = source.shape[2]
     def fn(t): return filter.function(t / radius)
     scaled_filter = Filter(fn, radius * filter.radius)
     srows, scols = source.shape[0], source.shape[1]
@@ -89,11 +94,13 @@ def resize(source, width=None, height=None, filter=None, radius=1,
     convolve(hresult, vresult, rowops)
     return transpose(hresult)
 
-def blur(source: np.ndarray, filter=GAUSSIAN, radius=4, wrapx=False,
-         wrapy=False):
-    """Create a filtered numpy image with same size as the original."""
-    width, height = source.shape[1], source.shape[0]
-    return resize(source, width, height, filter, radius)
+def blur(image, filter=GAUSSIAN, radius=4, wrapx=False, wrapy=False):
+    """Resample an image and produce a new image with the same size.
+    
+    For a list of available filters, see <a href="#resize">resize</a>.
+    """
+    width, height = image.shape[1], image.shape[0]
+    return resize(image, width, height, filter, radius, wrapx, wrapy)
 
 def transpose(source: np.ndarray):
     return np.swapaxes(source, 0, 1)

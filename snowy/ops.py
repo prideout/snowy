@@ -56,7 +56,8 @@ def hstack(images, border_width=2, border_value=0):
     This is similar to numpy's <code>hstack</code> except that it adds
     a border around each image. The borders can be controlled
     with the optional <code>border_width</code> and
-    <code>border_value</code> arguments.
+    <code>border_value</code> arguments. See also <a href="vstack">
+    vstack</a>.
     """
     if border_width == 0: return np.hstack(images)
     T, V = border_width, border_value
@@ -72,7 +73,8 @@ def vstack(images, border_width=2, border_value=0):
     This is similar to numpy's <code>vstack</code> except that it adds
     a border around each image. The borders can be controlled
     with the optional <code>border_width</code> and
-    <code>border_value</code> arguments.
+    <code>border_value</code> arguments. See also <a href="hstack">
+    hstack</a>.
     """
     if border_width == 0: return np.vstack(images)
     T, V = border_width, border_value
@@ -83,8 +85,10 @@ def vstack(images, border_width=2, border_value=0):
     return np.vstack(result)
 
 def unitize(img):
+    """Remap the values so that they span the range from 0 to +1."""
     return (img - np.amin(img)) / (np.amax(img) - np.amin(img))
 
 def gradient(img):
+    """Compute X derivatives and Y derivatives."""
     nx, ny = np.gradient(io.unshape(img))
     return io.reshape(nx), io.reshape(ny)

@@ -1,6 +1,7 @@
 from numba import jit
 import numba
 import numpy as np
+from . import io
 
 INF = 1e20
 
@@ -12,27 +13,22 @@ def generate_sdf(image: np.ndarray, wrapx=False, wrapy=False):
 
 def generate_udf(image: np.ndarray, wrapx=False, wrapy=False):
     """Create an unsigned distance field from a field of booleans."""
+    assert image.dtype == 'bool', 'Pixel values must be boolean'
+    assert len(image.shape) == 3, 'Shape is not rows x cols x channels'
+    assert image.shape[2] == 1, 'Image must be grayscale'
+    return _generate_edt(image, wrapx, wrapy)
 
-    assert image.dtype == 'bool'
-    assert len(image.shape) == 3
-    assert image.shape[2] == 1
-    image = np.reshape(image, image.shape[:2])
-
+def _generate_edt(image, wrapx, wrapy):
+    image = io.unshape(image)
     height, width = image.shape
-
     capacity = max(width, height)
     if wrapx or wrapy: capacity *= 2
-
     d = np.zeros([capacity])
     z = np.zeros([capacity + 1])
     v = np.zeros([capacity], dtype='i4')
     result = np.where(image, 0.0, INF)
-
     _generate_udf(width, height, d, z, v, result, wrapx, wrapy)
-
-    # Post-process by square-rooting and normalizing
-    result = np.reshape(result, result.shape + (1,))
-    return np.sqrt(result)
+    return np.sqrt(io.reshape(result))
 
 @jit(nopython=True, fastmath=True)
 def _generate_udf(width, height, d, z, v, result, wrapx, wrapy):
