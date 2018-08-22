@@ -45,7 +45,7 @@ body {
     background-color: #e2e2e2;
 }
 small {
-    color: #6ba268;
+    color: #a0a0a0;
     margin-top: 26px;
 }
 h1 {
