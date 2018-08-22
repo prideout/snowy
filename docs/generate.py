@@ -51,10 +51,14 @@ small {
 td:first-child {
     padding-right: 15px;
 }
+p:first-child {
+    clear: left;
+}
 h1 {
     margin-top: 0;
+    margin-bottom: 0;
     font-family: 'Alegreya', serif;
-    font-size: 40px;
+    font-size: 45px;
 }
 main {
     overflow: auto;

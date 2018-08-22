@@ -16,13 +16,14 @@ Painting and 2D paths are outside the scope of the library. See
 
 <!--
 
-Write section on csropping and blitting
-  "just use numpy"
-
 Examples
-- The EXR demo image sucks
-- Load the flake, create drop shadow, composite it over noise
-- Islands
+- Cropping and blitting
+  - The EXR demo image sucks
+  - Load the flake, create drop shadow, composite it over noise
+- Image generation
+  - Islands, look at heman, assume that gradient image already exists
+
+Implement and write tests for
 - to_planar and from_planar
 
 Write a section on wrap modes
@@ -31,17 +32,16 @@ I think we need some modicum of color space handling, at least in load / save --
   poodle slightly dark?  Create a page in "test" and use chrome. (or implement generate_gallery)
 
 travis
-  should run generate as well as test_snowy
-
-BUG:
-  when saving a solid color image, I think this exception can be thrown:
-    "Max value == min value, ambiguous given dtype"
-  also, "Lossy conversion from float64 to uint8." warnings are annoying
+  should run docs/generate as well as test_snowy
 
 open graph tags and thumbnail
 
 TODO items after open source release
 
+  Bug fix
+    when saving a solid color image, I think this exception can be thrown:
+    "Max value == min value, ambiguous given dtype"
+    also, "Lossy conversion from float64 to uint8." warnings are annoying
   arbitrary rotation
   reduce_colors and to_svg
   io can have create_movie

@@ -1,4 +1,4 @@
-# Snowy
+# Snowy <img src="snowy2.png" height="64px" style="vertical-align:text-bottom;margin-left:10px">
 
 This is a tiny module for manipulating and generating images, written purely in Python 3 and
 accelerated with [numba](https://numba.pydata.org/). It has a small, flat API with some interesting
@@ -51,7 +51,6 @@ snowy.show(snowy.hstack([nearest, mitchell]))
 
 ```python
 gibbons = snowy.load('gibbons.jpg')
-gibbons = snowy.resize(gibbons, width=gibbons.shape[1] // 10)
 rotated = snowy.rotate(gibbons, 180)
 flipped = snowy.vflip(gibbons)
 triptych = snowy.hstack([gibbons, rotated, flipped],
@@ -60,9 +59,11 @@ triptych = snowy.hstack([gibbons, rotated, flipped],
 
 <img src="xforms.jpg" height="150px">
 
-### Crop
+### Cropping and blitting
 
-This loads an OpenEXR image, then crops out the top half by slicing the numpy array.
+If you need to crop an image or compose two images, just use numpy.
+
+For example, this loads an OpenEXR image, then crops out the top half by slicing the numpy array.
 
 ```python
 sunset = snowy.load('sunset.exr')
@@ -71,6 +72,10 @@ snowy.show(cropped_sunset / 50.0) # darken the image
 ```
 
 <img src="cropped-sunset.png" height="100px">
+
+This composes an alpha-blended snowflake with a background image:
+
+TBD
 
 ### Gradient noise
 
@@ -99,10 +104,6 @@ snowy.show(snowy.hstack([circles, sdf]))
 
 <img src="sdf.png" height="128px">
 
-### Image manipulation
-
-TBD
-
 <img src="snowflake.png" height="128px">
 
 ### Image generation
@@ -112,6 +113,10 @@ TBD
 <img src="gradient.png" width="150px">
 
 <img src="island.png" height="150px">
+
+## Wrap modes
+
+TBD
 
 ## Interop
 
