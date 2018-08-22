@@ -23,6 +23,9 @@ small {
     color: #a0a0a0;
     margin-top: 26px;
 }
+td:first-child {
+    padding-right: 15px;
+}
 h1 {
     margin-top: 0;
     font-family: 'Alegreya', serif;
@@ -153,7 +156,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.1 ~ 6203a4e61ab0fa3f073c6a37d7d7c6245ae5ed71</small>
+<small>v0.0.1 ~ 73ffcca411b0a4cb8180892069fdcd929f759b2c</small>
 <h1>Snowy</h1>
 <p>This is a tiny module for manipulating and generating images, written purely in Python 3 and
 accelerated with <a href="https://numba.pydata.org/">numba</a>. It has a small, flat API with some interesting
@@ -187,8 +190,14 @@ Mitchell filter.</p>
 </pre></div>
 <img height="128px" src="diptych-parrot.png"/>
 <h3 id="rotate_and_flip"><a href="#rotate_and_flip">Rotate and flip</a></h3>
-<p>TBD</p>
-<img height="128px" src="gibbons.jpg"/>
+<div class="highlight"><pre><span></span><span class="n">gibbons</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'gibbons.jpg'</span><span class="p">)</span>
+<span class="n">gibbons</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">gibbons</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="n">gibbons</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">//</span> <span class="mi">10</span><span class="p">)</span>
+<span class="n">rotated</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">rotate</span><span class="p">(</span><span class="n">gibbons</span><span class="p">,</span> <span class="mi">180</span><span class="p">)</span>
+<span class="n">flipped</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">vflip</span><span class="p">(</span><span class="n">gibbons</span><span class="p">)</span>
+<span class="n">triptych</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">gibbons</span><span class="p">,</span> <span class="n">rotated</span><span class="p">,</span> <span class="n">flipped</span><span class="p">],</span>
+    <span class="n">border_width</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">border_value</span><span class="o">=</span><span class="p">[</span><span class="mi">128</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+<img height="150px" src="xforms.jpg"/>
 <h3 id="crop"><a href="#crop">Crop</a></h3>
 <p>This loads an OpenEXR image, then crops out the top half by slicing the numpy array.</p>
 <div class="highlight"><pre><span></span><span class="n">sunset</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'sunset.exr'</span><span class="p">)</span>
@@ -221,14 +230,18 @@ values into the <code>[0,1]</code> range.</p>
 <img src="gradient.png" width="150px"/>
 <img height="150px" src="island.png"/>
 <h2 id="interop"><a href="#interop">Interop</a></h2>
-<p>Remember, with snowy, images are <em>always</em> three-dimensional numpy arrays, and color channels live
-in the trailing dimension. If you're working with another module that does not follow this
-convention, consider using one of the following interop functions.</p>
+<p>Snowy's algorithms require images to be row-major three-dimensional <code>float64</code> numpy arrays, with
+color channels living in the trailing dimension. If you're working with another module that does not
+follow this convention, consider using one of the following interop functions.</p>
 <ul>
 <li>To add or remove the trailing 1 from the shape of grayscale images, use <a href="#reshape">reshape</a> and
 <a href="#unshape">unshape</a>.</li>
 <li>To swap color channels in or out of the leading dimension, use <a href="#to_planar">to_planar</a> and
 <a href="#from_planar">from_planar</a>.</li>
+<li>To cast between <code>float64</code> and other types, just use numpy. For example,
+<code>np.uint8(myimg * 255)</code> or <code>np.float64(myimg) / 255</code>.</li>
+<li>To swap rows with columns, use numpy's
+<a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.swapaxes.html">swapaxes function</a>.</li>
 </ul>
 <h2 id="quick_reference"><a href="#quick_reference">Quick Reference</a></h2>
 <table>
@@ -257,6 +270,10 @@ convention, consider using one of the following interop functions.</p>
 <td>Compute X derivatives and Y derivatives.</td>
 <tr>
 <tr>
+<td><a href="#hflip">hflip</a></td>
+<td>Horizontally mirror the given image.</td>
+<tr>
+<tr>
 <td><a href="#hstack">hstack</a></td>
 <td>Horizontally concatenate a list of images with a border.</td>
 <tr>
@@ -271,6 +288,10 @@ convention, consider using one of the following interop functions.</p>
 <tr>
 <td><a href="#resize">resize</a></td>
 <td>Create a new numpy image with the desired size.</td>
+<tr>
+<tr>
+<td><a href="#rotate">rotate</a></td>
+<td>Rotate image counter-clockwise by a multiple of 90 degrees.</td>
 <tr>
 <tr>
 <td><a href="#save">save</a></td>
@@ -289,12 +310,16 @@ convention, consider using one of the following interop functions.</p>
 <td>Remove the trailing dimension from single-channel 3D images.</td>
 <tr>
 <tr>
+<td><a href="#vflip">vflip</a></td>
+<td>Vertically mirror the given image.</td>
+<tr>
+<tr>
 <td><a href="#vstack">vstack</a></td>
 <td>Vertically concatenate a list of images with a border.</td>
 <tr>
-</tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></table>
+</tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></table>
 <h2 id="reference"><a href="#reference">Reference</a></h2>
-<p>This section is autogenerated and includes the source code of each entry point. This allows
+<p>This section includes the source code of each entry point. This allows
 you to clearly see the default parameters and expectations of each function.</p>
 <h3 id="add_border"><a href="#add_border">add_border</a></h3>
 <p>
@@ -352,6 +377,18 @@ Compute X derivatives and Y derivatives.
     <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">unshape</span><span class="p">(</span><span class="n">img</span><span class="p">))</span>
     <span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nx</span><span class="p">),</span> <span class="n">io</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">ny</span><span class="p">)</span>
 </pre></div>
+<h3 id="hflip"><a href="#hflip">hflip</a></h3>
+<p>
+Horizontally mirror the given image.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hflip</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
+    <span class="k">assert</span> <span class="n">source</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="s1">'Images must be doubles.'</span>
+    <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span><span class="p">])</span>
+    <span class="n">jit_hflip</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
 <h3 id="hstack"><a href="#hstack">hstack</a></h3>
 <p>
 Horizontally concatenate a list of images with a border.  This is similar to numpy's <code>hstack</code> except that it adds a border around each image. The borders can be controlled with the optional <code>border_width</code> and <code>border_value</code> arguments. See also <a href="vstack"> vstack</a>.
@@ -399,6 +436,28 @@ Create a new numpy image with the desired size.  Either width or height can be n
     <span class="k">if</span> <span class="nb">filter</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span> <span class="nb">filter</span> <span class="o">=</span> <span class="n">MITCHELL</span> <span class="k">if</span> <span class="n">magnifying</span> <span class="k">else</span> <span class="n">LANCZOS</span>
     <span class="k">return</span> <span class="n">resample</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">wrapx</span><span class="p">,</span> <span class="n">wrapy</span><span class="p">)</span>
 </pre></div>
+<h3 id="rotate"><a href="#rotate">rotate</a></h3>
+<p>
+Rotate image counter-clockwise by a multiple of 90 degrees.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">degrees</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
+    <span class="k">assert</span> <span class="n">source</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="s1">'Images must be doubles.'</span>
+    <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">degrees</span> <span class="o">%=</span> <span class="mi">360</span>
+    <span class="k">if</span> <span class="n">degrees</span> <span class="o">==</span> <span class="mi">90</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">c</span><span class="p">])</span>
+        <span class="n">rotate90</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">degrees</span> <span class="o">==</span> <span class="mi">180</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span><span class="p">])</span>
+        <span class="n">rotate180</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">degrees</span> <span class="o">==</span> <span class="mi">270</span><span class="p">:</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">c</span><span class="p">])</span>
+        <span class="n">rotate270</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="bp">False</span><span class="p">,</span> <span class="s1">'Angle must be a multiple of 90.'</span>
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
 <h3 id="save"><a href="#save">save</a></h3>
 <p>
 Save a numpy array as an image file at the given path.
@@ -438,6 +497,18 @@ Remove the trailing dimension from single-channel 3D images.  See also <a href="
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">image</span>
+</pre></div>
+<h3 id="vflip"><a href="#vflip">vflip</a></h3>
+<p>
+Vertically mirror the given image.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">vflip</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
+    <span class="k">assert</span> <span class="n">source</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="s1">'Images must be doubles.'</span>
+    <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span><span class="p">])</span>
+    <span class="n">jit_vflip</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
 </pre></div>
 <h3 id="vstack"><a href="#vstack">vstack</a></h3>
 <p>

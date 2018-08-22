@@ -31,3 +31,6 @@ gradient = ops.gradient
 hstack = ops.hstack
 unitize = ops.unitize
 vstack = ops.vstack
+rotate = ops.rotate
+hflip = ops.hflip
+vflip = ops.vflip

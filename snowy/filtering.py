@@ -2,7 +2,7 @@
 
 from . import io
 from collections import namedtuple
-from numba import jit, guvectorize
+from numba import guvectorize
 import math
 import numpy as np
 

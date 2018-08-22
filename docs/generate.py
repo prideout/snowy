@@ -48,6 +48,9 @@ small {
     color: #a0a0a0;
     margin-top: 26px;
 }
+td:first-child {
+    padding-right: 15px;
+}
 h1 {
     margin-top: 0;
     font-family: 'Alegreya', serif;
@@ -157,7 +160,6 @@ for member in inspect.getmembers(snowy):
     dsbegin = src[:dsbegin].rfind('\n') + 1
     src = src[:dsbegin] + src[dsend:]
     nlines = len(src.split('\n'))
-    print(name, nlines, dsbegin, dsend)
 
     highlighted_src = highlight(src, PythonLexer(), formatter)
     if doc:
@@ -197,6 +199,20 @@ for tag in 'h2 h3 h4'.split():
         heading.contents[0].replace_with(anchor)
 open(qualify('index.html'), 'w').write(str(soup))
 
+# Test rotations and flips
+
+gibbons = snowy.load(qualify('gibbons.jpg'))
+gibbons = snowy.resize(gibbons, width=gibbons.shape[1] // 10)
+gibbons90 = snowy.rotate(gibbons, 90)
+gibbons180 = snowy.rotate(gibbons, 180)
+gibbons270 = snowy.rotate(gibbons, 270)
+hflipped = snowy.hflip(gibbons)
+vflipped = snowy.vflip(gibbons)
+snowy.save(snowy.hstack([gibbons, gibbons180, vflipped],
+    border_width=4, border_value=[128,0,0]), qualify("xforms.jpg"))
+
+# Test noise generation
+
 n = snowy.generate_noise(100, 100, frequency=4, seed=42, wrapx=True)
 n = np.hstack([n, n])
 n = 0.5 + 0.5 * n
@@ -209,7 +225,6 @@ gibbons = snowy.load(qualify('snowy.jpg'))
 gibbons = np.swapaxes(gibbons, 0, 2)
 gibbons = np.swapaxes(gibbons[0], 0, 1)
 gibbons = snowy.reshape(gibbons)
-
 source = snowy.resize(gibbons, height=200)
 blurry = snowy.blur(source, radius=4.0)
 diptych_filename = qualify('diptych.png')
@@ -220,7 +235,6 @@ snowy.show(diptych_filename)
 # Next try color
 
 gibbons = snowy.load(qualify('snowy.jpg'))
-
 source = snowy.resize(gibbons, height=200)
 blurry = snowy.blur(source, radius=4.0)
 diptych_filename = qualify('diptych.png')
@@ -238,7 +252,6 @@ diptych_filename = qualify('diptych-parrot.png')
 snowy.save(snowy.hstack([nearest, mitchell]), diptych_filename)
 os.system('optipng ' + diptych_filename)
 snowy.show(diptych_filename)
-
 sunset = snowy.load(qualify('small.exr'))
 print(sunset.shape)
 cropped_sunset = sunset[:100,:,:]

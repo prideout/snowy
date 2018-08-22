@@ -1,33 +1,34 @@
 """Define add_border etc."""
 
-import numpy as np
 from . import io
+from numba import jit, guvectorize
+import numpy as np
 
 def add_left(image: np.ndarray, T=2, V=0) -> np.ndarray:
     height, width, nchan = image.shape
     newshape = height, width + T, nchan
-    result = np.full(newshape, float(V))
+    result = np.full(newshape, np.float64(V))
     np.copyto(result[:,T:], image)
     return result
 
 def add_right(image: np.ndarray, T=2, V=0) -> np.ndarray:
     height, width, nchan = image.shape
     newshape = height, width + T, nchan
-    result = np.full(newshape, float(V))
+    result = np.full(newshape, np.float64(V))
     np.copyto(result[:,:-T], image)
     return result
 
 def add_top(image: np.ndarray, T=2, V=0) -> np.ndarray:
     height, width, nchan = image.shape
     newshape = height + T, width, nchan
-    result = np.full(newshape, float(V))
+    result = np.full(newshape, np.float64(V))
     np.copyto(result[T:,:], image)
     return result
 
 def add_bottom(image: np.ndarray, T=2, V=0) -> np.ndarray:
     height, width, nchan = image.shape
     newshape = height + T, width, nchan
-    result = np.full(newshape, float(V))
+    result = np.full(newshape, np.float64(V))
     np.copyto(result[:-T,:], image)
     return result
 
@@ -92,3 +93,95 @@ def gradient(img):
     """Compute X derivatives and Y derivatives."""
     nx, ny = np.gradient(io.unshape(img))
     return io.reshape(nx), io.reshape(ny)
+
+def rotate(source: np.ndarray, degrees) -> np.ndarray:
+    """Rotate image counter-clockwise by a multiple of 90 degrees."""
+    assert len(source.shape) == 3, 'Shape is not rows x cols x channels'
+    assert source.dtype == np.float, 'Images must be doubles.'
+    h, w, c = source.shape
+    degrees %= 360
+    if degrees == 90:
+        result = np.empty([w, h, c])
+        rotate90(result, source)
+    elif degrees == 180:
+        result = np.empty([h, w, c])
+        rotate180(result, source)
+    elif degrees == 270:
+        result = np.empty([w, h, c])
+        rotate270(result, source)
+    else:
+        assert False, 'Angle must be a multiple of 90.'
+    return result
+
+def hflip(source: np.ndarray) -> np.ndarray:
+    """Horizontally mirror the given image."""
+    assert len(source.shape) == 3, 'Shape is not rows x cols x channels'
+    assert source.dtype == np.float, 'Images must be doubles.'
+    h, w, c = source.shape
+    result = np.empty([h, w, c])
+    jit_hflip(result, source)
+    return result
+
+def vflip(source: np.ndarray) -> np.ndarray:
+    """Vertically mirror the given image."""
+    assert len(source.shape) == 3, 'Shape is not rows x cols x channels'
+    assert source.dtype == np.float, 'Images must be doubles.'
+    h, w, c = source.shape
+    result = np.empty([h, w, c])
+    jit_vflip(result, source)
+    return result
+
+SIG0 = "void(f8[:,:,:], f8[:,:,:])"
+SIG1 = "(r,c,d),(c,r,d)"
+@guvectorize([SIG0], SIG1, target='parallel')
+def rotate90(result, source):
+    nrows, ncols, nchan = source.shape
+    for row in range(nrows):
+        for col in range(ncols):
+            for chan in range(nchan):
+                v = source[row][col][chan]
+                result[-col-1][row][chan] = v
+
+SIG0 = "void(f8[:,:,:], f8[:,:,:])"
+SIG1 = "(r,c,d),(r,c,d)"
+@guvectorize([SIG0], SIG1, target='parallel')
+def rotate180(result, source):
+    nrows, ncols, nchan = source.shape
+    for row in range(nrows):
+        for col in range(ncols):
+            for chan in range(nchan):
+                v = source[row][col][chan]
+                result[-row-1][-col-1][chan] = v
+
+SIG0 = "void(f8[:,:,:], f8[:,:,:])"
+SIG1 = "(r,c,d),(c,r,d)"
+@guvectorize([SIG0], SIG1, target='parallel')
+def rotate270(result, source):
+    nrows, ncols, nchan = source.shape
+    for row in range(nrows):
+        for col in range(ncols):
+            for chan in range(nchan):
+                v = source[row][col][chan]
+                result[col][-row-1][chan] = v
+
+SIG0 = "void(f8[:,:,:], f8[:,:,:])"
+SIG1 = "(r,c,d),(r,c,d)"
+@guvectorize([SIG0], SIG1, target='parallel')
+def jit_hflip(result, source):
+    nrows, ncols, nchan = source.shape
+    for row in range(nrows):
+        for col in range(ncols):
+            for chan in range(nchan):
+                v = source[row][col][chan]
+                result[row][-col-1][chan] = v
+
+SIG0 = "void(f8[:,:,:], f8[:,:,:])"
+SIG1 = "(r,c,d),(r,c,d)"
+@guvectorize([SIG0], SIG1, target='parallel')
+def jit_vflip(result, source):
+    nrows, ncols, nchan = source.shape
+    for row in range(nrows):
+        for col in range(ncols):
+            for chan in range(nchan):
+                v = source[row][col][chan]
+                result[-row-1][col][chan] = v
