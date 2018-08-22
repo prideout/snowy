@@ -1,5 +1,12 @@
 #!/usr/bin/env python3
 
+"""
+Snowy implements high-quality filtering and is written purely in Python.
+We do not expect it to be quite as fast as PIL or vips. However we do
+ensure that it performs reasonably with large images, which it achieves
+through careful usage of numba.
+"""
+
 import sys
 sys.path.append('../snowy')
 
@@ -21,13 +28,13 @@ def minify_with_pil():
     pilimage = pilimage.resize((width//ZOOM, height//ZOOM))
     # pilimage.show()
 
-def minify_with_filo():
+def minify_with_snowy():
     global imgarray
     global pilimage
     print(imgarray.shape, imgarray.dtype)
     height, width = imgarray.shape[:2]
     imgarray = snowy.resize(imgarray, width//ZOOM, height//ZOOM)
-    snowy.show(imgarray)
+    # snowy.show(imgarray)
 
 def setup(grayscale=False, imgfile='~/Desktop/SaltLakes.jpg'):
     print('Loading image...')
@@ -44,6 +51,6 @@ seconds = timeit.timeit('minify_with_pil()', setup='setup()',
       globals=globals(), number=1)
 print(f"PIL minification took {seconds:6.3} seconds")
 
-seconds = timeit.timeit('minify_with_filo()', setup='setup()',
+seconds = timeit.timeit('minify_with_snowy()', setup='setup()',
       globals=globals(), number=1)
 print(f"Snowy minification took {seconds:6.3} seconds")

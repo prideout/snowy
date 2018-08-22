@@ -16,6 +16,9 @@ Painting and 2D paths are outside the scope of the library. See
 
 <!--
 
+Write section on csropping and blitting
+  "just use numpy"
+
 Examples
 - The EXR demo image sucks
 - Load the flake, create drop shadow, composite it over noise
@@ -39,8 +42,12 @@ open graph tags and thumbnail
 
 TODO items after open source release
 
-  io can have generate_gallery for making HTML, and optional forced width/height/filter
   arbitrary rotation
+  reduce_colors and to_svg
+  io can have create_movie
+    heat wave example
+    brownian loop zoom example
+  io can have generate_gallery for making HTML, and optional forced width/height/filter
   height field AO
   CPCF's
   variable radius blur (radius multiplier is a fn not a constant)

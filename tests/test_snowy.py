@@ -1,6 +1,9 @@
 #!/usr/bin/env python3 -m pytest -s
+
 # The shebang runs the test with stdout enabled and must be invoked from
-# the repo root.
+# the repo root. In addition to this script, we use our custom doc
+# generator for regression testing, because it exercises quite a bit
+# of functionality to generate the images seen in the documentation.
 
 import snowy
 import numpy as np
