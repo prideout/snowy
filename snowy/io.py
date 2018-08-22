@@ -45,8 +45,7 @@ def save(image: np.ndarray, filename: str, image_format: str=None):
         imageio.plugins.freeimage.download()
         image_format = 'EXR-FI'
         image = np.float32(image)
-    result = imageio.imwrite(filename, unshape(image), image_format)
-    return result
+    imageio.imwrite(filename, unshape(image), image_format)
 
 def show_array(image: np.ndarray):
     with tempfile.NamedTemporaryFile() as fp:
