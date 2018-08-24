@@ -15,6 +15,7 @@ Painting and 2D paths are outside the scope of the library. See
   [skia-pathops](https://github.com/fonttools/skia-pathops).
 
 <!--
+- Default border color is now transparent, we'd like it to be black.
 - Test "compose" and add image to doc
 - <aside> style
 - Drop shadow example

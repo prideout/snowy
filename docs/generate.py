@@ -65,8 +65,11 @@ main {
     margin: 0 auto;
     padding: 0 80px 20px 80px;
     max-width: 800px;
-    background-color: #f2f2f2;
+    background-color: #ffffff;
     position: relative;
+    color: #404040;
+    border-left: solid 2px black;
+    border-right: solid 2px black;
 }
 @media (max-width: 960px){
     body{ background-color: #f2f2f2; }
@@ -219,14 +222,14 @@ open(qualify('index.html'), 'w').write(str(soup))
 # Test rotations and flips
 
 gibbons = snowy.load(qualify('gibbons.jpg'))
-gibbons = snowy.resize(gibbons, width=gibbons.shape[1] // 10)
+gibbons = snowy.resize(gibbons, width=gibbons.shape[1] // 5)
 gibbons90 = snowy.rotate(gibbons, 90)
 gibbons180 = snowy.rotate(gibbons, 180)
 gibbons270 = snowy.rotate(gibbons, 270)
 hflipped = snowy.hflip(gibbons)
 vflipped = snowy.vflip(gibbons)
 snowy.save(snowy.hstack([gibbons, gibbons180, vflipped],
-    border_width=4, border_value=[128,0,0]), qualify("xforms.jpg"))
+    border_width=4, border_value=[128,0,0]), qualify("xforms.png"))
 
 # Test noise generation
 

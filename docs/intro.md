@@ -65,7 +65,7 @@ triptych = snowy.hstack([gibbons, rotated, flipped],
     border_width=4, border_value=[128,0,0])
 ```
 
-<img src="xforms.jpg" height="150px">
+<img src="xforms.png" height="150px">
 
 ### Cropping and composing
 
