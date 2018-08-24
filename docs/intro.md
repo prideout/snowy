@@ -59,9 +59,9 @@ triptych = snowy.hstack([gibbons, rotated, flipped],
 
 <img src="xforms.jpg" height="150px">
 
-### Cropping and blitting
+### Cropping and composing
 
-If you need to crop an image or compose two images, just use numpy.
+If you need to crop an image, just use Python slicing.
 
 For example, this loads an OpenEXR image, then crops out the top half by slicing the numpy array.
 
@@ -71,11 +71,35 @@ cropped_sunset = sunset[:100,:,:]
 snowy.show(cropped_sunset / 50.0) # darken the image
 ```
 
+<aside class="notice">
+By the way, if you're interested in tone mapping and other HDR operations, be sure to check
+out the [hydra](https://github.com/tatsy/hydra) module. And, if you wish to simply load / store
+raw double-precision data, consider using `numpy.save(filename, array)` and `numpy.load(filename)`
+for `npy` files.
+</aside>
+
 <img src="cropped-sunset.png" height="100px">
 
-This composes an alpha-blended snowflake with a background image:
+Next we'll draw an icon over the sunset image using [#compose](compose):
 
-TBD
+```python
+icon = snowy.load('snowflake.png')
+icon = snow.resize(snowflake, 128, 128)
+snowy.show(icon)
+
+sunset = snowy.compose(sunset[:128,:128], icon)
+snowy.show(sunset)
+```
+
+<img src="snowflake.png" height="128px">
+<img src="composed.png" height="128px">
+
+We can also create a drop shadow for our icon:
+
+```python
+# TBD
+translate()
+```
 
 ### Gradient noise
 
@@ -103,8 +127,6 @@ snowy.show(snowy.hstack([circles, sdf]))
 ```
 
 <img src="sdf.png" height="128px">
-
-<img src="snowflake.png" height="128px">
 
 ### Image generation
 

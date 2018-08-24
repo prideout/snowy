@@ -15,21 +15,17 @@ Painting and 2D paths are outside the scope of the library. See
   [skia-pathops](https://github.com/fonttools/skia-pathops).
 
 <!--
-
-Examples
-- Cropping and blitting
-  - The EXR demo image sucks
-  - Load the flake, create drop shadow, composite it over noise
+- Test "compose" and add image to doc
+- <aside> style
+- Drop shadow example
+- Wrap Modes section
+  - For noise, mention cylinderical, toroidal, and cubemap
+- Color space
+  - Just a modicum ... at least in load / save -- is the blurry poodle slightly dark?
+    Create a page in "test" and use chrome (test_colorspace.py)
 - Image generation
-  - Islands, look at heman, assume that gradient image already exists
-
-Implement and write tests for
-- to_planar and from_planar
-
-Write a section on wrap modes
-
-I think we need some modicum of color space handling, at least in load / save -- isn't the blurry
-  poodle slightly dark?  Create a page in "test" and use chrome. (or implement generate_gallery)
+  - Islands, look at heman, assume that the gradient image already exists
+  - https://twitter.com/prideout/status/981356407202050048
 
 travis
   should run docs/generate as well as test_snowy
@@ -50,6 +46,7 @@ TODO items after open source release
   io can have generate_gallery for making HTML, and optional forced width/height/filter
   height field AO
   CPCF's
+    try to repro https://twitter.com/prideout/status/981356407202050048
   variable radius blur (radius multiplier is a fn not a constant)
     test with a distance field + gradient
   prefiltering as seen in docs/hoppe
@@ -57,5 +54,7 @@ TODO items after open source release
   add fractal.py
       mandelbrot example from numba
       also this: https://en.wikipedia.org/wiki/Buddhabrot
+  generate voronoi or triangulations, like the little test images here:
+      http://agea.github.io/tutorial.md/
 
 -->

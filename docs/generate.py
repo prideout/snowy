@@ -256,6 +256,9 @@ diptych_filename = qualify('diptych-parrot.png')
 snowy.save(snowy.hstack([nearest, mitchell]), diptych_filename)
 os.system('optipng ' + diptych_filename)
 snowy.show(diptych_filename)
+
+# EXR cropping
+
 sunset = snowy.load(qualify('small.exr'))
 print(sunset.shape)
 cropped_sunset = sunset[:100,:,:]
@@ -263,6 +266,8 @@ cropped_filename = qualify('cropped-sunset.png')
 snowy.save(cropped_sunset / 50.0, cropped_filename)
 os.system('optipng ' + cropped_filename)
 snowy.show(cropped_filename)
+
+quit()
 
 STEPPED_PALETTE = [
     000, 0x203060 ,

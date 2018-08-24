@@ -1,3 +1,11 @@
+"""
+This implements the paper 'Distance Transforms of Sampled Functions'
+by Felzenszwalb and Huttenlocher.
+
+Distance fields are useful in a variety of applications, including
+image segmentation, antialiasing algorithms, and texture synthesis.
+"""
+
 from numba import jit
 import numba
 import numpy as np
