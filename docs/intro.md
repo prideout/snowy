@@ -1,12 +1,22 @@
 # Snowy <img src="snowy2.png" height="64px" style="vertical-align:text-bottom;margin-left:10px">
 
-This is a tiny module for manipulating and generating images, written purely in Python 3 and
-accelerated with [numba](https://numba.pydata.org/). It has a small, flat API with some interesting
-features, like the ability to specify boundary behavior during filtering.
+**User's Guide** | [API Reference](reference.html)
 
-With snowy, all images are three-dimensional numpy arrays. For example, RGB images have shape
-`[height,width,3]` and grayscale images have shape `[height,width,1]`. Snowy provides some
-utility functions that make it easy to work with other modules (see [interop](#interop)).
+Snowy is a tiny module for manipulating and generating images.
+
+- Small and flat (free functions only).
+- Written purely in Python 3.
+- Accelerated with [numba](https://numba.pydata.org/).
+- Configurable boundaries ([wrap modes](#wrap_modes)).
+
+Snowy does not define a special class for images. Instead, **images are always three-dimensional
+numpy arrays** in row-major order.
+
+#### aside
+
+For example, RGB images have shape `[height,width,3]` and grayscale images have shape
+`[height,width,1]`. Snowy provides some utility functions that make it easy to work with other
+modules (see [interop](#interop)).
 
 ## Installing
 
@@ -16,11 +26,9 @@ To install and update snowy, do this:
 
 ## Examples
 
-Not interested in example code? Skip to the [quick reference](#quick_reference).
-
 ### Resize and blur
 
-This snippet does a [resize](#resize), then a [blur](#blur), then horizontally concatenates the two
+This snippet does a resize, then a blur, then horizontally concatenates the two
 images.
 
 ```python
@@ -71,16 +79,16 @@ cropped_sunset = sunset[:100,:,:]
 snowy.show(cropped_sunset / 50.0) # darken the image
 ```
 
-<aside class="notice">
+#### aside
+
 By the way, if you're interested in tone mapping and other HDR operations, be sure to check
-out the [hydra](https://github.com/tatsy/hydra) module. And, if you wish to simply load / store
-raw double-precision data, consider using `numpy.save(filename, array)` and `numpy.load(filename)`
-for `npy` files.
-</aside>
+out the [hydra](https://github.com/tatsy/hydra) module. If you wish to simply load / store
+raw double-precision data, consider using npy files instead of image files. The relevant functions
+are `numpy.load(filename)` and `numpy.save(filename, array)`.
 
 <img src="cropped-sunset.png" height="100px">
 
-Next we'll draw an icon over the sunset image using [#compose](compose):
+Next we'll draw an icon over the sunset image using `compose`:
 
 ```python
 icon = snowy.load('snowflake.png')
@@ -103,7 +111,7 @@ translate()
 
 ### Gradient noise
 
-Snowy's [generate_noise](#generate_noise) function generates a single-channel image whose values are
+Snowy's `generate_noise` function generates a single-channel image whose values are
 in [-1,&nbsp;+1].
 
 ```python
@@ -116,9 +124,8 @@ snowy.show(0.5 + 0.5 * n)
 
 ### Distance fields
 
-This uses [generate_sdf](#generate_sdf) to create a signed distance field from a monochrome
-picture of two circles enclosed by a square. Note the usage of [unitize](#unitize) to adjust the
-values into the `[0,1]` range.
+This uses `generate_sdf` to create a signed distance field from a monochrome picture of two circles
+enclosed by a square. Note the usage of `unitize` to adjust the values into the `[0,1]` range.
 
 ```python
 circles = snowy.load('circles.png')

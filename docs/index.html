@@ -60,6 +60,12 @@ a {
     text-decoration: none;
     color: #2962ad;
 }
+p.aside {
+    background: white;
+    font-size: small;
+    border-left: solid 5px gray;
+    padding: 10px;
+}
 h2 a, h3 a, h4 a { color: black }
 h2 a:hover, h3 a:hover, h4 a:hover { color: #19529d }
 </style>
@@ -160,21 +166,27 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.1 ~ 52773f847a6b1b26907ee4b8d194def2db1e9c61</small>
+<small>v0.0.1 ~ 6c37024</small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
-<p>This is a tiny module for manipulating and generating images, written purely in Python 3 and
-accelerated with <a href="https://numba.pydata.org/">numba</a>. It has a small, flat API with some interesting
-features, like the ability to specify boundary behavior during filtering.</p>
-<p>With snowy, all images are three-dimensional numpy arrays. For example, RGB images have shape
-<code>[height,width,3]</code> and grayscale images have shape <code>[height,width,1]</code>. Snowy provides some
-utility functions that make it easy to work with other modules (see <a href="#interop">interop</a>).</p>
+<p><strong>User's Guide</strong> | <a href="reference.html">API Reference</a></p>
+<p>Snowy is a tiny module for manipulating and generating images.</p>
+<ul>
+<li>Small and flat (free functions only).</li>
+<li>Written purely in Python 3.</li>
+<li>Accelerated with <a href="https://numba.pydata.org/">numba</a>.</li>
+<li>Configurable boundaries (<a href="#wrap_modes">wrap modes</a>).</li>
+</ul>
+<p>Snowy does not define a special class for images. Instead, <strong>images are always three-dimensional
+numpy arrays</strong> in row-major order.</p>
+<p class="aside">For example, RGB images have shape <code>[height,width,3]</code> and grayscale images have shape
+<code>[height,width,1]</code>. Snowy provides some utility functions that make it easy to work with other
+modules (see <a href="#interop">interop</a>).</p>
 <h2 id="installing"><a href="#installing">Installing</a></h2>
 <p>To install and update snowy, do this:</p>
 <p><code>pip3 install -U snowy</code></p>
 <h2 id="examples"><a href="#examples">Examples</a></h2>
-<p>Not interested in example code? Skip to the <a href="#quick_reference">quick reference</a>.</p>
 <h3 id="resize_and_blur"><a href="#resize_and_blur">Resize and blur</a></h3>
-<p>This snippet does a <a href="#resize">resize</a>, then a <a href="#blur">blur</a>, then horizontally concatenates the two
+<p>This snippet does a resize, then a blur, then horizontally concatenates the two
 images.</p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">snowy</span>
 
@@ -201,18 +213,34 @@ Mitchell filter.</p>
     <span class="n">border_width</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">border_value</span><span class="o">=</span><span class="p">[</span><span class="mi">128</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 <img height="150px" src="xforms.jpg"/>
-<h3 id="cropping_and_blitting"><a href="#cropping_and_blitting">Cropping and blitting</a></h3>
-<p>If you need to crop an image or compose two images, just use numpy.</p>
+<h3 id="cropping_and_composing"><a href="#cropping_and_composing">Cropping and composing</a></h3>
+<p>If you need to crop an image, just use Python slicing.</p>
 <p>For example, this loads an OpenEXR image, then crops out the top half by slicing the numpy array.</p>
 <div class="highlight"><pre><span></span><span class="n">sunset</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'sunset.exr'</span><span class="p">)</span>
 <span class="n">cropped_sunset</span> <span class="o">=</span> <span class="n">sunset</span><span class="p">[:</span><span class="mi">100</span><span class="p">,:,:]</span>
 <span class="n">snowy</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">cropped_sunset</span> <span class="o">/</span> <span class="mf">50.0</span><span class="p">)</span> <span class="c1"># darken the image</span>
 </pre></div>
+<p class="aside">By the way, if you're interested in tone mapping and other HDR operations, be sure to check
+out the <a href="https://github.com/tatsy/hydra">hydra</a> module. If you wish to simply load / store
+raw double-precision data, consider using npy files instead of image files. The relevant functions
+are <code>numpy.load(filename)</code> and <code>numpy.save(filename, array)</code>.</p>
 <img height="100px" src="cropped-sunset.png"/>
-<p>This composes an alpha-blended snowflake with a background image:</p>
-<p>TBD</p>
+<p>Next we'll draw an icon over the sunset image using <a href="compose">#compose</a>:</p>
+<div class="highlight"><pre><span></span><span class="n">icon</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'snowflake.png'</span><span class="p">)</span>
+<span class="n">icon</span> <span class="o">=</span> <span class="n">snow</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">snowflake</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+<span class="n">snowy</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">icon</span><span class="p">)</span>
+
+<span class="n">sunset</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">sunset</span><span class="p">[:</span><span class="mi">128</span><span class="p">,:</span><span class="mi">128</span><span class="p">],</span> <span class="n">icon</span><span class="p">)</span>
+<span class="n">snowy</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">sunset</span><span class="p">)</span>
+</pre></div>
+<img height="128px" src="snowflake.png"/>
+<img height="128px" src="composed.png"/>
+<p>We can also create a drop shadow for our icon:</p>
+<div class="highlight"><pre><span></span><span class="c1"># TBD</span>
+<span class="n">translate</span><span class="p">()</span>
+</pre></div>
 <h3 id="gradient_noise"><a href="#gradient_noise">Gradient noise</a></h3>
-<p>Snowy's <a href="#generate_noise">generate_noise</a> function generates a single-channel image whose values are
+<p>Snowy's <code>generate_noise</code> function generates a single-channel image whose values are
 in [-1, +1].</p>
 <div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">generate_noise</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">wrapx</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">])</span>
@@ -220,15 +248,13 @@ in [-1, +1].</p>
 </pre></div>
 <img height="128px" src="noise.png"/>
 <h3 id="distance_fields"><a href="#distance_fields">Distance fields</a></h3>
-<p>This uses <a href="#generate_sdf">generate_sdf</a> to create a signed distance field from a monochrome
-picture of two circles enclosed by a square. Note the usage of <a href="#unitize">unitize</a> to adjust the
-values into the <code>[0,1]</code> range.</p>
+<p>This uses <code>generate_sdf</code> to create a signed distance field from a monochrome picture of two circles
+enclosed by a square. Note the usage of <code>unitize</code> to adjust the values into the <code>[0,1]</code> range.</p>
 <div class="highlight"><pre><span></span><span class="n">circles</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'circles.png'</span><span class="p">)</span>
 <span class="n">sdf</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">unitize</span><span class="p">(</span><span class="n">snowy</span><span class="o">.</span><span class="n">generate_sdf</span><span class="p">(</span><span class="n">circles</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">))</span>
 <span class="n">snowy</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">snowy</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">circles</span><span class="p">,</span> <span class="n">sdf</span><span class="p">]))</span>
 </pre></div>
 <img height="128px" src="sdf.png"/>
-<img height="128px" src="snowflake.png"/>
 <h3 id="image_generation"><a href="#image_generation">Image generation</a></h3>
 <p>TBD</p>
 <img src="gradient.png" width="150px"/>
@@ -258,6 +284,26 @@ follow this convention, consider using one of the following interop functions.</
 <tr>
 <td><a href="#blur">blur</a></td>
 <td>Resample an image and produce a new image with the same size.</td>
+<tr>
+<tr>
+<td><a href="#compose">compose</a></td>
+<td>Compose a source image with alpha onto a destination image.</td>
+<tr>
+<tr>
+<td><a href="#compose_premultiplied">compose_premultiplied</a></td>
+<td>Draw an image with premultiplied alpha over the destination.</td>
+<tr>
+<tr>
+<td><a href="#extract_alpha">extract_alpha</a></td>
+<td>Extract the alpha plane from an RGBA image.</td>
+<tr>
+<tr>
+<td><a href="#extract_rgb">extract_rgb</a></td>
+<td>Extract the RGB planes from an RGBA image.</td>
+<tr>
+<tr>
+<td><a href="#from_planar">from_planar</a></td>
+<td>Convert a channel-major image into row-major image.</td>
 <tr>
 <tr>
 <td><a href="#generate_noise">generate_noise</a></td>
@@ -308,6 +354,10 @@ follow this convention, consider using one of the following interop functions.</
 <td>Display an image in a platform-specific way.</td>
 <tr>
 <tr>
+<td><a href="#to_planar">to_planar</a></td>
+<td>Convert a row-major image into a channel-major image.</td>
+<tr>
+<tr>
 <td><a href="#unitize">unitize</a></td>
 <td>Remap the values so that they span the range from 0 to +1.</td>
 <tr>
@@ -323,7 +373,7 @@ follow this convention, consider using one of the following interop functions.</
 <td><a href="#vstack">vstack</a></td>
 <td>Vertically concatenate a list of images with a border.</td>
 <tr>
-</tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></table>
+</tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></table>
 <h2 id="reference"><a href="#reference">Reference</a></h2>
 <p>This section includes the source code of each entry point. This allows
 you to clearly see the default parameters and expectations of each function.</p>
@@ -347,6 +397,51 @@ Resample an image and produce a new image with the same size.  For a list of ava
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">blur</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">GAUSSIAN</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">wrapx</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">wrapy</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
     <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
     <span class="k">return</span> <span class="n">resize</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">wrapx</span><span class="p">,</span> <span class="n">wrapy</span><span class="p">)</span>
+</pre></div>
+<h3 id="compose"><a href="#compose">compose</a></h3>
+<p>
+Compose a source image with alpha onto a destination image.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compose</span><span class="p">(</span><span class="n">dst</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">extract_alpha</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">extract_rgb</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">extract_rgb</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="o">*</span> <span class="n">alpha</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</pre></div>
+<h3 id="compose_premultiplied"><a href="#compose_premultiplied">compose_premultiplied</a></h3>
+<p>
+Draw an image with premultiplied alpha over the destination.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compose_premultiplied</span><span class="p">(</span><span class="n">dst</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">extract_alpha</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+    <span class="n">a</span> <span class="o">=</span> <span class="n">extract_rgb</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span>
+    <span class="n">b</span> <span class="o">=</span> <span class="n">extract_rgb</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+</pre></div>
+<h3 id="extract_alpha"><a href="#extract_alpha">extract_alpha</a></h3>
+<p>
+Extract the alpha plane from an RGBA image.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">extract_alpha</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dsplit</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="mi">4</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+<h3 id="extract_rgb"><a href="#extract_rgb">extract_rgb</a></h3>
+<p>
+Extract the RGB planes from an RGBA image.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">extract_rgb</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span>
+    <span class="n">planes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dsplit</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">(</span><span class="n">planes</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
+</pre></div>
+<h3 id="from_planar"><a href="#from_planar">from_planar</a></h3>
+<p>
+Convert a channel-major image into row-major image.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">from_planar</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
 </pre></div>
 <h3 id="generate_noise"><a href="#generate_noise">generate_noise</a></h3>
 <p>
@@ -410,13 +505,10 @@ Horizontally concatenate a list of images with a border.  This is similar to num
 </pre></div>
 <h3 id="load"><a href="#load">load</a></h3>
 <p>
-Create a numpy array from the given image file.
+Create a numpy array from the given image file.  See also <a href="#reshape">reshape</a> (which this calls) and <a href="#save">save</a>.
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.exr'</span><span class="p">):</span>
-        <span class="n">imageio</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">freeimage</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
-    <span class="n">imgarray</span> <span class="o">=</span> <span class="n">imageio</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">imgarray</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">_load</span><span class="p">(</span><span class="n">filename</span><span class="p">)))</span>
 </pre></div>
 <h3 id="reshape"><a href="#reshape">reshape</a></h3>
 <p>
@@ -424,7 +516,7 @@ Add a trailing dimension to single-channel 2D images.  See also <a href="#unshap
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">reshape</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span>
     <span class="k">return</span> <span class="n">image</span>
 </pre></div>
 <h3 id="resize"><a href="#resize">resize</a></h3>
@@ -466,7 +558,7 @@ Rotate image counter-clockwise by a multiple of 90 degrees.
 </pre></div>
 <h3 id="save"><a href="#save">save</a></h3>
 <p>
-Save a numpy array as an image file at the given path.
+Save a numpy array as an image file at the given path.  See also <a href="#unshape">unshape</a> (which this calls) and <a href="#load">load</a>.
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image_format</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.exr'</span><span class="p">):</span>
@@ -486,6 +578,14 @@ Display an image in a platform-specific way.
         <span class="n">show_filename</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Unsupported type'</span><span class="p">)</span>
+</pre></div>
+<h3 id="to_planar"><a href="#to_planar">to_planar</a></h3>
+<p>
+Convert a row-major image into a channel-major image.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">to_planar</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dsplit</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 </pre></div>
 <h3 id="unitize"><a href="#unitize">unitize</a></h3>
 <p>

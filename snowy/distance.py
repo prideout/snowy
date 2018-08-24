@@ -14,13 +14,13 @@ from . import io
 INF = 1e20
 
 def generate_sdf(image: np.ndarray, wrapx=False, wrapy=False):
-    """Create a signed distance field from a field of booleans."""
+    """Create a signed distance field from a boolean field."""
     a = generate_udf(image, wrapx, wrapy)
     b = generate_udf(image == 0.0, wrapx, wrapy)
     return a - b
 
 def generate_udf(image: np.ndarray, wrapx=False, wrapy=False):
-    """Create an unsigned distance field from a field of booleans."""
+    """Create an unsigned distance field from a boolean field."""
     assert image.dtype == 'bool', 'Pixel values must be boolean'
     assert len(image.shape) == 3, 'Shape is not rows x cols x channels'
     assert image.shape[2] == 1, 'Image must be grayscale'

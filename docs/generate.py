@@ -6,7 +6,7 @@ import subprocess
 sys.path.append('../snowy')
 
 result = subprocess.run('git rev-parse HEAD'.split(), stdout=subprocess.PIPE)
-sha = result.stdout.strip().decode("utf-8") 
+sha = result.stdout.strip().decode("utf-8")[:7]
 version = f'<small>v0.0.1 ~ {sha}</small>'
 
 def qualify(filename: str):
@@ -85,6 +85,12 @@ a {
     text-decoration: none;
     color: #2962ad;
 }
+p.aside {
+    background: white;
+    font-size: small;
+    border-left: solid 5px gray;
+    padding: 10px;
+}
 h2 a, h3 a, h4 a { color: black }
 h2 a:hover, h3 a:hover, h4 a:hover { color: #19529d }
 </style>
@@ -124,6 +130,13 @@ soup = BeautifulSoup(htmldoc, 'html.parser')
 comments = soup.find_all(string=lambda text:isinstance(text,Comment))
 for comment in comments:
     comment.extract()
+
+# All h4 sections are actually asides.
+admonitions = soup.findAll("h4")
+for admonition in admonitions:
+    p = admonition.find_next_sibling("p")
+    p['class'] = 'aside'
+    admonition.extract()
 
 formatter = HtmlFormatter(style='tango')
 snippets = soup.findAll("code", {"class": "language-python"})
