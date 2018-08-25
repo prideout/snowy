@@ -88,6 +88,9 @@ main {
     body{ background-color: #f2f2f2; }
     main{ padding: 0 20px 100px 20px; }
 }
+img {
+    max-width: 100%;
+}
 pre {
     padding: 10px;
     background-color: #f8f8f8;
