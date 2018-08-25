@@ -38,13 +38,18 @@ def _load(filename: str):
     # decided that it is fine for the in-memory representation (floats)
     # to not match the on-disk representation (bytes).
     if filename.endswith('.png'):
-        return imageio.imread(filename, 'PNG-PIL', pilmode='RGBA')
-    if filename.endswith('.exr'):
+        return imageio.imread(filename, 'PNG-PIL',
+                pilmode='RGBA') / 255.0
+    elif filename.endswith('.exr'):
         imageio.plugins.freeimage.download()
     return imageio.imread(filename)
 
 def load(filename: str):
     """Create a numpy array from the given image file.
+
+    Regardless of the pixel format on disk, PNG pixels are always
+    divided by 255.0 and extended to 4 color channels before being
+    returned to the caller.
 
     See also <a href="#reshape">reshape</a> (which this calls) and
     <a href="#save">save</a>.

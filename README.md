@@ -21,7 +21,7 @@ Painting and 2D paths are outside the scope of the library. See
 - Color space
   - Just a modicum ... at least in load / save -- is the blurry poodle slightly dark?
     Create a page in "test" and use chrome (test_colorspace.py)
-  - Decide what to do about 1.0 vs 255.0 (esp for compose)
+  - Why isn't save doing a "img * 255.0" for PNG images?
 - Image generation
   - Islands, look at heman, assume that the gradient image already exists
   - https://twitter.com/prideout/status/981356407202050048

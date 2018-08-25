@@ -178,7 +178,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/2781241">2781241</a></small>
+<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/11cc3d3">11cc3d3</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><a href="index.html">User's Guide</a> | <strong>API Reference</strong></p>
 <hr/>
@@ -409,7 +409,7 @@ Horizontally concatenate a list of images with a border.  This is similar to num
 </pre></div>
 <h3 id="load"><a href="#load">load</a></h3>
 <p>
-Create a numpy array from the given image file.  See also <a href="#reshape">reshape</a> (which this calls) and <a href="#save">save</a>.
+Create a numpy array from the given image file.  Regardless of the pixel format on disk, PNG pixels are always divided by 255.0 and extended to 4 color channels before being returned to the caller.  See also <a href="#reshape">reshape</a> (which this calls) and <a href="#save">save</a>.
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">_load</span><span class="p">(</span><span class="n">filename</span><span class="p">)))</span>
@@ -462,7 +462,7 @@ Rotate image counter-clockwise by a multiple of 90 degrees.
 </pre></div>
 <h3 id="save"><a href="#save">save</a></h3>
 <p>
-Save a numpy array as an image file at the given path.  See also <a href="#unshape">unshape</a> (which this calls) and <a href="#load">load</a>.
+Save a numpy array as an image file at the given path.  PNG files are clamped to [0,1] and multiplied by 255.0 before being save to disk.  See also <a href="#unshape">unshape</a> (which this calls) and <a href="#load">load</a>.
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image_format</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.exr'</span><span class="p">):</span>

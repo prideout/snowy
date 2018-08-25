@@ -297,7 +297,7 @@ snowy.show(cropped_filename)
 # Alpha composition
 
 icon = snowy.load(qualify('snowflake.png'))
-icon = snowy.resize(icon, 100, 100) / 255.0
+icon = snowy.resize(icon, 100, 100)
 print(icon.shape, np.amax(icon))
 print(sunset.shape)
 sunset[:100,:100] = snowy.compose(sunset[:100,:100], icon)
