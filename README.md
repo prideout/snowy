@@ -15,15 +15,13 @@ Painting and 2D paths are outside the scope of the library. See
   [skia-pathops](https://github.com/fonttools/skia-pathops).
 
 <!--
-- Default border color is now transparent, we'd like it to be black.
-- Test "compose" and add image to doc
-- <aside> style
 - Drop shadow example
 - Wrap Modes section
   - For noise, mention cylinderical, toroidal, and cubemap
 - Color space
   - Just a modicum ... at least in load / save -- is the blurry poodle slightly dark?
     Create a page in "test" and use chrome (test_colorspace.py)
+  - Decide what to do about 1.0 vs 255.0 (esp for compose)
 - Image generation
   - Islands, look at heman, assume that the gradient image already exists
   - https://twitter.com/prideout/status/981356407202050048

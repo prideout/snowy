@@ -4,7 +4,7 @@
 
 Snowy is a tiny module for manipulating and generating images.
 
-- Small and flat (free functions only).
+- Small and flat API (free functions only).
 - Written purely in Python 3.
 - Accelerated with [numba](https://numba.pydata.org/).
 - Configurable boundaries ([wrap modes](#wrap_modes)).
@@ -67,7 +67,7 @@ triptych = snowy.hstack([gibbons, rotated, flipped],
 
 <img src="xforms.png" height="150px">
 
-### Cropping and composing
+### Cropping
 
 If you need to crop an image, just use Python slicing.
 
@@ -88,6 +88,8 @@ are `numpy.load(filename)` and `numpy.save(filename, array)`.
 
 <img src="cropped-sunset.png" height="100px">
 
+### Alpha composition
+
 Next we'll draw an icon over the sunset image using `compose`:
 
 ```python
@@ -99,8 +101,11 @@ sunset = snowy.compose(sunset[:128,:128], icon)
 snowy.show(sunset)
 ```
 
-<img src="snowflake.png" height="128px">
-<img src="composed.png" height="128px">
+<img src="snowflake.png" height="100px">
+
+<br/>
+
+<img src="composed.png" height="100px">
 
 We can also create a drop shadow for our icon:
 
@@ -141,7 +146,9 @@ TBD
 
 <img src="gradient.png" width="150px">
 
-<img src="island.png" height="150px">
+<br/>
+
+![](isles.png)
 
 ## Wrap modes
 

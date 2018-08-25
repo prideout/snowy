@@ -278,7 +278,9 @@ scale = 6
 nearest = snowy.resize(parrot, width=32*scale, filter=snowy.NEAREST)
 mitchell = snowy.resize(parrot, height=26*scale)
 diptych_filename = qualify('diptych-parrot.png')
-snowy.save(snowy.hstack([nearest, mitchell]), diptych_filename)
+parrot = snowy.hstack([nearest, mitchell])
+parrot = snowy.extract_rgb(parrot)
+snowy.save(parrot, diptych_filename)
 os.system('optipng ' + diptych_filename)
 snowy.show(diptych_filename)
 
@@ -286,11 +288,21 @@ snowy.show(diptych_filename)
 
 sunset = snowy.load(qualify('small.exr'))
 print(sunset.shape)
-cropped_sunset = sunset[:100,:,:]
+sunset = sunset[:100,:,:] / 50.0
 cropped_filename = qualify('cropped-sunset.png')
-snowy.save(cropped_sunset / 50.0, cropped_filename)
+snowy.save(sunset, cropped_filename)
 os.system('optipng ' + cropped_filename)
 snowy.show(cropped_filename)
+
+# Alpha composition
+
+icon = snowy.load(qualify('snowflake.png'))
+icon = snowy.resize(icon, 100, 100) / 255.0
+print(icon.shape, np.amax(icon))
+print(sunset.shape)
+sunset[:100,:100] = snowy.compose(sunset[:100,:100], icon)
+snowy.save(sunset, qualify('composed.png'))
+snowy.show(sunset)
 
 quit()
 
@@ -362,6 +374,7 @@ stack = snowy.hstack([circles, sdf])
 snowy.save(stack, qualify('sdf.png'))
 snowy.show(stack)
 
+# Islands
 def create_island(seed, gradient, freq=3):
     w, h = 750, 512
     falloff = create_falloff(w, h)
@@ -389,14 +402,11 @@ def createColorGradient(pal):
 gradient = createColorGradient(STEPPED_PALETTE)
 snowy.save(snowy.add_border(gradient), qualify('gradient.png'))
 snowy.show(gradient)
-
 isles = []
 for i in range(6):
     isle = create_island(i * 5, gradient)
+    isle = snowy.resize(isle, width=isle.shape[1] // 4)
     isles.append(isle)
 snowy.save(isles[2], qualify('island.png'))
 isles = snowy.hstack(isles)
-snowy.show(isles)
-
-# flake = snowy.load(qualify('snowflake64.png'))
-# snowy.show(flake)
+snowy.save(isles, qualify('isles.png'))

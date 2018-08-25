@@ -178,12 +178,12 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/dff0fe2">dff0fe2</a></small>
+<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/2781241">2781241</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><strong>User's Guide</strong> | <a href="reference.html">API Reference</a></p>
 <p>Snowy is a tiny module for manipulating and generating images.</p>
 <ul>
-<li>Small and flat (free functions only).</li>
+<li>Small and flat API (free functions only).</li>
 <li>Written purely in Python 3.</li>
 <li>Accelerated with <a href="https://numba.pydata.org/">numba</a>.</li>
 <li>Configurable boundaries (<a href="#wrap_modes">wrap modes</a>).</li>
@@ -225,7 +225,7 @@ Mitchell filter.</p>
     <span class="n">border_width</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">border_value</span><span class="o">=</span><span class="p">[</span><span class="mi">128</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
 <img height="150px" src="xforms.png"/>
-<h3 id="cropping_and_composing"><a href="#cropping_and_composing">Cropping and composing</a></h3>
+<h3 id="cropping"><a href="#cropping">Cropping</a></h3>
 <p>If you need to crop an image, just use Python slicing.</p>
 <p>For example, this loads an OpenEXR image, then crops out the top half by slicing the numpy array.</p>
 <div class="highlight"><pre><span></span><span class="n">sunset</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'sunset.exr'</span><span class="p">)</span>
@@ -237,6 +237,7 @@ out the <a href="https://github.com/tatsy/hydra">hydra</a> module. If you wish t
 raw double-precision data, consider using npy files instead of image files. The relevant functions
 are <code>numpy.load(filename)</code> and <code>numpy.save(filename, array)</code>.</p>
 <img height="100px" src="cropped-sunset.png"/>
+<h3 id="alpha_composition"><a href="#alpha_composition">Alpha composition</a></h3>
 <p>Next we'll draw an icon over the sunset image using <code>compose</code>:</p>
 <div class="highlight"><pre><span></span><span class="n">icon</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'snowflake.png'</span><span class="p">)</span>
 <span class="n">icon</span> <span class="o">=</span> <span class="n">snow</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">snowflake</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
@@ -245,8 +246,9 @@ are <code>numpy.load(filename)</code> and <code>numpy.save(filename, array)</cod
 <span class="n">sunset</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">sunset</span><span class="p">[:</span><span class="mi">128</span><span class="p">,:</span><span class="mi">128</span><span class="p">],</span> <span class="n">icon</span><span class="p">)</span>
 <span class="n">snowy</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">sunset</span><span class="p">)</span>
 </pre></div>
-<img height="128px" src="snowflake.png"/>
-<img height="128px" src="composed.png"/>
+<img height="100px" src="snowflake.png"/>
+<br/>
+<img height="100px" src="composed.png"/>
 <p>We can also create a drop shadow for our icon:</p>
 <div class="highlight"><pre><span></span><span class="c1"># TBD</span>
 <span class="n">translate</span><span class="p">()</span>
@@ -270,7 +272,8 @@ enclosed by a square. Note the usage of <code>unitize</code> to adjust the value
 <h3 id="image_generation"><a href="#image_generation">Image generation</a></h3>
 <p>TBD</p>
 <img src="gradient.png" width="150px"/>
-<img height="150px" src="island.png"/>
+<br/>
+<p><img alt="" src="isles.png"/></p>
 <h2 id="wrap_modes"><a href="#wrap_modes">Wrap modes</a></h2>
 <p>TBD</p>
 <h2 id="interop"><a href="#interop">Interop</a></h2>
