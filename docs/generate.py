@@ -1,26 +1,30 @@
 #!/usr/bin/env python3
 
+from bs4 import BeautifulSoup, Comment
+
+from pygments import highlight
+from pygments.formatters import HtmlFormatter
+from pygments.lexers import PythonLexer
+
+import CommonMark
+import inspect
+import numpy as np
 import os
-import sys
+import pygments.styles
 import subprocess
+import sys
+
 sys.path.append('../snowy')
+import snowy
 
 result = subprocess.run('git rev-parse HEAD'.split(), stdout=subprocess.PIPE)
 sha = result.stdout.strip().decode("utf-8")[:7]
+sha = f'<a href="https://github.com/prideout/snowy/tree/{sha}">{sha}</a>'
 version = f'<small>v0.0.1 ~ {sha}</small>'
 
 def qualify(filename: str):
     scriptdir = os.path.dirname(os.path.realpath(__file__))
     return os.path.join(scriptdir, filename)
-
-import snowy
-import numpy as np
-import CommonMark
-
-from pygments import highlight
-from pygments.lexers import PythonLexer
-from pygments.formatters import HtmlFormatter
-import pygments.styles
 
 header = '''
 <!DOCTYPE html>
@@ -44,7 +48,16 @@ body {
     -webkit-font-smoothing:auto;
     background-color: #e2e2e2;
 }
-small {
+a {
+    text-decoration: none;
+    color: #2962ad;
+}
+hr {
+     border: 0;
+    border-bottom: 1px dashed #ccc;
+    background: #999;
+}
+small, small a {
     color: #a0a0a0;
     margin-top: 26px;
 }
@@ -84,13 +97,10 @@ pre {
 code {
     font-family: 'Inconsolata', monospace;
 }
-a {
-    text-decoration: none;
-    color: #2962ad;
-}
 p.aside {
     background: white;
     font-size: small;
+    border: solid 1px gray;
     border-left: solid 5px gray;
     padding: 10px;
 }
@@ -124,100 +134,96 @@ class="octo-body"></path></svg></a>
 
 '''
 
-markdown = open(qualify('intro.md')).read()
-htmldoc = CommonMark.commonmark(markdown)
+def generate_page(sourcefile, resultfile, genref):
 
-# https://www.crummy.com/software/BeautifulSoup/bs4/doc/
-from bs4 import BeautifulSoup, Comment
-soup = BeautifulSoup(htmldoc, 'html.parser')
-comments = soup.find_all(string=lambda text:isinstance(text,Comment))
-for comment in comments:
-    comment.extract()
+    # Generate html DOM from markdown.
+    markdown = open(sourcefile).read()
+    htmldoc = CommonMark.commonmark(markdown)
+    soup = BeautifulSoup(htmldoc, 'html.parser')
 
-# All h4 sections are actually asides.
-admonitions = soup.findAll("h4")
-for admonition in admonitions:
-    p = admonition.find_next_sibling("p")
-    p['class'] = 'aside'
-    admonition.extract()
+    # Remove comments.
+    comments = soup.find_all(string=lambda text:isinstance(text,Comment))
+    for comment in comments:
+        comment.extract()
 
-formatter = HtmlFormatter(style='tango')
-snippets = soup.findAll("code", {"class": "language-python"})
-for snippet in snippets:
-    code = snippet.contents[0]
-    highlighted = highlight(code, PythonLexer(), formatter)
-    newcode = BeautifulSoup(highlighted, 'html.parser')
-    snippet.parent.replace_with(newcode)
+    # All h4 sections are actually asides.
+    admonitions = soup.findAll("h4")
+    for admonition in admonitions:
+        p = admonition.find_next_sibling("p")
+        p['class'] = 'aside'
+        admonition.extract()
 
-htmlfile = open(qualify('index.html'), 'w')
-htmlfile.write(header)
+    # Colorize the code blocks.
+    formatter = HtmlFormatter(style='tango')
+    snippets = soup.findAll("code", {"class": "language-python"})
+    for snippet in snippets:
+        code = snippet.contents[0]
+        highlighted = highlight(code, PythonLexer(), formatter)
+        newcode = BeautifulSoup(highlighted, 'html.parser')
+        snippet.parent.replace_with(newcode)
 
-# for s in pygments.styles.get_all_styles(): print(s)
-htmlfile.write('<style>')
-htmlfile.write(formatter.get_style_defs('.highlight'))
-htmlfile.write('''
-.highlight .mb, .highlight .mf, .highlight .mh, .highlight .mi,
-.highlight .mo { color: #0063cf; }
-''')
-htmlfile.write('</style>')
-htmlfile.write('<main>\n')
-htmlfile.write(forkme)
-htmlfile.write(str(soup))
+    # Generate the HTML in its initial form, including <style>.
+    htmlfile = open(resultfile, 'w')
+    htmlfile.write(header)
+    htmlfile.write('<style>')
+    htmlfile.write(formatter.get_style_defs('.highlight'))
+    htmlfile.write('''
+    .highlight .mb, .highlight .mf, .highlight .mh, .highlight .mi,
+    .highlight .mo { color: #0063cf; }
+    ''')
+    htmlfile.write('</style>')
+    htmlfile.write('<main>\n')
+    htmlfile.write(forkme)
+    htmlfile.write(str(soup))
 
-import inspect
-quickref = ''
-for member in inspect.getmembers(snowy):
-    name, value = member
-    if name.startswith('__'):
-        continue
-    if not inspect.isfunction(value):
-        continue
-    doc = inspect.getdoc(value)
-    src = inspect.getsource(value)
+    # Generate quickref.
+    quickref = ''
+    if genref:
+        for member in inspect.getmembers(snowy):
+            name, value = member
+            if name.startswith('__'):
+                continue
+            if not inspect.isfunction(value):
+                continue
+            doc = inspect.getdoc(value)
+            src = inspect.getsource(value)
+            dsbegin = src.find(r'"""')
+            dsend = src.rfind(r'"""') + 4
+            dsbegin = src[:dsbegin].rfind('\n') + 1
+            src = src[:dsbegin] + src[dsend:]
+            nlines = len(src.split('\n'))
+            highlighted_src = highlight(src, PythonLexer(), formatter)
+            if doc:
+                doclines = doc.split('\n')
+                quickref += '<tr>\n'
+                quickref += f'<td><a href="#{name}">{name}</a></td>\n'
+                quickref += f'<td>{doclines[0]}</td>\n'
+                quickref += '<tr>\n'
+                htmlfile.write(f'<h3>{name}</h3>\n<p>\n')
+                htmlfile.write(' '.join(doclines))
+                htmlfile.write('\n</p>\n')
+                htmlfile.write(highlighted_src)
+    htmlfile.write('</main>\n')
+    htmlfile.close()
 
-    dsbegin = src.find(r'"""')
-    dsend = src.rfind(r'"""') + 4
-    dsbegin = src[:dsbegin].rfind('\n') + 1
-    src = src[:dsbegin] + src[dsend:]
-    nlines = len(src.split('\n'))
+    # Post process HTML by adding anchors, etc.
+    htmldoc = open(resultfile).read()
+    htmldoc = htmldoc.replace('$quickref$', quickref)
+    htmldoc = htmldoc.replace('<h1>', version + '\n<h1>')
+    soup = BeautifulSoup(htmldoc, 'html.parser')
+    for tag in 'h2 h3 h4'.split():
+        headings = soup.find_all(tag)
+        for heading in headings:
+            content = heading.contents[0].strip()
+            id = content.replace(' ', '_').lower()
+            heading["id"] = id
+            anchor = soup.new_tag('a', href='#' + id)
+            anchor.string = content
+            heading.contents[0].replace_with(anchor)
+    open(resultfile, 'w').write(str(soup))
 
-    highlighted_src = highlight(src, PythonLexer(), formatter)
-    if doc:
-        doclines = doc.split('\n')
-        quickref += '<tr>\n'
-        quickref += f'<td><a href="#{name}">{name}</a></td>\n'
-        quickref += f'<td>{doclines[0]}</td>\n'
-        quickref += '<tr>\n'
-        htmlfile.write(f'<h3>{name}</h3>\n<p>\n')
-        htmlfile.write(' '.join(doclines))
-        htmlfile.write('\n</p>\n')
-        htmlfile.write(highlighted_src)
-
-htmlfile.write('''
-<a href="https://github.prideout.net/">
-<img src="https://github.prideout.net/assets/PublishedLogo.svg"
-width="175px">
-</a>
-</main>
-''')
-
-htmlfile.close()
-
-# Post process HTML (add anchors)
-htmldoc = open(qualify('index.html')).read()
-htmldoc = htmldoc.replace('$quickref$', quickref)
-htmldoc = htmldoc.replace('<h1>', version + '\n<h1>')
-soup = BeautifulSoup(htmldoc, 'html.parser')
-for tag in 'h2 h3 h4'.split():
-    headings = soup.find_all(tag)
-    for heading in headings:
-        content = heading.contents[0].strip()
-        id = content.replace(' ', '_').lower()
-        heading["id"] = id
-        anchor = soup.new_tag('a', href='#' + id)
-        anchor.string = content
-        heading.contents[0].replace_with(anchor)
-open(qualify('index.html'), 'w').write(str(soup))
+generate_page(qualify('index.md'), qualify('index.html'), False)
+generate_page(qualify('reference.md'), qualify('reference.html'), True)
 
 # Test rotations and flips
 

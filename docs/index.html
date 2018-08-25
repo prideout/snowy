@@ -19,7 +19,16 @@ body {
     -webkit-font-smoothing:auto;
     background-color: #e2e2e2;
 }
-small {
+a {
+    text-decoration: none;
+    color: #2962ad;
+}
+hr {
+     border: 0;
+    border-bottom: 1px dashed #ccc;
+    background: #999;
+}
+small, small a {
     color: #a0a0a0;
     margin-top: 26px;
 }
@@ -40,8 +49,11 @@ main {
     margin: 0 auto;
     padding: 0 80px 20px 80px;
     max-width: 800px;
-    background-color: #f2f2f2;
+    background-color: #ffffff;
     position: relative;
+    color: #404040;
+    border-left: solid 2px black;
+    border-right: solid 2px black;
 }
 @media (max-width: 960px){
     body{ background-color: #f2f2f2; }
@@ -56,13 +68,10 @@ pre {
 code {
     font-family: 'Inconsolata', monospace;
 }
-a {
-    text-decoration: none;
-    color: #2962ad;
-}
 p.aside {
     background: white;
     font-size: small;
+    border: solid 1px gray;
     border-left: solid 5px gray;
     padding: 10px;
 }
@@ -146,9 +155,9 @@ h2 a:hover, h3 a:hover, h4 a:hover { color: #19529d }
 .highlight .vi { color: #000000 } /* Name.Variable.Instance */
 .highlight .vm { color: #000000 } /* Name.Variable.Magic */
 .highlight .il { color: #0000cf; font-weight: bold } /* Literal.Number.Integer.Long */
-.highlight .mb, .highlight .mf, .highlight .mh, .highlight .mi,
-.highlight .mo { color: #0063cf; }
-</style><main>
+    .highlight .mb, .highlight .mf, .highlight .mh, .highlight .mi,
+    .highlight .mo { color: #0063cf; }
+    </style><main>
 <!-- GITHUB FORK ME LOGO -->
 <a aria-label="View source on Github" class="github-corner" href="https://github.com/prideout/snowy">
 <svg aria-hidden="true" height="80" style="color:#fff; position: absolute; top: 0; border: 0;
@@ -166,7 +175,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.1 ~ 6c37024</small>
+<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/5bef2ba">5bef2ba</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><strong>User's Guide</strong> | <a href="reference.html">API Reference</a></p>
 <p>Snowy is a tiny module for manipulating and generating images.</p>
@@ -212,7 +221,7 @@ Mitchell filter.</p>
 <span class="n">triptych</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">gibbons</span><span class="p">,</span> <span class="n">rotated</span><span class="p">,</span> <span class="n">flipped</span><span class="p">],</span>
     <span class="n">border_width</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">border_value</span><span class="o">=</span><span class="p">[</span><span class="mi">128</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
 </pre></div>
-<img height="150px" src="xforms.jpg"/>
+<img height="150px" src="xforms.png"/>
 <h3 id="cropping_and_composing"><a href="#cropping_and_composing">Cropping and composing</a></h3>
 <p>If you need to crop an image, just use Python slicing.</p>
 <p>For example, this loads an OpenEXR image, then crops out the top half by slicing the numpy array.</p>
@@ -225,7 +234,7 @@ out the <a href="https://github.com/tatsy/hydra">hydra</a> module. If you wish t
 raw double-precision data, consider using npy files instead of image files. The relevant functions
 are <code>numpy.load(filename)</code> and <code>numpy.save(filename, array)</code>.</p>
 <img height="100px" src="cropped-sunset.png"/>
-<p>Next we'll draw an icon over the sunset image using <a href="compose">#compose</a>:</p>
+<p>Next we'll draw an icon over the sunset image using <code>compose</code>:</p>
 <div class="highlight"><pre><span></span><span class="n">icon</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'snowflake.png'</span><span class="p">)</span>
 <span class="n">icon</span> <span class="o">=</span> <span class="n">snow</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">snowflake</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
 <span class="n">snowy</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">icon</span><span class="p">)</span>
@@ -275,361 +284,5 @@ follow this convention, consider using one of the following interop functions.</
 <li>To swap rows with columns, use numpy's
 <a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.swapaxes.html">swapaxes function</a>.</li>
 </ul>
-<h2 id="quick_reference"><a href="#quick_reference">Quick Reference</a></h2>
-<table>
-<tr>
-<td><a href="#add_border">add_border</a></td>
-<td>Extend the size of an image by adding borders.</td>
-<tr>
-<tr>
-<td><a href="#blur">blur</a></td>
-<td>Resample an image and produce a new image with the same size.</td>
-<tr>
-<tr>
-<td><a href="#compose">compose</a></td>
-<td>Compose a source image with alpha onto a destination image.</td>
-<tr>
-<tr>
-<td><a href="#compose_premultiplied">compose_premultiplied</a></td>
-<td>Draw an image with premultiplied alpha over the destination.</td>
-<tr>
-<tr>
-<td><a href="#extract_alpha">extract_alpha</a></td>
-<td>Extract the alpha plane from an RGBA image.</td>
-<tr>
-<tr>
-<td><a href="#extract_rgb">extract_rgb</a></td>
-<td>Extract the RGB planes from an RGBA image.</td>
-<tr>
-<tr>
-<td><a href="#from_planar">from_planar</a></td>
-<td>Convert a channel-major image into row-major image.</td>
-<tr>
-<tr>
-<td><a href="#generate_noise">generate_noise</a></td>
-<td>Generate a single-channel gradient noise image.</td>
-<tr>
-<tr>
-<td><a href="#generate_sdf">generate_sdf</a></td>
-<td>Create a signed distance field from a field of booleans.</td>
-<tr>
-<tr>
-<td><a href="#generate_udf">generate_udf</a></td>
-<td>Create an unsigned distance field from a field of booleans.</td>
-<tr>
-<tr>
-<td><a href="#gradient">gradient</a></td>
-<td>Compute X derivatives and Y derivatives.</td>
-<tr>
-<tr>
-<td><a href="#hflip">hflip</a></td>
-<td>Horizontally mirror the given image.</td>
-<tr>
-<tr>
-<td><a href="#hstack">hstack</a></td>
-<td>Horizontally concatenate a list of images with a border.</td>
-<tr>
-<tr>
-<td><a href="#load">load</a></td>
-<td>Create a numpy array from the given image file.</td>
-<tr>
-<tr>
-<td><a href="#reshape">reshape</a></td>
-<td>Add a trailing dimension to single-channel 2D images.</td>
-<tr>
-<tr>
-<td><a href="#resize">resize</a></td>
-<td>Create a new numpy image with the desired size.</td>
-<tr>
-<tr>
-<td><a href="#rotate">rotate</a></td>
-<td>Rotate image counter-clockwise by a multiple of 90 degrees.</td>
-<tr>
-<tr>
-<td><a href="#save">save</a></td>
-<td>Save a numpy array as an image file at the given path.</td>
-<tr>
-<tr>
-<td><a href="#show">show</a></td>
-<td>Display an image in a platform-specific way.</td>
-<tr>
-<tr>
-<td><a href="#to_planar">to_planar</a></td>
-<td>Convert a row-major image into a channel-major image.</td>
-<tr>
-<tr>
-<td><a href="#unitize">unitize</a></td>
-<td>Remap the values so that they span the range from 0 to +1.</td>
-<tr>
-<tr>
-<td><a href="#unshape">unshape</a></td>
-<td>Remove the trailing dimension from single-channel 3D images.</td>
-<tr>
-<tr>
-<td><a href="#vflip">vflip</a></td>
-<td>Vertically mirror the given image.</td>
-<tr>
-<tr>
-<td><a href="#vstack">vstack</a></td>
-<td>Vertically concatenate a list of images with a border.</td>
-<tr>
-</tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></table>
-<h2 id="reference"><a href="#reference">Reference</a></h2>
-<p>This section includes the source code of each entry point. This allows
-you to clearly see the default parameters and expectations of each function.</p>
-<h3 id="add_border"><a href="#add_border">add_border</a></h3>
-<p>
-Extend the size of an image by adding borders.  <p> The <code>sides</code> argument defaults to <code>"LTRB"</code>, which enables borders for all four sides: Left, Top, Right, and Bottom. This can be used to select which borders you wish to add. </p>
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">add_border</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">sides</span><span class="o">=</span><span class="s1">'ltrb'</span><span class="p">):</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">image</span>
-    <span class="n">sides</span> <span class="o">=</span> <span class="n">sides</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span>
-    <span class="k">if</span> <span class="s1">'L'</span> <span class="ow">in</span> <span class="n">sides</span><span class="p">:</span> <span class="n">result</span> <span class="o">=</span> <span class="n">add_left</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-    <span class="k">if</span> <span class="s1">'T'</span> <span class="ow">in</span> <span class="n">sides</span><span class="p">:</span> <span class="n">result</span> <span class="o">=</span> <span class="n">add_top</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-    <span class="k">if</span> <span class="s1">'R'</span> <span class="ow">in</span> <span class="n">sides</span><span class="p">:</span> <span class="n">result</span> <span class="o">=</span> <span class="n">add_right</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-    <span class="k">if</span> <span class="s1">'B'</span> <span class="ow">in</span> <span class="n">sides</span><span class="p">:</span> <span class="n">result</span> <span class="o">=</span> <span class="n">add_bottom</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">result</span>
-</pre></div>
-<h3 id="blur"><a href="#blur">blur</a></h3>
-<p>
-Resample an image and produce a new image with the same size.  For a list of available filters, see <a href="#resize">resize</a>.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">blur</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="n">GAUSSIAN</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">wrapx</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">wrapy</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-    <span class="n">width</span><span class="p">,</span> <span class="n">height</span> <span class="o">=</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">return</span> <span class="n">resize</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">wrapx</span><span class="p">,</span> <span class="n">wrapy</span><span class="p">)</span>
-</pre></div>
-<h3 id="compose"><a href="#compose">compose</a></h3>
-<p>
-Compose a source image with alpha onto a destination image.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compose</span><span class="p">(</span><span class="n">dst</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="n">alpha</span> <span class="o">=</span> <span class="n">extract_alpha</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">extract_rgb</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="n">extract_rgb</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="o">*</span> <span class="n">alpha</span>
-    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
-</pre></div>
-<h3 id="compose_premultiplied"><a href="#compose_premultiplied">compose_premultiplied</a></h3>
-<p>
-Draw an image with premultiplied alpha over the destination.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compose_premultiplied</span><span class="p">(</span><span class="n">dst</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-    <span class="n">alpha</span> <span class="o">=</span> <span class="n">extract_alpha</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">extract_rgb</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="n">extract_rgb</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
-</pre></div>
-<h3 id="extract_alpha"><a href="#extract_alpha">extract_alpha</a></h3>
-<p>
-Extract the alpha plane from an RGBA image.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">extract_alpha</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dsplit</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="mi">4</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span>
-</pre></div>
-<h3 id="extract_rgb"><a href="#extract_rgb">extract_rgb</a></h3>
-<p>
-Extract the RGB planes from an RGBA image.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">extract_rgb</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span>
-    <span class="n">planes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dsplit</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">(</span><span class="n">planes</span><span class="p">[:</span><span class="mi">3</span><span class="p">])</span>
-</pre></div>
-<h3 id="from_planar"><a href="#from_planar">from_planar</a></h3>
-<p>
-Convert a channel-major image into row-major image.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">from_planar</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
-</pre></div>
-<h3 id="generate_noise"><a href="#generate_noise">generate_noise</a></h3>
-<p>
-Generate a single-channel gradient noise image.  A frequency of 1.0 creates a single surflet across the width of the image, while a frequency of 4.0 creates a 4x4 grid such that the (2,2) surflet is centered. Noise values live within the [-1,+1] range.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">generate_noise</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">wrapx</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-                   <span class="n">wrapy</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">offset</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]):</span>
-    <span class="k">return</span> <span class="n">_noise</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">frequency</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">wrapx</span><span class="p">,</span> <span class="n">wrapy</span><span class="p">,</span> <span class="n">offset</span><span class="p">)</span>
-</pre></div>
-<h3 id="generate_sdf"><a href="#generate_sdf">generate_sdf</a></h3>
-<p>
-Create a signed distance field from a field of booleans.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">generate_sdf</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">wrapx</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">wrapy</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">generate_udf</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">wrapx</span><span class="p">,</span> <span class="n">wrapy</span><span class="p">)</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="n">generate_udf</span><span class="p">(</span><span class="n">image</span> <span class="o">==</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">wrapx</span><span class="p">,</span> <span class="n">wrapy</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">a</span> <span class="o">-</span> <span class="n">b</span>
-</pre></div>
-<h3 id="generate_udf"><a href="#generate_udf">generate_udf</a></h3>
-<p>
-Create an unsigned distance field from a field of booleans.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">generate_udf</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">wrapx</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">wrapy</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-    <span class="k">assert</span> <span class="n">image</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s1">'bool'</span><span class="p">,</span> <span class="s1">'Pixel values must be boolean'</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
-    <span class="k">assert</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'Image must be grayscale'</span>
-    <span class="k">return</span> <span class="n">_generate_edt</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">wrapx</span><span class="p">,</span> <span class="n">wrapy</span><span class="p">)</span>
-</pre></div>
-<h3 id="gradient"><a href="#gradient">gradient</a></h3>
-<p>
-Compute X derivatives and Y derivatives.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
-    <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">unshape</span><span class="p">(</span><span class="n">img</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nx</span><span class="p">),</span> <span class="n">io</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">ny</span><span class="p">)</span>
-</pre></div>
-<h3 id="hflip"><a href="#hflip">hflip</a></h3>
-<p>
-Horizontally mirror the given image.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hflip</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
-    <span class="k">assert</span> <span class="n">source</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="s1">'Images must be doubles.'</span>
-    <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span><span class="p">])</span>
-    <span class="n">jit_hflip</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">result</span>
-</pre></div>
-<h3 id="hstack"><a href="#hstack">hstack</a></h3>
-<p>
-Horizontally concatenate a list of images with a border.  This is similar to numpy's <code>hstack</code> except that it adds a border around each image. The borders can be controlled with the optional <code>border_width</code> and <code>border_value</code> arguments. See also <a href="vstack"> vstack</a>.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hstack</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">border_width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">border_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">border_width</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
-    <span class="n">T</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">border_width</span><span class="p">,</span> <span class="n">border_value</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">add_border</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="s1">'LTB'</span><span class="p">))</span>
-    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">add_border</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-</pre></div>
-<h3 id="load"><a href="#load">load</a></h3>
-<p>
-Create a numpy array from the given image file.  See also <a href="#reshape">reshape</a> (which this calls) and <a href="#save">save</a>.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">_load</span><span class="p">(</span><span class="n">filename</span><span class="p">)))</span>
-</pre></div>
-<h3 id="reshape"><a href="#reshape">reshape</a></h3>
-<p>
-Add a trailing dimension to single-channel 2D images.  See also <a href="#unshape">unshape</a>.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">reshape</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
-        <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span><span class="p">,))</span>
-    <span class="k">return</span> <span class="n">image</span>
-</pre></div>
-<h3 id="resize"><a href="#resize">resize</a></h3>
-<p>
-Create a new numpy image with the desired size.  Either width or height can be null, in which case its value is inferred from the aspect ratio of the source image.  Filter can be HERMITE, TRIANGLE, GAUSSIAN, NEAREST, LANCZOS, or MITCHELL.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">resize</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="nb">filter</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-           <span class="n">wrapx</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">wrapy</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
-    <span class="k">assert</span> <span class="n">width</span> <span class="o">!=</span> <span class="bp">None</span> <span class="ow">or</span> <span class="n">height</span> <span class="o">!=</span> <span class="bp">None</span><span class="p">,</span>  <span class="s1">'Missing target size'</span>
-    <span class="n">aspect</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="k">if</span> <span class="n">width</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span> <span class="n">width</span> <span class="o">=</span> <span class="n">height</span> <span class="o">*</span> <span class="n">aspect</span>
-    <span class="k">if</span> <span class="n">height</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span> <span class="n">height</span> <span class="o">=</span> <span class="n">width</span> <span class="o">/</span> <span class="n">aspect</span>
-    <span class="n">magnifying</span> <span class="o">=</span> <span class="n">width</span> <span class="o">&gt;</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-    <span class="k">if</span> <span class="nb">filter</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span> <span class="nb">filter</span> <span class="o">=</span> <span class="n">MITCHELL</span> <span class="k">if</span> <span class="n">magnifying</span> <span class="k">else</span> <span class="n">LANCZOS</span>
-    <span class="k">return</span> <span class="n">resample</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">wrapx</span><span class="p">,</span> <span class="n">wrapy</span><span class="p">)</span>
-</pre></div>
-<h3 id="rotate"><a href="#rotate">rotate</a></h3>
-<p>
-Rotate image counter-clockwise by a multiple of 90 degrees.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">rotate</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">degrees</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
-    <span class="k">assert</span> <span class="n">source</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="s1">'Images must be doubles.'</span>
-    <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">degrees</span> <span class="o">%=</span> <span class="mi">360</span>
-    <span class="k">if</span> <span class="n">degrees</span> <span class="o">==</span> <span class="mi">90</span><span class="p">:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">c</span><span class="p">])</span>
-        <span class="n">rotate90</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">degrees</span> <span class="o">==</span> <span class="mi">180</span><span class="p">:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span><span class="p">])</span>
-        <span class="n">rotate180</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="n">degrees</span> <span class="o">==</span> <span class="mi">270</span><span class="p">:</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">c</span><span class="p">])</span>
-        <span class="n">rotate270</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">assert</span> <span class="bp">False</span><span class="p">,</span> <span class="s1">'Angle must be a multiple of 90.'</span>
-    <span class="k">return</span> <span class="n">result</span>
-</pre></div>
-<h3 id="save"><a href="#save">save</a></h3>
-<p>
-Save a numpy array as an image file at the given path.  See also <a href="#unshape">unshape</a> (which this calls) and <a href="#load">load</a>.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image_format</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.exr'</span><span class="p">):</span>
-        <span class="n">imageio</span><span class="o">.</span><span class="n">plugins</span><span class="o">.</span><span class="n">freeimage</span><span class="o">.</span><span class="n">download</span><span class="p">()</span>
-        <span class="n">image_format</span> <span class="o">=</span> <span class="s1">'EXR-FI'</span>
-        <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
-    <span class="n">imageio</span><span class="o">.</span><span class="n">imwrite</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">unshape</span><span class="p">(</span><span class="n">image</span><span class="p">),</span> <span class="n">image_format</span><span class="p">)</span>
-</pre></div>
-<h3 id="show"><a href="#show">show</a></h3>
-<p>
-Display an image in a platform-specific way.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">show</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-        <span class="n">show_array</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-        <span class="n">show_filename</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">'Unsupported type'</span><span class="p">)</span>
-</pre></div>
-<h3 id="to_planar"><a href="#to_planar">to_planar</a></h3>
-<p>
-Convert a row-major image into a channel-major image.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">to_planar</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dsplit</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
-</pre></div>
-<h3 id="unitize"><a href="#unitize">unitize</a></h3>
-<p>
-Remap the values so that they span the range from 0 to +1.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">unitize</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
-    <span class="k">return</span> <span class="p">(</span><span class="n">img</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">img</span><span class="p">))</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">amax</span><span class="p">(</span><span class="n">img</span><span class="p">)</span> <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">amin</span><span class="p">(</span><span class="n">img</span><span class="p">))</span>
-</pre></div>
-<h3 id="unshape"><a href="#unshape">unshape</a></h3>
-<p>
-Remove the trailing dimension from single-channel 3D images.  See also <a href="#reshape">reshape</a>.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">unshape</span><span class="p">(</span><span class="n">image</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
-    <span class="k">return</span> <span class="n">image</span>
-</pre></div>
-<h3 id="vflip"><a href="#vflip">vflip</a></h3>
-<p>
-Vertically mirror the given image.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">vflip</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
-    <span class="k">assert</span> <span class="n">source</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="n">np</span><span class="o">.</span><span class="n">float</span><span class="p">,</span> <span class="s1">'Images must be doubles.'</span>
-    <span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">h</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">c</span><span class="p">])</span>
-    <span class="n">jit_vflip</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">source</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">result</span>
-</pre></div>
-<h3 id="vstack"><a href="#vstack">vstack</a></h3>
-<p>
-Vertically concatenate a list of images with a border.  This is similar to numpy's <code>vstack</code> except that it adds a border around each image. The borders can be controlled with the optional <code>border_width</code> and <code>border_value</code> arguments. See also <a href="hstack"> hstack</a>.
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">vstack</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">border_width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">border_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">border_width</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
-    <span class="n">T</span><span class="p">,</span> <span class="n">V</span> <span class="o">=</span> <span class="n">border_width</span><span class="p">,</span> <span class="n">border_value</span>
-    <span class="n">result</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">image</span> <span class="ow">in</span> <span class="n">images</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
-        <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">add_border</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">,</span> <span class="s1">'LTR'</span><span class="p">))</span>
-    <span class="n">result</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">add_border</span><span class="p">(</span><span class="n">images</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">T</span><span class="p">,</span> <span class="n">V</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-</pre></div>
-<a href="https://github.prideout.net/">
-<img src="https://github.prideout.net/assets/PublishedLogo.svg" width="175px"/>
-</a>
 </main>
 </head>

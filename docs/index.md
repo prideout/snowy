@@ -161,14 +161,3 @@ follow this convention, consider using one of the following interop functions.
 `np.uint8(myimg * 255)` or `np.float64(myimg) / 255`.
 - To swap rows with columns, use numpy's
 [swapaxes function](https://docs.scipy.org/doc/numpy/reference/generated/numpy.swapaxes.html).
-
-## Quick Reference
-
-<table>
-$quickref$
-</table>
-
-## Reference
-
-This section includes the source code of each entry point. This allows
-you to clearly see the default parameters and expectations of each function.
