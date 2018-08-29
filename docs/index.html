@@ -178,7 +178,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/11cc3d3">11cc3d3</a></small>
+<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/bdc185a">bdc185a</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><strong>User's Guide</strong> | <a href="reference.html">API Reference</a></p>
 <p>Snowy is a tiny module for manipulating and generating images.</p>
@@ -238,17 +238,23 @@ raw double-precision data, consider using npy files instead of image files. The 
 are <code>numpy.load(filename)</code> and <code>numpy.save(filename, array)</code>.</p>
 <img height="100px" src="cropped-sunset.png"/>
 <h3 id="alpha_composition"><a href="#alpha_composition">Alpha composition</a></h3>
-<p>Next we'll draw an icon over the sunset image using <code>compose</code>:</p>
+<p>To copy a section of one image into another, simply use numpy slicing.</p>
+<p>However, to achieve "source-over" style alpha blending, using raw numpy math would be cumbersome.
+Snowy provides <code>compose</code> to make this easier:</p>
 <div class="highlight"><pre><span></span><span class="n">icon</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'snowflake.png'</span><span class="p">)</span>
-<span class="n">icon</span> <span class="o">=</span> <span class="n">snow</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">snowflake</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">128</span><span class="p">)</span>
+<span class="n">icon</span> <span class="o">=</span> <span class="n">snow</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">snowflake</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
 <span class="n">snowy</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">icon</span><span class="p">)</span>
 
-<span class="n">sunset</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">sunset</span><span class="p">[:</span><span class="mi">128</span><span class="p">,:</span><span class="mi">128</span><span class="p">],</span> <span class="n">icon</span><span class="p">)</span>
+<span class="n">sunset</span><span class="p">[:</span><span class="mi">100</span><span class="p">,</span><span class="mi">200</span><span class="p">:</span><span class="mi">300</span><span class="p">]</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">compose</span><span class="p">(</span><span class="n">sunset</span><span class="p">[:</span><span class="mi">100</span><span class="p">,</span><span class="mi">200</span><span class="p">:</span><span class="mi">300</span><span class="p">],</span> <span class="n">icon</span><span class="p">)</span>
 <span class="n">snowy</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">sunset</span><span class="p">)</span>
 </pre></div>
 <img height="100px" src="snowflake.png"/>
 <br/>
 <img height="100px" src="composed.png"/>
+<p>The implementation of <a href="reference.html#compose">compose</a> leverages some useful snowy functions that
+you can use directly: <a href="reference.html#extract_alpha">extract_alpha</a> and
+<a href="reference.html#extract_rgb">extract_rgb</a>.</p>
+<h3 id="drop_shadows"><a href="#drop_shadows">Drop shadows</a></h3>
 <p>We can also create a drop shadow for our icon:</p>
 <div class="highlight"><pre><span></span><span class="c1"># TBD</span>
 <span class="n">translate</span><span class="p">()</span>

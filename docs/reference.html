@@ -178,7 +178,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/11cc3d3">11cc3d3</a></small>
+<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/bdc185a">bdc185a</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><a href="index.html">User's Guide</a> | <strong>API Reference</strong></p>
 <hr/>
@@ -209,7 +209,7 @@ C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 <tr>
 <tr>
 <td><a href="#from_planar">from_planar</a></td>
-<td>Convert a channel-major image into row-major image.</td>
+<td>Create a channel-major image into row-major image.</td>
 <tr>
 <tr>
 <td><a href="#generate_noise">generate_noise</a></td>
@@ -307,32 +307,30 @@ Resample an image and produce a new image with the same size.  For a list of ava
 Compose a source image with alpha onto a destination image.
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compose</span><span class="p">(</span><span class="n">dst</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">ensure_alpha</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="n">ensure_alpha</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
     <span class="n">alpha</span> <span class="o">=</span> <span class="n">extract_alpha</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">extract_rgb</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="n">extract_rgb</span><span class="p">(</span><span class="n">src</span><span class="p">)</span> <span class="o">*</span> <span class="n">alpha</span>
-    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+    <span class="k">return</span> <span class="n">dst</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">src</span> <span class="o">*</span> <span class="n">alpha</span>
 </pre></div>
 <h3 id="compose_premultiplied"><a href="#compose_premultiplied">compose_premultiplied</a></h3>
 <p>
 Draw an image with premultiplied alpha over the destination.
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compose_premultiplied</span><span class="p">(</span><span class="n">dst</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">ensure_alpha</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="n">ensure_alpha</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
     <span class="n">alpha</span> <span class="o">=</span> <span class="n">extract_alpha</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
-    <span class="n">a</span> <span class="o">=</span> <span class="n">extract_rgb</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span>
-    <span class="n">b</span> <span class="o">=</span> <span class="n">extract_rgb</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+    <span class="k">return</span> <span class="n">dst</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">src</span>
 </pre></div>
 <h3 id="extract_alpha"><a href="#extract_alpha">extract_alpha</a></h3>
 <p>
-Extract the alpha plane from an RGBA image.
+Extract the alpha plane from an RGBA image.  Note that this returns a copy, not a view. To manipulate the pixels in a <i>view</i> of the alpha plane, simply make a numpy slice, as in: <code>alpha_view = myimage[:,:,3]</code>.
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">extract_alpha</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dsplit</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="mi">4</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dsplit</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="mi">4</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
 </pre></div>
 <h3 id="extract_rgb"><a href="#extract_rgb">extract_rgb</a></h3>
 <p>
-Extract the RGB planes from an RGBA image.
+Extract the RGB planes from an RGBA image.  Note that this returns a copy. If you wish to obtain a view that allows mutating pixels, simply use slicing instead. For example, to invert the colors of an image while leaving alpha intact, you can do: <code>myimage[:,:,:3] = 1.0 - myimage[:,:,:3]</code>.
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">extract_rgb</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span> <span class="ow">and</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span>
@@ -341,7 +339,7 @@ Extract the RGB planes from an RGBA image.
 </pre></div>
 <h3 id="from_planar"><a href="#from_planar">from_planar</a></h3>
 <p>
-Convert a channel-major image into row-major image.
+Create a channel-major image into row-major image.  This creates a copy, not a view.
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">from_planar</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
@@ -462,7 +460,7 @@ Rotate image counter-clockwise by a multiple of 90 degrees.
 </pre></div>
 <h3 id="save"><a href="#save">save</a></h3>
 <p>
-Save a numpy array as an image file at the given path.  PNG files are clamped to [0,1] and multiplied by 255.0 before being save to disk.  See also <a href="#unshape">unshape</a> (which this calls) and <a href="#load">load</a>.
+Save a numpy array as an image file at the given path.  See also <a href="#unshape">unshape</a> (which this calls) and <a href="#load">load</a>.
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image_format</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.exr'</span><span class="p">):</span>
@@ -485,11 +483,12 @@ Display an image in a platform-specific way.
 </pre></div>
 <h3 id="to_planar"><a href="#to_planar">to_planar</a></h3>
 <p>
-Convert a row-major image into a channel-major image.
+Convert a row-major image into a channel-major image.  This creates a copy, not a view.
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">to_planar</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
-    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dsplit</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">dsplit</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 <h3 id="unitize"><a href="#unitize">unitize</a></h3>
 <p>

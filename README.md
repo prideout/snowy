@@ -15,16 +15,17 @@ Painting and 2D paths are outside the scope of the library. See
   [skia-pathops](https://github.com/fonttools/skia-pathops).
 
 <!--
-- Drop shadow example
+- Fix up "compose" (currently broken in the "generate" script) and write unit test
+- Drop shadow example and "translate"
+- Image generation
+  - Islands, assume that the gradient image already exists
 - Wrap Modes section
   - For noise, mention cylinderical, toroidal, and cubemap
 - Color space
+  - tests/gamma_dalai_lama_gray.jpg
   - Just a modicum ... at least in load / save -- is the blurry poodle slightly dark?
     Create a page in "test" and use chrome (test_colorspace.py)
   - Why isn't save doing a "img * 255.0" for PNG images?
-- Image generation
-  - Islands, look at heman, assume that the gradient image already exists
-  - https://twitter.com/prideout/status/981356407202050048
 
 travis
   should run docs/generate as well as test_snowy
@@ -37,6 +38,8 @@ TODO items after open source release
     when saving a solid color image, I think this exception can be thrown:
     "Max value == min value, ambiguous given dtype"
     also, "Lossy conversion from float64 to uint8." warnings are annoying
+  Improve the island gen example
+    https://twitter.com/prideout/status/981356407202050048
   arbitrary rotation
   reduce_colors and to_svg
   io can have create_movie

@@ -90,14 +90,17 @@ are `numpy.load(filename)` and `numpy.save(filename, array)`.
 
 ### Alpha composition
 
-Next we'll draw an icon over the sunset image using `compose`:
+To copy a section of one image into another, simply use numpy slicing.
+
+However, to achieve "source-over" style alpha blending, using raw numpy math would be cumbersome.
+Snowy provides `compose` to make this easier:
 
 ```python
 icon = snowy.load('snowflake.png')
-icon = snow.resize(snowflake, 128, 128)
+icon = snow.resize(snowflake, height=100)
 snowy.show(icon)
 
-sunset = snowy.compose(sunset[:128,:128], icon)
+sunset[:100,200:300] = snowy.compose(sunset[:100,200:300], icon)
 snowy.show(sunset)
 ```
 
@@ -106,6 +109,12 @@ snowy.show(sunset)
 <br/>
 
 <img src="composed.png" height="100px">
+
+The implementation of [compose](reference.html#compose) leverages some useful snowy functions that
+you can use directly: [extract_alpha](reference.html#extract_alpha) and
+[extract_rgb](reference.html#extract_rgb).
+
+### Drop shadows
 
 We can also create a drop shadow for our icon:
 

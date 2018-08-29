@@ -84,37 +84,63 @@ def show_filename(image: str):
     else:
         print('Generated ' + image)
 
+def ensure_alpha(src: np.ndarray) -> np.ndarray:
+    """If the incoming image is 3-channel, adds a 4th channel."""
+    assert len(src.shape) == 3
+    if src.shape[2] == 3:
+        alpha = np.ones(src.shape[:2])
+        r, g, b = to_planar(src)
+        return from_planar(np.array([r, g, b, alpha]))
+    return src
+
 def compose(dst: np.ndarray, src: np.ndarray) -> np.ndarray:
     """Compose a source image with alpha onto a destination image."""
+    src, dst = ensure_alpha(src), ensure_alpha(dst)
     alpha = extract_alpha(src)
-    a = extract_rgb(dst) * (1.0 - alpha)
-    b = extract_rgb(src) * alpha
-    return a + b
+    return dst * (1.0 - alpha) + src * alpha
 
 def compose_premultiplied(dst: np.ndarray, src: np.ndarray):
     """Draw an image with premultiplied alpha over the destination."""
+    src, dst = ensure_alpha(src), ensure_alpha(dst)
     alpha = extract_alpha(src)
-    a = extract_rgb(dst) * (1.0 - alpha)
-    b = extract_rgb(src)
-    return a + b
+    return dst * (1.0 - alpha) + src
 
 def extract_alpha(image: np.ndarray) -> np.ndarray:
-    """Extract the alpha plane from an RGBA image."""
+    """Extract the alpha plane from an RGBA image.
+    
+    Note that this returns a copy, not a view. To manipulate the pixels
+    in a <i>view</i> of the alpha plane, simply make a numpy slice, as
+    in: <code>alpha_view = myimage[:,:,3]</code>.
+    """
     assert len(image.shape) == 3 and image.shape[2] == 4
-    return np.dsplit(image, 4)[3]
+    return np.dsplit(image, 4)[3].copy()
 
 def extract_rgb(image: np.ndarray) -> np.ndarray:
-    """Extract the RGB planes from an RGBA image."""
+    """Extract the RGB planes from an RGBA image.
+    
+    Note that this returns a copy. If you wish to obtain a view that
+    allows mutating pixels, simply use slicing instead. For
+    example, to invert the colors of an image while leaving alpha
+    intact, you can do:
+    <code>myimage[:,:,:3] = 1.0 - myimage[:,:,:3]</code>.
+    """
     assert len(image.shape) == 3 and image.shape[2] >= 3
     planes = np.dsplit(image, image.shape[2])
     return np.dstack(planes[:3])
 
 def to_planar(image: np.ndarray) -> np.ndarray:
-    """Convert a row-major image into a channel-major image."""
+    """Convert a row-major image into a channel-major image.
+    
+    This creates a copy, not a view.
+    """
     assert len(image.shape) == 3
-    return np.dsplit(image, image.shape[2])
+    result = np.array(np.dsplit(image, image.shape[2]))
+    return np.reshape(result, result.shape[:-1])
 
 def from_planar(image: np.ndarray) -> np.ndarray:
-    """Convert a channel-major image into row-major image."""
+    """Create a channel-major image into row-major image.
+    
+    This creates a copy, not a view.
+    """
     assert len(image.shape) == 3
     return np.dstack(image)
