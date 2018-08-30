@@ -87,23 +87,29 @@ def show_filename(image: str):
 def ensure_alpha(src: np.ndarray) -> np.ndarray:
     """If the incoming image is 3-channel, adds a 4th channel."""
     assert len(src.shape) == 3
-    if src.shape[2] == 3:
-        alpha = np.ones(src.shape[:2])
-        r, g, b = to_planar(src)
-        return from_planar(np.array([r, g, b, alpha]))
-    return src
+    if src.shape[2] != 3:
+        return src
+    alpha = np.ones(src.shape[:2])
+    r, g, b = to_planar(src)
+    return from_planar(np.array([r, g, b, alpha]))
 
 def compose(dst: np.ndarray, src: np.ndarray) -> np.ndarray:
     """Compose a source image with alpha onto a destination image."""
-    src, dst = ensure_alpha(src), ensure_alpha(dst)
-    alpha = extract_alpha(src)
-    return dst * (1.0 - alpha) + src * alpha
+    a, b = ensure_alpha(src), ensure_alpha(dst)
+    alpha = extract_alpha(a)
+    result = b * (1.0 - alpha) + a * alpha
+    if dst.shape[2] == 3:
+        return extract_rgb(result)
+    return result
 
 def compose_premultiplied(dst: np.ndarray, src: np.ndarray):
     """Draw an image with premultiplied alpha over the destination."""
-    src, dst = ensure_alpha(src), ensure_alpha(dst)
-    alpha = extract_alpha(src)
-    return dst * (1.0 - alpha) + src
+    a, b = ensure_alpha(src), ensure_alpha(dst)
+    alpha = extract_alpha(a)
+    result = b * (1.0 - alpha) + a
+    if dst.shape[2] == 3:
+        return extract_rgb(result)
+    return result
 
 def extract_alpha(image: np.ndarray) -> np.ndarray:
     """Extract the alpha plane from an RGBA image.

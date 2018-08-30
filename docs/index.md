@@ -93,35 +93,42 @@ are `numpy.load(filename)` and `numpy.save(filename, array)`.
 To copy a section of one image into another, simply use numpy slicing.
 
 However, to achieve "source-over" style alpha blending, using raw numpy math would be cumbersome.
-Snowy provides `compose` to make this easier:
+Snowy provides [compose](reference.html#compose) to make this easier:
 
 ```python
 icon = snowy.load('snowflake.png')
 icon = snow.resize(snowflake, height=100)
-snowy.show(icon)
-
 sunset[:100,200:300] = snowy.compose(sunset[:100,200:300], icon)
 snowy.show(sunset)
 ```
 
-<img src="snowflake.png" height="100px">
-
-<br/>
-
 <img src="composed.png" height="100px">
-
-The implementation of [compose](reference.html#compose) leverages some useful snowy functions that
-you can use directly: [extract_alpha](reference.html#extract_alpha) and
-[extract_rgb](reference.html#extract_rgb).
 
 ### Drop shadows
 
-We can also create a drop shadow for our icon:
+Combining operations like [blur](reference.html#blur) and [compose](reference.html#compose) can be
+used to create a drop shadow:
 
 ```python
-# TBD
-translate()
+# Extend the 100x100 snowflake image on 4 sides to give room for blur.
+shadow = np.zeros([150, 150, 4])
+shadow[25:-25,25:-25,:] = icon
+
+# Invert the colors but not the alpha.
+white = shadow.copy()
+white[:,:,:3] = 1.0 - white[:,:,:3]
+
+# Blur the shadow, then "strengthen" it.
+shadow = snowy.blur(shadow, radius=10.0)
+shadow = snowy.compose(shadow, shadow)
+shadow = snowy.compose(shadow, shadow)
+shadow = snowy.compose(shadow, shadow)
+
+# Compose the white flake onto its shadow.
+dropshadow = snowy.compose(shadow, white)
 ```
+
+<img src="dropshadow.png" height="150px">
 
 ### Gradient noise
 

@@ -298,24 +298,25 @@ snowy.show(cropped_filename)
 
 icon = snowy.load(qualify('snowflake.png'))
 icon = snowy.resize(icon, height=100)
-print(icon.shape, np.amax(icon))
-print(sunset.shape)
 sunset[:100,200:300] = snowy.compose(sunset[:100,200:300], icon)
 snowy.save(sunset, qualify('composed.png'))
 snowy.show(sunset)
 
 # Drop shadows
 
-white = icon.copy()
+shadow = np.zeros([150, 150, 4])
+shadow[25:-25,25:-25,:] = icon
+
+white = shadow.copy()
 white[:,:,:3] = 1.0 - white[:,:,:3]
-shadow = snowy.blur(icon, radius=4.0)
-snowy.show(shadow)
-snowy.show(white)
 
-# BUG: compose gets rid of alpha
-snowy.show(snowy.compose(shadow, white))
+shadow = snowy.blur(shadow, radius=10.0)
+shadow = snowy.compose(shadow, shadow)
+shadow = snowy.compose(shadow, shadow)
+shadow = snowy.compose(shadow, shadow)
 
-# TODO: translation
+dropshadow = snowy.compose(shadow, white)
+snowy.save(dropshadow, qualify('dropshadow.png'))
 
 quit()
 

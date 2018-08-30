@@ -15,8 +15,6 @@ Painting and 2D paths are outside the scope of the library. See
   [skia-pathops](https://github.com/fonttools/skia-pathops).
 
 <!--
-- Fix up "compose" (currently broken in the "generate" script) and write unit test
-- Drop shadow example and "translate"
 - Image generation
   - Islands, assume that the gradient image already exists
 - Wrap Modes section

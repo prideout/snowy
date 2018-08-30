@@ -22,6 +22,7 @@ extract_alpha = io.extract_alpha
 extract_rgb = io.extract_rgb
 to_planar = io.to_planar
 from_planar = io.from_planar
+ensure_alpha = io.ensure_alpha
 
 from . import ops
 add_border = ops.add_border

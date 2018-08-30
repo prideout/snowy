@@ -178,7 +178,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/bdc185a">bdc185a</a></small>
+<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/8cdfdb8">8cdfdb8</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><a href="index.html">User's Guide</a> | <strong>API Reference</strong></p>
 <hr/>
@@ -198,6 +198,10 @@ C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 <tr>
 <td><a href="#compose_premultiplied">compose_premultiplied</a></td>
 <td>Draw an image with premultiplied alpha over the destination.</td>
+<tr>
+<tr>
+<td><a href="#ensure_alpha">ensure_alpha</a></td>
+<td>If the incoming image is 3-channel, adds a 4th channel.</td>
 <tr>
 <tr>
 <td><a href="#extract_alpha">extract_alpha</a></td>
@@ -279,7 +283,7 @@ C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 <td><a href="#vstack">vstack</a></td>
 <td>Vertically concatenate a list of images with a border.</td>
 <tr>
-</tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></table>
+</tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></table>
 <hr/>
 <h3 id="add_border"><a href="#add_border">add_border</a></h3>
 <p>
@@ -307,18 +311,36 @@ Resample an image and produce a new image with the same size.  For a list of ava
 Compose a source image with alpha onto a destination image.
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compose</span><span class="p">(</span><span class="n">dst</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">ensure_alpha</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="n">ensure_alpha</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
-    <span class="n">alpha</span> <span class="o">=</span> <span class="n">extract_alpha</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dst</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">src</span> <span class="o">*</span> <span class="n">alpha</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ensure_alpha</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="n">ensure_alpha</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">extract_alpha</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">a</span> <span class="o">*</span> <span class="n">alpha</span>
+    <span class="k">if</span> <span class="n">dst</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">extract_rgb</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
 </pre></div>
 <h3 id="compose_premultiplied"><a href="#compose_premultiplied">compose_premultiplied</a></h3>
 <p>
 Draw an image with premultiplied alpha over the destination.
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compose_premultiplied</span><span class="p">(</span><span class="n">dst</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">src</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-    <span class="n">src</span><span class="p">,</span> <span class="n">dst</span> <span class="o">=</span> <span class="n">ensure_alpha</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="n">ensure_alpha</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
-    <span class="n">alpha</span> <span class="o">=</span> <span class="n">extract_alpha</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">dst</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">src</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">ensure_alpha</span><span class="p">(</span><span class="n">src</span><span class="p">),</span> <span class="n">ensure_alpha</span><span class="p">(</span><span class="n">dst</span><span class="p">)</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">extract_alpha</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">b</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">alpha</span><span class="p">)</span> <span class="o">+</span> <span class="n">a</span>
+    <span class="k">if</span> <span class="n">dst</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">extract_rgb</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
+<h3 id="ensure_alpha"><a href="#ensure_alpha">ensure_alpha</a></h3>
+<p>
+If the incoming image is 3-channel, adds a 4th channel.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">ensure_alpha</span><span class="p">(</span><span class="n">src</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
+    <span class="k">if</span> <span class="n">src</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">src</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">src</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">])</span>
+    <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">to_planar</span><span class="p">(</span><span class="n">src</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">from_planar</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">alpha</span><span class="p">]))</span>
 </pre></div>
 <h3 id="extract_alpha"><a href="#extract_alpha">extract_alpha</a></h3>
 <p>
