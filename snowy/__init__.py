@@ -16,8 +16,6 @@ reshape = io.reshape
 save = io.save
 show = io.show
 unshape = io.unshape
-compose = io.compose
-compose_premultiplied = io.compose_premultiplied
 extract_alpha = io.extract_alpha
 extract_rgb = io.extract_rgb
 to_planar = io.to_planar
@@ -33,10 +31,13 @@ vstack = ops.vstack
 rotate = ops.rotate
 hflip = ops.hflip
 vflip = ops.vflip
+compose = ops.compose
+compose_premultiplied = ops.compose_premultiplied
 
 from . import distance
 generate_sdf = distance.generate_sdf
 generate_udf = distance.generate_udf
+generate_gdf = distance.generate_gdf
 
 from . import noise
 generate_noise = noise.generate_noise

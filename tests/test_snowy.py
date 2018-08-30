@@ -69,17 +69,6 @@ def test_tileable():
 
     snowy.show(snowy.hstack([gold, bad, good], 2, .7))
 
-def test_distance():
-    c0 = create_circle(200, 200, 0.3)
-    c1 = create_circle(200, 200, 0.08, 0.8, 0.8)
-    c0 = np.clip(c0 + c1, 0, 1)
-    circles = snowy.add_border(c0, value=1)
-    mask = circles != 0.0
-    sdf = snowy.unitize(snowy.generate_sdf(mask))
-    nx, ny = snowy.gradient(sdf)
-    grad = snowy.unitize(nx + ny)
-    snowy.show(snowy.hstack([circles, sdf, grad]))
-
 def test_tileable_distance():
     c0 = create_circle(400, 200, 0.3)
     c1 = create_circle(400, 200, 0.08, 0.8, 0.8)

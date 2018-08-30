@@ -131,6 +131,24 @@ def vflip(source: np.ndarray) -> np.ndarray:
     jit_vflip(result, source)
     return result
 
+def compose(dst: np.ndarray, src: np.ndarray) -> np.ndarray:
+    """Compose a source image with alpha onto a destination image."""
+    a, b = ensure_alpha(src), ensure_alpha(dst)
+    alpha = extract_alpha(a)
+    result = b * (1.0 - alpha) + a * alpha
+    if dst.shape[2] == 3:
+        return extract_rgb(result)
+    return result
+
+def compose_premultiplied(dst: np.ndarray, src: np.ndarray):
+    """Draw an image with premultiplied alpha over the destination."""
+    a, b = ensure_alpha(src), ensure_alpha(dst)
+    alpha = extract_alpha(a)
+    result = b * (1.0 - alpha) + a
+    if dst.shape[2] == 3:
+        return extract_rgb(result)
+    return result
+
 SIG0 = "void(f8[:,:,:], f8[:,:,:])"
 SIG1 = "(r,c,d),(c,r,d)"
 @guvectorize([SIG0], SIG1, target='parallel')

@@ -93,24 +93,6 @@ def ensure_alpha(src: np.ndarray) -> np.ndarray:
     r, g, b = to_planar(src)
     return from_planar(np.array([r, g, b, alpha]))
 
-def compose(dst: np.ndarray, src: np.ndarray) -> np.ndarray:
-    """Compose a source image with alpha onto a destination image."""
-    a, b = ensure_alpha(src), ensure_alpha(dst)
-    alpha = extract_alpha(a)
-    result = b * (1.0 - alpha) + a * alpha
-    if dst.shape[2] == 3:
-        return extract_rgb(result)
-    return result
-
-def compose_premultiplied(dst: np.ndarray, src: np.ndarray):
-    """Draw an image with premultiplied alpha over the destination."""
-    a, b = ensure_alpha(src), ensure_alpha(dst)
-    alpha = extract_alpha(a)
-    result = b * (1.0 - alpha) + a
-    if dst.shape[2] == 3:
-        return extract_rgb(result)
-    return result
-
 def extract_alpha(image: np.ndarray) -> np.ndarray:
     """Extract the alpha plane from an RGBA image.
     

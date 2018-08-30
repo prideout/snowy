@@ -26,6 +26,25 @@ def generate_udf(image: np.ndarray, wrapx=False, wrapy=False):
     assert image.shape[2] == 1, 'Image must be grayscale'
     return _generate_edt(image, wrapx, wrapy)
 
+def generate_gdf(image: np.ndarray, wrapx=False, wrapy=False):
+    "Create an generalized squared distance field from a scalar field."
+    assert image.dtype == 'float64', 'Pixel values must be real'
+    assert len(image.shape) == 3, 'Shape is not rows x cols x channels'
+    assert image.shape[2] == 1, 'Image must be grayscale'
+    return _generate_gdt(image, wrapx, wrapy)
+
+def _generate_gdt(image, wrapx, wrapy):
+    image = io.unshape(image)
+    height, width = image.shape
+    capacity = max(width, height)
+    if wrapx or wrapy: capacity *= 2
+    d = np.zeros([capacity])
+    z = np.zeros([capacity + 1])
+    v = np.zeros([capacity], dtype='i4')
+    result = image.copy()
+    _generate_udf(width, height, d, z, v, result, wrapx, wrapy)
+    return io.reshape(result)
+
 def _generate_edt(image, wrapx, wrapy):
     image = io.unshape(image)
     height, width = image.shape
