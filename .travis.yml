@@ -3,7 +3,7 @@ python:
   - "3.6"
 cache: pip
 install:
-  - pip install snowy beautifulsoup4
+  - pip install snowy beautifulsoup4 Pygments
 script:
   - python tests/test_snowy.py
   - python tests/test_dist.py
