@@ -18,36 +18,13 @@ Painting and 2D paths are outside the scope of the library. See
 
 <!--
 
-Making a release:
-
-  python3 setup.py sdist bdist_wheel
-  twine upload dist/*
-  open https://pypi.org/project/snowy/
-  consider using travis for this:
-      https://docs.travis-ci.com/user/deployment/pypi/
-
-Testing a release:
-
-  cd ~
-  python3 -m venv snowy_test
-  source snowy_test/bin/activate
-  pip install snowy
-  python3
-      import snowy; import numpy as np
-      n = snowy.generate_noise(100, 100, frequency=4, seed=42, wrapx=True)
-      snowy.show(n)
-      deactivate
-  see also:
-      https://docs.python-guide.org/dev/virtualenvs/
-
-TODO
+  Blurry images look brighter in the docs, probably due to float normalization.  Please fix!
 
   Color space
       tests/gamma_dalai_lama_gray.jpg
       Just a modicum ... at least in load / save -- is the blurry poodle slightly dark?
       Create a page in "test" and use chrome (test_colorspace.py)
       Why isn't save doing a "img * 255.0" for PNG images?
-      Blurry images look brighter, this seems wrong.
 
   Bug fix
       when saving a solid color image, I think this exception can be thrown:
@@ -77,5 +54,28 @@ TODO
       also this: https://en.wikipedia.org/wiki/Buddhabrot
   generate voronoi or triangulations, like the little test images here:
       http://agea.github.io/tutorial.md/
+
+
+Making a release:
+
+  python3 setup.py sdist bdist_wheel
+  twine upload dist/*
+  open https://pypi.org/project/snowy/
+  consider using travis for this:
+      https://docs.travis-ci.com/user/deployment/pypi/
+
+Testing a release:
+
+  cd ~
+  python3 -m venv snowy_test
+  source snowy_test/bin/activate
+  pip install snowy
+  python3
+      import snowy; import numpy as np
+      n = snowy.generate_noise(100, 100, frequency=4, seed=42, wrapx=True)
+      snowy.show(n)
+      deactivate
+  see also:
+      https://docs.python-guide.org/dev/virtualenvs/
 
 -->
