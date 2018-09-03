@@ -23,6 +23,8 @@ Making a release:
   python3 setup.py sdist bdist_wheel
   twine upload dist/*
   open https://pypi.org/project/snowy/
+  consider using travis for this:
+      https://docs.travis-ci.com/user/deployment/pypi/
 
 Testing a release:
 
