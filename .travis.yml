@@ -1,0 +1,10 @@
+language: python
+python:
+  - "3.6"
+cache: pip
+install:
+  - pip install snowy
+script:
+  - python tests/test_snowy.py
+  - python docs/generate.py
+  - python docs/test_dist.py

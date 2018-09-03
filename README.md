@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/prideout/snowy.svg?branch=master)](https://travis-ci.org/prideout/snowy)
+
 ## Snowy
 
 This is a tiny Python 3 module for manipulating and generating images.
@@ -16,36 +18,54 @@ Painting and 2D paths are outside the scope of the library. See
 
 <!--
 
-travis and pip
-  should run docs/generate as well as test_snowy
+Making a release:
 
-- Color space
-  - tests/gamma_dalai_lama_gray.jpg
-  - Just a modicum ... at least in load / save -- is the blurry poodle slightly dark?
-    Create a page in "test" and use chrome (test_colorspace.py)
-  - Why isn't save doing a "img * 255.0" for PNG images?
+  python3 setup.py sdist bdist_wheel
+  twine upload dist/*
+  open https://pypi.org/project/snowy/
 
-open graph tags and thumbnail
-  - https://github.prideout.net/snowy/
-  - https://cards-dev.twitter.com/validator
+Testing a release:
 
-TODO items after open source release
+  cd ~
+  python3 -m venv snowy_test
+  source snowy_test/bin/activate
+  pip install snowy
+  python3
+      import snowy; import numpy as np
+      n = snowy.generate_noise(100, 100, frequency=4, seed=42, wrapx=True)
+      snowy.show(n)
+      deactivate
+  see also:
+      https://docs.python-guide.org/dev/virtualenvs/
+
+TODO
+
+  Color space
+      tests/gamma_dalai_lama_gray.jpg
+      Just a modicum ... at least in load / save -- is the blurry poodle slightly dark?
+      Create a page in "test" and use chrome (test_colorspace.py)
+      Why isn't save doing a "img * 255.0" for PNG images?
+      Blurry images look brighter, this seems wrong.
 
   Bug fix
-    when saving a solid color image, I think this exception can be thrown:
-    "Max value == min value, ambiguous given dtype"
-    also, "Lossy conversion from float64 to uint8." warnings are annoying
+      when saving a solid color image, I think this exception can be thrown:
+      "Max value == min value, ambiguous given dtype"
+
+  Warning Fix
+      Typing the simple example from https://github.prideout.net/snowy/#gradient_noise results in:
+      "Lossy conversion from float64 to uint8."
+
   Improve the island gen example
     https://twitter.com/prideout/status/981356407202050048
+    CPCF's ?
+
   arbitrary rotation
   reduce_colors and to_svg
   io can have create_movie
-    heat wave example
-    brownian loop zoom example
+      heat wave example
+      brownian loop zoom example
   io can have generate_gallery for making HTML, and optional forced width/height/filter
   height field AO
-  CPCF's
-    try to repro https://twitter.com/prideout/status/981356407202050048
   variable radius blur (radius multiplier is a fn not a constant)
     test with a distance field + gradient
   prefiltering as seen in docs/hoppe
