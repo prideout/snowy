@@ -189,7 +189,52 @@ snowy.save(create_island(10), 'island.png')
 
 ## Wrap modes
 
-TBD
+Snowy's [blur](reference.html#blur), [resize](reference.html#resize),
+[generate_noise](reference.html#generate_noise), and [generate_sdf](reference.html#generate_sdf)
+functions all take `wrapx` and `wrapy` arguments, both of which default to `False`. These arguments
+tell Snowy how to sample from outside the boundaries of the source image or noise function.
+
+To help understand these arguments, consider this wrappable image and its 2x2 tiling:
+
+<img src="ground.jpg" height="128px">
+<br>
+<img src="ground2x2.jpg" height="256px">
+
+Next, let's try blurring the tile naively:
+
+<img src="blurry_ground2x2_bad.jpg" height="256px">
+
+See the seams? Now let's blur it with `wrapx` and `wrapy` set to `True` when we call
+[blur](reference.html#blur):
+
+<img src="blurry_ground2x2_good.jpg" height="256px">
+
+### Wrappable Gradient Noise
+
+The wrap arguments are also useful for 2D noise. One way of making tileable gradient noise is to
+sample 3D noise on the surface of a cylinder, torus, or cube. However Snowy can do this more
+efficiently by generating 2D noise with modulus arithmetic.
+
+Here we created a 128x256 tile using [generate_noise](reference.html#generate_noise) without the
+`wrapx` argument, then horizontally tiled it twice:
+
+<img src="tiled_noise_bad.png" height="256px">
+
+Here's another tiling of gradient noise, but this time the tile was generated with `wrapx` set to
+`True`:
+
+<img src="tiled_noise_good.png" height="256px">
+
+### Wrappable Distance Fields
+
+Snowy's [generate_sdf](reference.html#generate_sdf) function also takes wrap arguments. For example
+here's a distance field in a 4x2 tiling:
+
+<img src="tiled_sdf_bad.png" height="128px">
+
+Here's the same distance field, this time with wrapx and wrapy set to `True`:
+
+<img src="tiled_sdf_good.png" height="128px">
 
 ## Interop
 

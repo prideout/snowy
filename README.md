@@ -15,20 +15,19 @@ Painting and 2D paths are outside the scope of the library. See
   [skia-pathops](https://github.com/fonttools/skia-pathops).
 
 <!--
-- Image generation
-  - Islands, assume that the gradient image already exists
-- Wrap Modes section
-  - For noise, mention cylinderical, toroidal, and cubemap
+
+travis and pip
+  should run docs/generate as well as test_snowy
+
 - Color space
   - tests/gamma_dalai_lama_gray.jpg
   - Just a modicum ... at least in load / save -- is the blurry poodle slightly dark?
     Create a page in "test" and use chrome (test_colorspace.py)
   - Why isn't save doing a "img * 255.0" for PNG images?
 
-travis
-  should run docs/generate as well as test_snowy
-
 open graph tags and thumbnail
+  - https://github.prideout.net/snowy/
+  - https://cards-dev.twitter.com/validator
 
 TODO items after open source release
 

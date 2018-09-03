@@ -19,14 +19,79 @@ import snowy
 
 GRAY_ISLAND = True
 
-result = subprocess.run('git rev-parse HEAD'.split(), stdout=subprocess.PIPE)
-sha = result.stdout.strip().decode("utf-8")[:7]
-sha = f'<a href="https://github.com/prideout/snowy/tree/{sha}">{sha}</a>'
-version = f'<small>v0.0.1 ~ {sha}</small>'
+def smoothstep(edge0, edge1, x):
+    t = np.clip((x - edge0) / (edge1 - edge0), 0.0, 1.0)
+    return t * t * (3.0 - 2.0 * t)
+
+def create_circle(w, h, radius=0.4, cx=0.5, cy=0.5):
+    hw, hh = 0.5 / w, 0.5 / h
+    dp = max(hw, hh)
+    x = np.linspace(hw, 1 - hw, w)
+    y = np.linspace(hh, 1 - hh, h)
+    u, v = np.meshgrid(x, y, sparse=True)
+    d2, r2 = (u-cx)**2 + (v-cy)**2, radius**2
+    result = 1 - smoothstep(radius-dp, radius+dp, np.sqrt(d2))
+    return snowy.reshape(result)
 
 def qualify(filename: str):
     scriptdir = os.path.dirname(os.path.realpath(__file__))
     return os.path.join(scriptdir, filename)
+
+def create_wrap_figures():
+    ground = snowy.load(qualify('ground.jpg'))
+    hground = np.hstack([ground, ground])
+    ground2x2 = np.vstack([hground, hground])
+    snowy.save(ground2x2, qualify('ground2x2.jpg'))
+
+    ground = snowy.blur(ground, radius=14, filter=snowy.LANCZOS)
+    snowy.save(ground, qualify('blurry_ground_bad.jpg'))
+    hground = np.hstack([ground, ground])
+    ground2x2 = np.vstack([hground, hground])
+    snowy.save(ground2x2, qualify('blurry_ground2x2_bad.jpg'))
+
+    ground = snowy.load(qualify('ground.jpg'))
+
+    ground = snowy.blur(ground, radius=14, wrapx=True, wrapy=True,
+            filter=snowy.LANCZOS)
+    snowy.save(ground, qualify('blurry_ground_good.jpg'))
+    hground = np.hstack([ground, ground])
+    ground2x2 = np.vstack([hground, hground])
+    snowy.save(ground2x2, qualify('blurry_ground2x2_good.jpg'))
+
+    n = snowy.generate_noise(256, 512, frequency=4, seed=42, wrapx=False)
+    n = 0.5 + 0.5 * np.sign(n) - n
+    n = np.hstack([n, n])
+    n = snowy.add_border(n, width=4)
+    snowy.save(n, qualify('tiled_noise_bad.png'))
+
+    n = snowy.generate_noise(256, 512, frequency=4, seed=42, wrapx=True)
+    n = 0.5 + 0.5 * np.sign(n) - n
+    n = np.hstack([n, n])
+    n = snowy.add_border(n, width=4)
+    snowy.save(n, qualify('tiled_noise_good.png'))
+
+    c0 = create_circle(400, 200, 0.3)
+    c1 = create_circle(400, 200, 0.08, 0.8, 0.8)
+    circles = np.clip(c0 + c1, 0, 1)
+    mask = circles != 0.0
+    sdf = snowy.unitize(snowy.generate_sdf(mask, wrapx=True, wrapy=True))
+    sdf = np.hstack([sdf, sdf, sdf, sdf])
+    sdf = snowy.resize(np.vstack([sdf, sdf]), width=512)
+    sdf = snowy.add_border(sdf)
+    snowy.save(sdf, qualify('tiled_sdf_good.png'))
+
+    sdf = snowy.unitize(snowy.generate_sdf(mask, wrapx=False, wrapy=False))
+    sdf = np.hstack([sdf, sdf, sdf, sdf])
+    sdf = snowy.resize(np.vstack([sdf, sdf]), width=512)
+    sdf = snowy.add_border(sdf)
+    snowy.save(sdf, qualify('tiled_sdf_bad.png'))
+
+create_wrap_figures()
+
+result = subprocess.run('git rev-parse HEAD'.split(), stdout=subprocess.PIPE)
+sha = result.stdout.strip().decode("utf-8")[:7]
+sha = f'<a href="https://github.com/prideout/snowy/tree/{sha}">{sha}</a>'
+version = f'<small>v0.0.1 ~ {sha}</small>'
 
 header = '''
 <!DOCTYPE html>
@@ -34,7 +99,17 @@ header = '''
 <title>Snowy</title>
 <link rel="icon" href="snowflake64.png" type="image/x-icon">
 <meta name=viewport content='width=device-width,initial-scale=1'>
-<meta charset='utf-8'>
+<meta charset="utf-8">
+
+<meta property="og:image"
+    content="https://github.prideout.net/snowy/snowy2.png">
+<meta property="og:site_name" content="GitHub">
+<meta property="og:type" content="object">
+<meta property="og:title" content="prideout/snowy">
+<meta property="og:url" content="https://github.prideout.net/snowy/">
+<meta property="og:description"
+    content="Small Python 3 module for manipulating and generating images.">
+
 <link href="https://fonts.googleapis.com/css?family=Alegreya"
     rel="stylesheet">
 <link href="https://fonts.googleapis.com/css?family=Inconsolata"
@@ -230,6 +305,8 @@ def generate_page(sourcefile, resultfile, genref):
 generate_page(qualify('index.md'), qualify('index.html'), False)
 generate_page(qualify('reference.md'), qualify('reference.html'), True)
 
+quit()
+
 # Test rotations and flips
 
 gibbons = snowy.load(qualify('gibbons.jpg'))
@@ -363,20 +440,6 @@ def create_falloff(w, h, radius=0.4, cx=0.5, cy=0.5):
     u, v = np.meshgrid(x, y, sparse=True)
     d2 = (u-cx)**2 + (v-cy)**2
     return 1-snowy.unitize(snowy.reshape(d2))
-
-def smoothstep(edge0, edge1, x):
-    t = np.clip((x - edge0) / (edge1 - edge0), 0.0, 1.0)
-    return t * t * (3.0 - 2.0 * t)
-
-def create_circle(w, h, radius=0.4, cx=0.5, cy=0.5):
-    hw, hh = 0.5 / w, 0.5 / h
-    dp = max(hw, hh)
-    x = np.linspace(hw, 1 - hw, w)
-    y = np.linspace(hh, 1 - hh, h)
-    u, v = np.meshgrid(x, y, sparse=True)
-    d2, r2 = (u-cx)**2 + (v-cy)**2, radius**2
-    result = 1 - smoothstep(radius-dp, radius+dp, np.sqrt(d2))
-    return snowy.reshape(result)
 
 c0 = create_circle(200, 200, 0.3)
 c1 = create_circle(200, 200, 0.08, 0.8, 0.8)

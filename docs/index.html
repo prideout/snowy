@@ -6,6 +6,12 @@
 <link href="snowflake64.png" rel="icon" type="image/x-icon"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
 <meta charset="utf-8"/>
+<meta content="https://github.prideout.net/snowy/snowy2.png" property="og:image"/>
+<meta content="GitHub" property="og:site_name"/>
+<meta content="object" property="og:type"/>
+<meta content="prideout/snowy" property="og:title"/>
+<meta content="https://github.prideout.net/snowy/" property="og:url"/>
+<meta content="Small Python 3 module for manipulating and generating images." property="og:description"/>
 <link href="https://fonts.googleapis.com/css?family=Alegreya" rel="stylesheet"/>
 <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet"/>
 <style>
@@ -178,7 +184,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/a03ac95">a03ac95</a></small>
+<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/440de36">440de36</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><strong>User's Guide</strong> | <a href="reference.html">API Reference</a></p>
 <p>Snowy is a tiny module for manipulating and generating images.</p>
@@ -311,7 +317,35 @@ The following example creates an elevation map for an imaginary island.</p>
 </pre></div>
 <p><img alt="" src="island.png"/></p>
 <h2 id="wrap_modes"><a href="#wrap_modes">Wrap modes</a></h2>
-<p>TBD</p>
+<p>Snowy's <a href="reference.html#blur">blur</a>, <a href="reference.html#resize">resize</a>,
+<a href="reference.html#generate_noise">generate_noise</a>, and <a href="reference.html#generate_sdf">generate_sdf</a>
+functions all take <code>wrapx</code> and <code>wrapy</code> arguments, both of which default to <code>False</code>. These arguments
+tell Snowy how to sample from outside the boundaries of the source image or noise function.</p>
+<p>To help understand these arguments, consider this wrappable image and its 2x2 tiling:</p>
+<img height="128px" src="ground.jpg"/>
+<br/>
+<img height="256px" src="ground2x2.jpg"/>
+<p>Next, let's try blurring the tile naively:</p>
+<img height="256px" src="blurry_ground2x2_bad.jpg"/>
+<p>See the seams? Now let's blur it with <code>wrapx</code> and <code>wrapy</code> set to <code>True</code> when we call
+<a href="reference.html#blur">blur</a>:</p>
+<img height="256px" src="blurry_ground2x2_good.jpg"/>
+<h3 id="wrappable_gradient_noise"><a href="#wrappable_gradient_noise">Wrappable Gradient Noise</a></h3>
+<p>The wrap arguments are also useful for 2D noise. One way of making tileable gradient noise is to
+sample 3D noise on the surface of a cylinder, torus, or cube. However Snowy can do this more
+efficiently by generating 2D noise with modulus arithmetic.</p>
+<p>Here we created a 128x256 tile using <a href="reference.html#generate_noise">generate_noise</a> without the
+<code>wrapx</code> argument, then horizontally tiled it twice:</p>
+<img height="256px" src="tiled_noise_bad.png"/>
+<p>Here's another tiling of gradient noise, but this time the tile was generated with <code>wrapx</code> set to
+<code>True</code>:</p>
+<img height="256px" src="tiled_noise_good.png"/>
+<h3 id="wrappable_distance_fields"><a href="#wrappable_distance_fields">Wrappable Distance Fields</a></h3>
+<p>Snowy's <a href="reference.html#generate_sdf">generate_sdf</a> function also takes wrap arguments. For example
+here's a distance field in a 4x2 tiling:</p>
+<img height="128px" src="tiled_sdf_bad.png"/>
+<p>Here's the same distance field, this time with wrapx and wrapy set to <code>True</code>:</p>
+<img height="128px" src="tiled_sdf_good.png"/>
 <h2 id="interop"><a href="#interop">Interop</a></h2>
 <p>Snowy's algorithms require images to be row-major three-dimensional <code>float64</code> numpy arrays, with
 color channels living in the trailing dimension. If you're working with another module that does not
