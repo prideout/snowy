@@ -3,8 +3,8 @@ python:
   - "3.6"
 cache: pip
 install:
-  - pip install snowy
+  - pip install snowy BeautifulSoup
 script:
   - python tests/test_snowy.py
+  - python tests/test_dist.py
   - python docs/generate.py
-  - python docs/test_dist.py
