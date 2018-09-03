@@ -69,14 +69,14 @@ triptych = snowy.hstack([gibbons, rotated, flipped],
 
 ### Cropping
 
-If you need to crop an image, just use Python slicing.
+If you need to crop an image, just use numpy slicing.
 
-For example, this loads an OpenEXR image, then crops out the top half by slicing the numpy array.
+For example, this loads an OpenEXR image then crops out the top half:
 
 ```python
-sunset = snowy.load('sunset.exr')
-cropped_sunset = sunset[:100,:,:]
-snowy.show(cropped_sunset / 50.0) # darken the image
+sunrise = snowy.load('sunrise.exr')
+cropped_sunrise = sunrise[:100,:,:]
+snowy.show(cropped_sunrise / 50.0) # darken the image
 ```
 
 #### aside
@@ -133,7 +133,7 @@ dropshadow = snowy.compose(shadow, white)
 ### Gradient noise
 
 Snowy's `generate_noise` function generates a single-channel image whose values are
-in [-1,&nbsp;+1].
+in [-1,&nbsp;+1]. Here we create a square noise image that can be tiled horizontally:
 
 ```python
 n = snowy.generate_noise(100, 100, frequency=4, seed=42, wrapx=True)
@@ -145,7 +145,7 @@ snowy.show(0.5 + 0.5 * n)
 
 ### Distance fields
 
-This uses `generate_sdf` to create a signed distance field from a monochrome picture of two circles
+This example uses `generate_sdf` to create a signed distance field from a monochrome picture of two circles
 enclosed by a square. Note the usage of `unitize` to adjust the values into the `[0,1]` range.
 
 ```python
@@ -158,13 +158,34 @@ snowy.show(snowy.hstack([circles, sdf]))
 
 ### Image generation
 
-TBD
+Combining Snowy's unique features with numpy can be used to create interesting procedural images.
+The following example creates an elevation map for an imaginary island.
 
-<img src="gradient.png" width="150px">
+```python
+def create_falloff(w, h, radius=0.4, cx=0.5, cy=0.5):
+    hw, hh = 0.5 / w, 0.5 / h
+    x = np.linspace(hw, 1 - hw, w)
+    y = np.linspace(hh, 1 - hh, h)
+    u, v = np.meshgrid(x, y, sparse=True)
+    d2 = (u-cx)**2 + (v-cy)**2
+    return 1-snowy.unitize(snowy.reshape(d2))
 
-<br/>
+def create_island(seed, freq=3.5):
+    w, h = 750, 512
+    falloff = create_falloff(w, h)
+    n1 = 1.000 * snowy.generate_noise(w, h, freq*1, seed+0)
+    n2 = 0.500 * snowy.generate_noise(w, h, freq*2, seed+1)
+    n3 = 0.250 * snowy.generate_noise(w, h, freq*4, seed+2)
+    n4 = 0.125 * snowy.generate_noise(w, h, freq*8, seed+3)
+    elevation = falloff * (falloff / 2 + n1 + n2 + n3 + n4)
+    mask = elevation < 0.4
+    elevation = snowy.unitize(snowy.generate_sdf(mask))
+    return (1 - mask) * np.power(elevation, 3.0)
 
-![](isles.png)
+snowy.save(create_island(10), 'island.png')
+```
+
+![](island.png)
 
 ## Wrap modes
 
@@ -176,10 +197,10 @@ Snowy's algorithms require images to be row-major three-dimensional `float64` nu
 color channels living in the trailing dimension. If you're working with another module that does not
 follow this convention, consider using one of the following interop functions.
 
-- To add or remove the trailing 1 from the shape of grayscale images, use [reshape](#reshape) and
-[unshape](#unshape).
-- To swap color channels in or out of the leading dimension, use [to_planar](#to_planar) and
-[from_planar](#from_planar).
+- To add or remove the trailing 1 from the shape of grayscale images, use
+[reshape](reference.html#reshape) and [unshape](reference.html#unshape).
+- To swap color channels in or out of the leading dimension, use
+[to_planar](reference.html#to_planar) and [from_planar](reference.html#from_planar).
 - To cast between `float64` and other types, just use numpy. For example,
 `np.uint8(myimg * 255)` or `np.float64(myimg) / 255`.
 - To swap rows with columns, use numpy's

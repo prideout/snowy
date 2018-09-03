@@ -1,6 +1,6 @@
 """Define add_border etc."""
 
-from . import io
+from snowy.io import *
 from numba import jit, guvectorize
 import numpy as np
 
@@ -91,8 +91,8 @@ def unitize(img):
 
 def gradient(img):
     """Compute X derivatives and Y derivatives."""
-    nx, ny = np.gradient(io.unshape(img))
-    return io.reshape(nx), io.reshape(ny)
+    nx, ny = np.gradient(unshape(img))
+    return reshape(nx), reshape(ny)
 
 def rotate(source: np.ndarray, degrees) -> np.ndarray:
     """Rotate image counter-clockwise by a multiple of 90 degrees."""

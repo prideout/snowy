@@ -17,6 +17,8 @@ import sys
 sys.path.append('../snowy')
 import snowy
 
+GRAY_ISLAND = True
+
 result = subprocess.run('git rev-parse HEAD'.split(), stdout=subprocess.PIPE)
 sha = result.stdout.strip().decode("utf-8")[:7]
 sha = f'<a href="https://github.com/prideout/snowy/tree/{sha}">{sha}</a>'
@@ -318,8 +320,6 @@ shadow = snowy.compose(shadow, shadow)
 dropshadow = snowy.compose(shadow, white)
 snowy.save(dropshadow, qualify('dropshadow.png'))
 
-quit()
-
 STEPPED_PALETTE = [
     000, 0x203060 ,
     64,  0x2C316F ,
@@ -358,7 +358,6 @@ def applyColorGradient(elevation_image, gradient_image):
 
 def create_falloff(w, h, radius=0.4, cx=0.5, cy=0.5):
     hw, hh = 0.5 / w, 0.5 / h
-    dp = max(hw, hh)
     x = np.linspace(hw, 1 - hw, w)
     y = np.linspace(hh, 1 - hh, h)
     u, v = np.meshgrid(x, y, sparse=True)
@@ -389,7 +388,7 @@ snowy.save(stack, qualify('sdf.png'))
 snowy.show(stack)
 
 # Islands
-def create_island(seed, gradient, freq=3):
+def create_island(seed, gradient, freq=3.5):
     w, h = 750, 512
     falloff = create_falloff(w, h)
     n1 = 1.000 * snowy.generate_noise(w, h, freq*1, seed+0)
@@ -398,6 +397,9 @@ def create_island(seed, gradient, freq=3):
     n4 = 0.125 * snowy.generate_noise(w, h, freq*8, seed+3)
     elevation = falloff * (falloff / 2 + n1 + n2 + n3 + n4)
     mask = elevation < 0.4
+    elevation = snowy.unitize(snowy.generate_sdf(mask))
+    if GRAY_ISLAND:
+        return (1 - mask) * np.power(elevation, 3.0)
     elevation = snowy.generate_sdf(mask) - 100 * n4
     mask = np.where(elevation < 0, 1, 0)
     el = 128 + 127 * elevation / np.amax(elevation)
@@ -415,11 +417,10 @@ def createColorGradient(pal):
 
 gradient = createColorGradient(STEPPED_PALETTE)
 snowy.save(snowy.add_border(gradient), qualify('gradient.png'))
-snowy.show(gradient)
 isles = []
 for i in range(6):
     isle = create_island(i * 5, gradient)
-    isle = snowy.resize(isle, width=isle.shape[1] // 4)
+    isle = snowy.resize(isle, width=isle.shape[1] // 3)
     isles.append(isle)
 snowy.save(isles[2], qualify('island.png'))
 isles = snowy.hstack(isles)

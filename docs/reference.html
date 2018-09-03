@@ -178,7 +178,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/8cdfdb8">8cdfdb8</a></small>
+<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/a03ac95">a03ac95</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><a href="index.html">User's Guide</a> | <strong>API Reference</strong></p>
 <hr/>
@@ -214,6 +214,10 @@ C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 <tr>
 <td><a href="#from_planar">from_planar</a></td>
 <td>Create a channel-major image into row-major image.</td>
+<tr>
+<tr>
+<td><a href="#generate_gdf">generate_gdf</a></td>
+<td>Create an generalized squared distance field from a scalar field.</td>
 <tr>
 <tr>
 <td><a href="#generate_noise">generate_noise</a></td>
@@ -283,7 +287,7 @@ C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 <td><a href="#vstack">vstack</a></td>
 <td>Vertically concatenate a list of images with a border.</td>
 <tr>
-</tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></table>
+</tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></table>
 <hr/>
 <h3 id="add_border"><a href="#add_border">add_border</a></h3>
 <p>
@@ -367,6 +371,22 @@ Create a channel-major image into row-major image.  This creates a copy, not a v
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
 </pre></div>
+<h3 id="generate_gdf"><a href="#generate_gdf">generate_gdf</a></h3>
+<p>
+Create an generalized squared distance field from a scalar field.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">generate_gdf</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">wrapx</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">wrapy</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="s2">"Create an generalized squared distance field from a scalar field."</span>
+    <span class="k">assert</span> <span class="n">image</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s1">'float64'</span><span class="p">,</span> <span class="s1">'Pixel values must be real'</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
+    <span class="k">assert</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'Image must be grayscale'</span>
+ <span class="n">generate_gdf</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">wrapx</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">wrapy</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="s2">"Create an generalized squared distance field from a scalar field."</span>
+    <span class="k">assert</span> <span class="n">image</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s1">'float64'</span><span class="p">,</span> <span class="s1">'Pixel values must be real'</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
+    <span class="k">assert</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'Image must be grayscale'</span>
+    <span class="k">return</span> <span class="n">_generate_gdt</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">wrapx</span><span class="p">,</span> <span class="n">wrapy</span><span class="p">)</span>
+</pre></div>
 <h3 id="generate_noise"><a href="#generate_noise">generate_noise</a></h3>
 <p>
 Generate a single-channel gradient noise image.  A frequency of 1.0 creates a single surflet across the width of the image, while a frequency of 4.0 creates a 4x4 grid such that the (2,2) surflet is centered. Noise values live within the [-1,+1] range.
@@ -399,8 +419,8 @@ Create an unsigned distance field from a boolean field.
 Compute X derivatives and Y derivatives.
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">gradient</span><span class="p">(</span><span class="n">img</span><span class="p">):</span>
-    <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">io</span><span class="o">.</span><span class="n">unshape</span><span class="p">(</span><span class="n">img</span><span class="p">))</span>
-    <span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">nx</span><span class="p">),</span> <span class="n">io</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">ny</span><span class="p">)</span>
+    <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">gradient</span><span class="p">(</span><span class="n">unshape</span><span class="p">(</span><span class="n">img</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">reshape</span><span class="p">(</span><span class="n">nx</span><span class="p">),</span> <span class="n">reshape</span><span class="p">(</span><span class="n">ny</span><span class="p">)</span>
 </pre></div>
 <h3 id="hflip"><a href="#hflip">hflip</a></h3>
 <p>

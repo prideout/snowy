@@ -178,7 +178,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/8cdfdb8">8cdfdb8</a></small>
+<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/a03ac95">a03ac95</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><strong>User's Guide</strong> | <a href="reference.html">API Reference</a></p>
 <p>Snowy is a tiny module for manipulating and generating images.</p>
@@ -226,11 +226,11 @@ Mitchell filter.</p>
 </pre></div>
 <img height="150px" src="xforms.png"/>
 <h3 id="cropping"><a href="#cropping">Cropping</a></h3>
-<p>If you need to crop an image, just use Python slicing.</p>
-<p>For example, this loads an OpenEXR image, then crops out the top half by slicing the numpy array.</p>
-<div class="highlight"><pre><span></span><span class="n">sunset</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'sunset.exr'</span><span class="p">)</span>
-<span class="n">cropped_sunset</span> <span class="o">=</span> <span class="n">sunset</span><span class="p">[:</span><span class="mi">100</span><span class="p">,:,:]</span>
-<span class="n">snowy</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">cropped_sunset</span> <span class="o">/</span> <span class="mf">50.0</span><span class="p">)</span> <span class="c1"># darken the image</span>
+<p>If you need to crop an image, just use numpy slicing.</p>
+<p>For example, this loads an OpenEXR image then crops out the top half:</p>
+<div class="highlight"><pre><span></span><span class="n">sunrise</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'sunrise.exr'</span><span class="p">)</span>
+<span class="n">cropped_sunrise</span> <span class="o">=</span> <span class="n">sunrise</span><span class="p">[:</span><span class="mi">100</span><span class="p">,:,:]</span>
+<span class="n">snowy</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">cropped_sunrise</span> <span class="o">/</span> <span class="mf">50.0</span><span class="p">)</span> <span class="c1"># darken the image</span>
 </pre></div>
 <p class="aside">By the way, if you're interested in tone mapping and other HDR operations, be sure to check
 out the <a href="https://github.com/tatsy/hydra">hydra</a> module. If you wish to simply load / store
@@ -250,7 +250,7 @@ Snowy provides <a href="reference.html#compose">compose</a> to make this easier:
 <h3 id="drop_shadows"><a href="#drop_shadows">Drop shadows</a></h3>
 <p>Combining operations like <a href="reference.html#blur">blur</a> and <a href="reference.html#compose">compose</a> can be
 used to create a drop shadow:</p>
-<div class="highlight"><pre><span></span><span class="c1"># Extend the "icon" image on all four sides to give room for blur.</span>
+<div class="highlight"><pre><span></span><span class="c1"># Extend the 100x100 snowflake image on 4 sides to give room for blur.</span>
 <span class="n">shadow</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="mi">150</span><span class="p">,</span> <span class="mi">150</span><span class="p">,</span> <span class="mi">4</span><span class="p">])</span>
 <span class="n">shadow</span><span class="p">[</span><span class="mi">25</span><span class="p">:</span><span class="o">-</span><span class="mi">25</span><span class="p">,</span><span class="mi">25</span><span class="p">:</span><span class="o">-</span><span class="mi">25</span><span class="p">,:]</span> <span class="o">=</span> <span class="n">icon</span>
 
@@ -270,14 +270,14 @@ used to create a drop shadow:</p>
 <img height="150px" src="dropshadow.png"/>
 <h3 id="gradient_noise"><a href="#gradient_noise">Gradient noise</a></h3>
 <p>Snowy's <code>generate_noise</code> function generates a single-channel image whose values are
-in [-1, +1].</p>
+in [-1, +1]. Here we create a square noise image that can be tiled horizontally:</p>
 <div class="highlight"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">generate_noise</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">seed</span><span class="o">=</span><span class="mi">42</span><span class="p">,</span> <span class="n">wrapx</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">])</span>
 <span class="n">snowy</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span>
 </pre></div>
 <img height="128px" src="noise.png"/>
 <h3 id="distance_fields"><a href="#distance_fields">Distance fields</a></h3>
-<p>This uses <code>generate_sdf</code> to create a signed distance field from a monochrome picture of two circles
+<p>This example uses <code>generate_sdf</code> to create a signed distance field from a monochrome picture of two circles
 enclosed by a square. Note the usage of <code>unitize</code> to adjust the values into the <code>[0,1]</code> range.</p>
 <div class="highlight"><pre><span></span><span class="n">circles</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'circles.png'</span><span class="p">)</span>
 <span class="n">sdf</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">unitize</span><span class="p">(</span><span class="n">snowy</span><span class="o">.</span><span class="n">generate_sdf</span><span class="p">(</span><span class="n">circles</span> <span class="o">!=</span> <span class="mf">0.0</span><span class="p">))</span>
@@ -285,10 +285,31 @@ enclosed by a square. Note the usage of <code>unitize</code> to adjust the value
 </pre></div>
 <img height="128px" src="sdf.png"/>
 <h3 id="image_generation"><a href="#image_generation">Image generation</a></h3>
-<p>TBD</p>
-<img src="gradient.png" width="150px"/>
-<br/>
-<p><img alt="" src="isles.png"/></p>
+<p>Combining Snowy's unique features with numpy can be used to create interesting procedural images.
+The following example creates an elevation map for an imaginary island.</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">create_falloff</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">0.4</span><span class="p">,</span> <span class="n">cx</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span> <span class="n">cy</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+    <span class="n">hw</span><span class="p">,</span> <span class="n">hh</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="n">w</span><span class="p">,</span> <span class="mf">0.5</span> <span class="o">/</span> <span class="n">h</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">hw</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">hw</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">hh</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">hh</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+    <span class="n">u</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">sparse</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">d2</span> <span class="o">=</span> <span class="p">(</span><span class="n">u</span><span class="o">-</span><span class="n">cx</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">v</span><span class="o">-</span><span class="n">cy</span><span class="p">)</span><span class="o">**</span><span class="mi">2</span>
+    <span class="k">return</span> <span class="mi">1</span><span class="o">-</span><span class="n">snowy</span><span class="o">.</span><span class="n">unitize</span><span class="p">(</span><span class="n">snowy</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">d2</span><span class="p">))</span>
+
+<span class="k">def</span> <span class="nf">create_island</span><span class="p">(</span><span class="n">seed</span><span class="p">,</span> <span class="n">freq</span><span class="o">=</span><span class="mf">3.5</span><span class="p">):</span>
+    <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="mi">750</span><span class="p">,</span> <span class="mi">512</span>
+    <span class="n">falloff</span> <span class="o">=</span> <span class="n">create_falloff</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">)</span>
+    <span class="n">n1</span> <span class="o">=</span> <span class="mf">1.000</span> <span class="o">*</span> <span class="n">snowy</span><span class="o">.</span><span class="n">generate_noise</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">freq</span><span class="o">*</span><span class="mi">1</span><span class="p">,</span> <span class="n">seed</span><span class="o">+</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">n2</span> <span class="o">=</span> <span class="mf">0.500</span> <span class="o">*</span> <span class="n">snowy</span><span class="o">.</span><span class="n">generate_noise</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">freq</span><span class="o">*</span><span class="mi">2</span><span class="p">,</span> <span class="n">seed</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">n3</span> <span class="o">=</span> <span class="mf">0.250</span> <span class="o">*</span> <span class="n">snowy</span><span class="o">.</span><span class="n">generate_noise</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">freq</span><span class="o">*</span><span class="mi">4</span><span class="p">,</span> <span class="n">seed</span><span class="o">+</span><span class="mi">2</span><span class="p">)</span>
+    <span class="n">n4</span> <span class="o">=</span> <span class="mf">0.125</span> <span class="o">*</span> <span class="n">snowy</span><span class="o">.</span><span class="n">generate_noise</span><span class="p">(</span><span class="n">w</span><span class="p">,</span> <span class="n">h</span><span class="p">,</span> <span class="n">freq</span><span class="o">*</span><span class="mi">8</span><span class="p">,</span> <span class="n">seed</span><span class="o">+</span><span class="mi">3</span><span class="p">)</span>
+    <span class="n">elevation</span> <span class="o">=</span> <span class="n">falloff</span> <span class="o">*</span> <span class="p">(</span><span class="n">falloff</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">n1</span> <span class="o">+</span> <span class="n">n2</span> <span class="o">+</span> <span class="n">n3</span> <span class="o">+</span> <span class="n">n4</span><span class="p">)</span>
+    <span class="n">mask</span> <span class="o">=</span> <span class="n">elevation</span> <span class="o">&lt;</span> <span class="mf">0.4</span>
+    <span class="n">elevation</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">unitize</span><span class="p">(</span><span class="n">snowy</span><span class="o">.</span><span class="n">generate_sdf</span><span class="p">(</span><span class="n">mask</span><span class="p">))</span>
+    <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mask</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">elevation</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)</span>
+
+<span class="n">snowy</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">create_island</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="s1">'island.png'</span><span class="p">)</span>
+</pre></div>
+<p><img alt="" src="island.png"/></p>
 <h2 id="wrap_modes"><a href="#wrap_modes">Wrap modes</a></h2>
 <p>TBD</p>
 <h2 id="interop"><a href="#interop">Interop</a></h2>
@@ -296,10 +317,10 @@ enclosed by a square. Note the usage of <code>unitize</code> to adjust the value
 color channels living in the trailing dimension. If you're working with another module that does not
 follow this convention, consider using one of the following interop functions.</p>
 <ul>
-<li>To add or remove the trailing 1 from the shape of grayscale images, use <a href="#reshape">reshape</a> and
-<a href="#unshape">unshape</a>.</li>
-<li>To swap color channels in or out of the leading dimension, use <a href="#to_planar">to_planar</a> and
-<a href="#from_planar">from_planar</a>.</li>
+<li>To add or remove the trailing 1 from the shape of grayscale images, use
+<a href="reference.html#reshape">reshape</a> and <a href="reference.html#unshape">unshape</a>.</li>
+<li>To swap color channels in or out of the leading dimension, use
+<a href="reference.html#to_planar">to_planar</a> and <a href="reference.html#from_planar">from_planar</a>.</li>
 <li>To cast between <code>float64</code> and other types, just use numpy. For example,
 <code>np.uint8(myimg * 255)</code> or <code>np.float64(myimg) / 255</code>.</li>
 <li>To swap rows with columns, use numpy's
