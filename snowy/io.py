@@ -6,6 +6,47 @@ import os
 import platform
 import tempfile
 
+from enum import Enum
+
+class ColorSpace(Enum):
+    LINEAR = 0
+    SRGB = 1
+    GAMMA = 2
+
+def sRGB_to_linear(s):
+   a = 0.055
+   return np.where(s <= 0.04045, s / 12.92, ((s+a) / (1+a)) ** 2.4)
+
+def linear_to_sRGB(s):
+   a = 0.055
+   return np.where(s <= 0.0031308, 12.92 * s, (1+a) * s**(1/2.4) - a)
+
+def gamma_to_linear(s):
+   return s ** 2.2
+
+def linear_to_gamma(s):
+   return s ** (1/2.2)
+
+def linearize(image, target_space=ColorSpace.SRGB):
+    """Transform colors from perceptually linear to physically linear.
+    
+    This is automatically performed when using <a href="#load">load</a>
+    on a PNG or JPEG. See also <a href="#delinearize">delinearize</a>.
+    """
+    if target_space == ColorSpace.SRGB:
+        return sRGB_to_linear(image)
+    return gamma_to_linear(image)
+
+def delinearize(image, source_space=ColorSpace.SRGB):
+    """Transform colors from physically linear to perceptually linear.
+    
+    This is automatically performed when using <a href="#save">save</a>
+    to a PNG or JPEG. See also <a href="#linearize">linearize</a>.
+    """
+    if source_space == ColorSpace.SRGB:
+        return linear_to_sRGB(image)
+    return linear_to_gamma(image)
+
 def show(image):
     """Display an image in a platform-specific way."""
     if isinstance(image, np.ndarray):
@@ -33,20 +74,27 @@ def unshape(image):
         return np.reshape(image, image.shape[:2])
     return image
 
+def _to_linear(image):
+    return linearize(np.clip(np.float64(image) / 255, 0, None))
+
+def _from_linear(image):
+    image = delinearize(np.clip(image, 0, None))
+    return np.uint8(np.clip(image * 255, 0, 255))
+
 def _load(filename: str):
     # PNG files are always loaded as RGBA because paletted byte-based
     # images with transparency are problematic. Moreover with Snowy we
     # expect the in-memory representation (floats) to not match the
     # on-disk representation (bytes).
     if filename.endswith('.png'):
-        return np.float64(imageio.imread(filename, 'PNG-PIL',
-                pilmode='RGBA')) / 255
+        return _to_linear(imageio.imread(filename, 'PNG-PIL',
+                pilmode='RGBA'))
     elif filename.endswith('.exr'):
         imageio.plugins.freeimage.download()
         return np.float64(imageio.imread(filename))
-    return np.float64(imageio.imread(filename)) / 255
+    return _to_linear(imageio.imread(filename))
 
-def load(filename: str):
+def load(filename: str) -> np.ndarray:
     """Create a numpy array from the given PNG, JPEG, or EXR image file.
 
     Regardless of the pixel format on disk, PNG / JPEG images are always
@@ -75,7 +123,7 @@ def save(image: np.ndarray, filename: str, image_format: str=None):
         image_format = 'EXR-FI'
         image = np.float32(image)
     else:
-        image = np.uint8(np.clip(image * 255, 0, 255))
+        image = _from_linear(image)
     imageio.imwrite(filename, unshape(image), image_format)
 
 def show_array(image: np.ndarray):

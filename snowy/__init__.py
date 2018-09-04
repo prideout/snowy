@@ -11,33 +11,36 @@ NEAREST = filtering.NEAREST
 TRIANGLE = filtering.TRIANGLE
 
 from . import io
+delinearize = io.delinearize
+ensure_alpha = io.ensure_alpha
+extract_alpha = io.extract_alpha
+extract_rgb = io.extract_rgb
+from_planar = io.from_planar
+linearize = io.linearize
 load = io.load
 reshape = io.reshape
 save = io.save
 show = io.show
-unshape = io.unshape
-extract_alpha = io.extract_alpha
-extract_rgb = io.extract_rgb
 to_planar = io.to_planar
-from_planar = io.from_planar
-ensure_alpha = io.ensure_alpha
+unshape = io.unshape
+ColorSpace = io.ColorSpace
 
 from . import ops
 add_border = ops.add_border
-gradient = ops.gradient
-hstack = ops.hstack
-unitize = ops.unitize
-vstack = ops.vstack
-rotate = ops.rotate
-hflip = ops.hflip
-vflip = ops.vflip
 compose = ops.compose
 compose_premultiplied = ops.compose_premultiplied
+gradient = ops.gradient
+hflip = ops.hflip
+hstack = ops.hstack
+rotate = ops.rotate
+unitize = ops.unitize
+vflip = ops.vflip
+vstack = ops.vstack
 
 from . import distance
+generate_gdf = distance.generate_gdf
 generate_sdf = distance.generate_sdf
 generate_udf = distance.generate_udf
-generate_gdf = distance.generate_gdf
 
 from . import noise
 generate_noise = noise.generate_noise

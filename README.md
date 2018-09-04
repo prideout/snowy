@@ -18,8 +18,6 @@ Painting and 2D paths are outside the scope of the library. See
 
 <!--
 
-  Fix color space issue apparent in tests/test.html
-
   Analytics
 
   Improve the island gen example
