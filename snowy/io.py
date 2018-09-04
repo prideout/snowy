@@ -84,7 +84,7 @@ def show_array(image: np.ndarray):
         show_filename(filename)
 
 def show_filename(image: str):
-    if 0 == os.system('which -s imgcat'):
+    if 0 == os.system('which imgcat >/dev/null 2>&1'):
         print("\n")
         os.system('imgcat ' + image)
     elif platform.system() == 'Darwin':

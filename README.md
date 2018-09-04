@@ -24,7 +24,7 @@ Painting and 2D paths are outside the scope of the library. See
 
   Improve the island gen example
     https://twitter.com/prideout/status/981356407202050048
-    CPCF's ?
+    CPCF's
 
   arbitrary rotation
   reduce_colors and to_svg
