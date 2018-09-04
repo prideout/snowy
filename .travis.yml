@@ -3,7 +3,7 @@ python:
   - "3.6"
 cache: pip
 install:
-  - pip install snowy beautifulsoup4 Pygments CommonMark
+  - pip install numpy beautifulsoup4 Pygments CommonMark
 script:
   - python tests/test_snowy.py
   - python tests/test_io.py
