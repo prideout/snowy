@@ -10,6 +10,6 @@ script:
   - python -m pytest -s tests/test_dist.py
 
   - pip install beautifulsoup4 Pygments CommonMark scipy
-  - python -m pytest -s docs/generate.py
+  - python docs/generate.py
 
   - python3 setup.py sdist bdist_wheel
