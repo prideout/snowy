@@ -6,5 +6,6 @@ install:
   - pip install snowy beautifulsoup4 Pygments CommonMark
 script:
   - python tests/test_snowy.py
+  - python tests/test_io.py
   - python tests/test_dist.py
   - python docs/generate.py

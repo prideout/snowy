@@ -19,6 +19,9 @@ import snowy
 
 GRAY_ISLAND = True
 
+def optimize(filename):
+    os.system('optipng ' + filename + ' >/dev/null 2>&1')
+
 def smoothstep(edge0, edge1, x):
     t = np.clip((x - edge0) / (edge1 - edge0), 0.0, 1.0)
     return t * t * (3.0 - 2.0 * t)
@@ -305,8 +308,6 @@ def generate_page(sourcefile, resultfile, genref):
 generate_page(qualify('index.md'), qualify('index.html'), False)
 generate_page(qualify('reference.md'), qualify('reference.html'), True)
 
-quit()
-
 # Test rotations and flips
 
 gibbons = snowy.load(qualify('gibbons.jpg'))
@@ -317,7 +318,7 @@ gibbons270 = snowy.rotate(gibbons, 270)
 hflipped = snowy.hflip(gibbons)
 vflipped = snowy.vflip(gibbons)
 snowy.save(snowy.hstack([gibbons, gibbons180, vflipped],
-    border_width=4, border_value=[128,0,0]), qualify("xforms.png"))
+    border_width=4, border_value=[0.5,0,0]), qualify("xforms.png"))
 
 # Test noise generation
 
@@ -337,7 +338,7 @@ source = snowy.resize(gibbons, height=200)
 blurry = snowy.blur(source, radius=4.0)
 diptych_filename = qualify('diptych.png')
 snowy.save(snowy.hstack([source, blurry]), diptych_filename)
-os.system('optipng ' + diptych_filename)
+optimize(diptych_filename)
 snowy.show(diptych_filename)
 
 # Next try color
@@ -347,7 +348,7 @@ source = snowy.resize(gibbons, height=200)
 blurry = snowy.blur(source, radius=4.0)
 diptych_filename = qualify('diptych.png')
 snowy.save(snowy.hstack([source, blurry]), diptych_filename)
-os.system('optipng ' + diptych_filename)
+optimize(diptych_filename)
 snowy.show(diptych_filename)
 
 # Moving on to magnification...
@@ -360,17 +361,16 @@ diptych_filename = qualify('diptych-parrot.png')
 parrot = snowy.hstack([nearest, mitchell])
 parrot = snowy.extract_rgb(parrot)
 snowy.save(parrot, diptych_filename)
-os.system('optipng ' + diptych_filename)
+optimize(diptych_filename)
 snowy.show(diptych_filename)
 
 # EXR cropping
 
 sunset = snowy.load(qualify('small.exr'))
-print(sunset.shape)
 sunset = sunset[:100,:,:] / 50.0
 cropped_filename = qualify('cropped-sunset.png')
 snowy.save(sunset, cropped_filename)
-os.system('optipng ' + cropped_filename)
+optimize(cropped_filename)
 snowy.show(cropped_filename)
 
 # Alpha composition
@@ -379,6 +379,7 @@ icon = snowy.load(qualify('snowflake.png'))
 icon = snowy.resize(icon, height=100)
 sunset[:100,200:300] = snowy.compose(sunset[:100,200:300], icon)
 snowy.save(sunset, qualify('composed.png'))
+optimize(qualify('composed.png'))
 snowy.show(sunset)
 
 # Drop shadows
@@ -396,6 +397,7 @@ shadow = snowy.compose(shadow, shadow)
 
 dropshadow = snowy.compose(shadow, white)
 snowy.save(dropshadow, qualify('dropshadow.png'))
+optimize(qualify('dropshadow.png'))
 
 STEPPED_PALETTE = [
     000, 0x203060 ,
@@ -486,5 +488,6 @@ for i in range(6):
     isle = snowy.resize(isle, width=isle.shape[1] // 3)
     isles.append(isle)
 snowy.save(isles[2], qualify('island.png'))
+optimize(qualify('island.png'))
 isles = snowy.hstack(isles)
 snowy.save(isles, qualify('isles.png'))

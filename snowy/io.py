@@ -35,43 +35,53 @@ def unshape(image):
 def _load(filename: str):
     # PNG files are always loaded as RGBA because paletted byte-based
     # images with transparency are problematic. Moreover with Snowy we
-    # decided that it is fine for the in-memory representation (floats)
-    # to not match the on-disk representation (bytes).
+    # expect the in-memory representation (floats) to not match the
+    # on-disk representation (bytes).
     if filename.endswith('.png'):
-        return imageio.imread(filename, 'PNG-PIL',
-                pilmode='RGBA') / 255.0
+        return np.float64(imageio.imread(filename, 'PNG-PIL',
+                pilmode='RGBA')) / 255
     elif filename.endswith('.exr'):
         imageio.plugins.freeimage.download()
-    return imageio.imread(filename)
+        return np.float64(imageio.imread(filename))
+    return np.float64(imageio.imread(filename)) / 255
 
 def load(filename: str):
-    """Create a numpy array from the given image file.
+    """Create a numpy array from the given PNG, JPEG, or EXR image file.
 
-    Regardless of the pixel format on disk, PNG pixels are always
+    Regardless of the pixel format on disk, PNG / JPEG images are always
     divided by 255.0 and extended to 4 color channels before being
     returned to the caller.
 
     See also <a href="#reshape">reshape</a> (which this calls) and
     <a href="#save">save</a>.
     """
+    assert filename.endswith('.png') or filename.endswith('.jpeg') or \
+            filename.endswith('.jpg') or filename.endswith('.exr')
     return reshape(np.float64(_load(filename)))
 
 def save(image: np.ndarray, filename: str, image_format: str=None):
-    """Save a numpy array as an image file at the given path.
+    """Export a numpy array to a PNG, JPEG, or EXR image file.
+
+    This function automatically multiplies PNG / JPEG images by 255.
 
     See also <a href="#unshape">unshape</a> (which this calls) and
     <a href="#load">load</a>.
     """
+    assert filename.endswith('.png') or filename.endswith('.jpeg') or \
+            filename.endswith('.jpg') or filename.endswith('.exr')
     if filename.endswith('.exr'):
         imageio.plugins.freeimage.download()
         image_format = 'EXR-FI'
         image = np.float32(image)
+    else:
+        image = np.uint8(np.clip(image * 255, 0, 255))
     imageio.imwrite(filename, unshape(image), image_format)
 
 def show_array(image: np.ndarray):
     with tempfile.NamedTemporaryFile() as fp:
-        imageio.imwrite(fp.name, image, format='PNG-PIL')
-        show(fp.name)
+        filename = fp.name + '.png'
+        save(image, filename)
+        show_filename(filename)
 
 def show_filename(image: str):
     if 0 == os.system('which -s imgcat'):

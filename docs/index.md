@@ -62,7 +62,7 @@ gibbons = snowy.load('gibbons.jpg')
 rotated = snowy.rotate(gibbons, 180)
 flipped = snowy.vflip(gibbons)
 triptych = snowy.hstack([gibbons, rotated, flipped],
-    border_width=4, border_value=[128,0,0])
+    border_width=4, border_value=[0.5,0,0])
 ```
 
 <img src="xforms.png" height="150px">

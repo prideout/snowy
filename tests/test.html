@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>snowy test</title>
+<style>
+img {
+    /* image-rendering: pixelated; */
+    border: solid 2px;
+}
+p.horizontal { font-size: 0 }
+.horizontal img { border-left: 0; }
+.horizontal img:first-of-type { border-left: solid 2px; }
+.vertical img { border-top: 0; display: block }
+.vertical img:first-of-type { border-top: solid 2px; }
+</style>
+</head>
+<body>
+
+<p class="vertical">
+<img src="gamma_dalai_lama_gray.jpg">
+<img src="gamma_dalai_lama_gray.jpg" height="32px">
+<img src="small_dalai_lama.png">
+</p>
+
+</body>
+</html>

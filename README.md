@@ -18,21 +18,9 @@ Painting and 2D paths are outside the scope of the library. See
 
 <!--
 
-  Blurry images look brighter in the docs, probably due to float normalization.  Please fix!
+  Fix color space issue apparent in tests/test.html
 
-  Color space
-      tests/gamma_dalai_lama_gray.jpg
-      Just a modicum ... at least in load / save -- is the blurry poodle slightly dark?
-      Create a page in "test" and use chrome (test_colorspace.py)
-      Why isn't save doing a "img * 255.0" for PNG images?
-
-  Bug fix
-      when saving a solid color image, I think this exception can be thrown:
-      "Max value == min value, ambiguous given dtype"
-
-  Warning Fix
-      Typing the simple example from https://github.prideout.net/snowy/#gradient_noise results in:
-      "Lossy conversion from float64 to uint8."
+  Analytics
 
   Improve the island gen example
     https://twitter.com/prideout/status/981356407202050048
