@@ -5,7 +5,7 @@ cache: pip
 install:
   - pip install numpy beautifulsoup4 Pygments CommonMark
 script:
-  - python tests/test_snowy.py
-  - python tests/test_io.py
-  - python tests/test_dist.py
-  - python docs/generate.py
+  - ./tests/test_snowy.py
+  - ./tests/test_io.py
+  - ./tests/test_dist.py
+  - ./docs/generate.py
