@@ -90,7 +90,9 @@ def show_filename(image: str):
         os.system('imgcat ' + image)
     elif platform.system() == 'Darwin':
         os.system('open ' + image)
-    elif platform.system() == 'Linux':
+    elif platform.system() == 'Linux' and \
+            os.environ.get('DESKTOP_SESSION'):
+        print(os.environ.get('DESKTOP_SESSION')) # TODO: Remove
         os.system('xdg-open ' + image)
     else:
         print('Generated ' + image)
