@@ -194,7 +194,7 @@ Snowy's [blur](reference.html#blur), [resize](reference.html#resize),
 functions all take `wrapx` and `wrapy` arguments, both of which default to `False`. These arguments
 tell Snowy how to sample from outside the boundaries of the source image or noise function.
 
-To help understand these arguments, consider this wrappable image and its 2x2 tiling:
+To help understand these arguments, consider this tileable image and its 2x2 tiling:
 
 <img src="ground.jpg" height="128px">
 <br>

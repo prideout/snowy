@@ -94,11 +94,20 @@ create_wrap_figures()
 result = subprocess.run('git rev-parse HEAD'.split(), stdout=subprocess.PIPE)
 sha = result.stdout.strip().decode("utf-8")[:7]
 sha = f'<a href="https://github.com/prideout/snowy/tree/{sha}">{sha}</a>'
-version = f'<small>v0.0.1 ~ {sha}</small>'
+version = f'<small>v0.0.2 ~ {sha}</small>'
 
 header = '''
 <!DOCTYPE html>
 <head>
+<script async
+    src="https://www.googletagmanager.com/gtag/js?id=UA-19914519-2">
+</script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-19914519-2');
+</script>
 <title>Snowy</title>
 <link rel="icon" href="snowflake64.png" type="image/x-icon">
 <meta name=viewport content='width=device-width,initial-scale=1'>
@@ -111,7 +120,7 @@ header = '''
 <meta property="og:title" content="prideout/snowy">
 <meta property="og:url" content="https://github.prideout.net/snowy/">
 <meta property="og:description"
-    content="Small Python 3 module for manipulating and generating images.">
+content="Small Python 3 module for manipulating and generating images.">
 
 <link href="https://fonts.googleapis.com/css?family=Alegreya"
     rel="stylesheet">

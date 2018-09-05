@@ -2,6 +2,14 @@
 <!DOCTYPE html>
 
 <head>
+<script async="" src="https://www.googletagmanager.com/gtag/js?id=UA-19914519-2">
+</script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'UA-19914519-2');
+</script>
 <title>Snowy</title>
 <link href="snowflake64.png" rel="icon" type="image/x-icon"/>
 <meta content="width=device-width,initial-scale=1" name="viewport"/>
@@ -184,7 +192,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.1 ~ <a href="https://github.com/prideout/snowy/tree/03d2dbc">03d2dbc</a></small>
+<small>v0.0.2 ~ <a href="https://github.com/prideout/snowy/tree/4acfd4a">4acfd4a</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><strong>User's Guide</strong> | <a href="reference.html">API Reference</a></p>
 <p>Snowy is a tiny module for manipulating and generating images.</p>
@@ -321,7 +329,7 @@ The following example creates an elevation map for an imaginary island.</p>
 <a href="reference.html#generate_noise">generate_noise</a>, and <a href="reference.html#generate_sdf">generate_sdf</a>
 functions all take <code>wrapx</code> and <code>wrapy</code> arguments, both of which default to <code>False</code>. These arguments
 tell Snowy how to sample from outside the boundaries of the source image or noise function.</p>
-<p>To help understand these arguments, consider this wrappable image and its 2x2 tiling:</p>
+<p>To help understand these arguments, consider this tileable image and its 2x2 tiling:</p>
 <img height="128px" src="ground.jpg"/>
 <br/>
 <img height="256px" src="ground2x2.jpg"/>

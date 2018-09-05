@@ -18,8 +18,6 @@ Painting and 2D paths are outside the scope of the library. See
 
 <!--
 
-  Analytics
-
   Improve the island gen example
     https://twitter.com/prideout/status/981356407202050048
     CPCF's
