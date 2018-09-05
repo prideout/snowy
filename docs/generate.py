@@ -94,7 +94,7 @@ create_wrap_figures()
 result = subprocess.run('git rev-parse HEAD'.split(), stdout=subprocess.PIPE)
 sha = result.stdout.strip().decode("utf-8")[:7]
 sha = f'<a href="https://github.com/prideout/snowy/tree/{sha}">{sha}</a>'
-version = f'<small>v0.0.2 ~ {sha}</small>'
+version = f'<small>v0.0.3 ~ {sha}</small>'
 
 header = '''
 <!DOCTYPE html>
