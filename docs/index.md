@@ -34,7 +34,7 @@ images.
 ```python
 import snowy
 
-source = snowy.open('poodle.png')
+source = snowy.load('poodle.png')
 source = snowy.resize(source, height=200)
 blurry = snowy.blur(source, radius=4.0)
 snowy.save(snowy.hstack([source, blurry]), 'diptych.png')
