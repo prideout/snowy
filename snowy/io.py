@@ -4,6 +4,7 @@ import imageio
 import numpy as np
 import os
 import platform
+import sys
 import tempfile
 
 from enum import Enum
@@ -136,11 +137,12 @@ def show_filename(image: str):
     if 0 == os.system('which imgcat >/dev/null 2>&1'):
         print("\n")
         os.system('imgcat ' + image)
+    elif 'pytest' in sys.modules:
+        return
     elif platform.system() == 'Darwin':
         os.system('open ' + image)
     elif platform.system() == 'Linux' and \
             os.environ.get('DESKTOP_SESSION'):
-        print(os.environ.get('DESKTOP_SESSION')) # TODO: Remove
         os.system('xdg-open ' + image)
     else:
         print('Generated ' + image)
