@@ -192,7 +192,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.3 ~ <a href="https://github.com/prideout/snowy/tree/691f8dd">691f8dd</a></small>
+<small>v0.0.3 ~ <a href="https://github.com/prideout/snowy/tree/4944c4d">4944c4d</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><strong>User's Guide</strong> | <a href="reference.html">API Reference</a></p>
 <p>Snowy is a tiny module for manipulating and generating images.</p>
@@ -216,7 +216,7 @@ modules (see <a href="#interop">interop</a>).</p>
 images.</p>
 <div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">snowy</span>
 
-<span class="n">source</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">'poodle.png'</span><span class="p">)</span>
+<span class="n">source</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'poodle.png'</span><span class="p">)</span>
 <span class="n">source</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
 <span class="n">blurry</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">blur</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>
 <span class="n">snowy</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">snowy</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">source</span><span class="p">,</span> <span class="n">blurry</span><span class="p">]),</span> <span class="s1">'diptych.png'</span><span class="p">)</span>
