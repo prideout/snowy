@@ -62,13 +62,11 @@ def test_gdf():
 
 def test_tweet():
     import snowy as sn, numpy as np
-    img = sn.generate_noise(2000, 500, seed=2, frequency=5, wrapx=True)
-    sdf = snowy.generate_sdf(img < 0.0, wrapx=True, wrapy=False)
-    img = 0.5 + 0.5 * np.sign(img) - img
-    get_mask = lambda L, U: np.logical_and(sdf > L, sdf < U)
-    get_contour = lambda L, U: np.where(get_mask(L, U), img, 0)
-    img -= get_contour(20, 30)
-    img -= get_contour(60, 70)
-    img -= get_contour(100, 110)
-    sn.show(sn.resize(img, height=100, wrapx=True, wrapy=False))
-    sn.show(sn.resize(np.hstack([img, img]), height=200, wrapx=True))
+    im = sn.generate_noise(2000, 500, 5, seed=2, wrapx=True)
+    df = sn.generate_sdf(im < 0.0, wrapx=True)
+    im = 0.5 + 0.5 * np.sign(im) - im
+    cl = lambda L, U: np.where(np.logical_and(df>L, df<U), -im, 0)
+    im += cl(20, 30) + cl(60, 70) + cl(100, 110)
+
+    sn.show(sn.resize(im, height=100, wrapx=True))
+    sn.show(sn.resize(np.hstack([im, im]), height=200, wrapx=True))
