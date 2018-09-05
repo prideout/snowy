@@ -67,10 +67,8 @@ def test_tweet():
     img = 0.5 + 0.5 * np.sign(img) - img
     get_mask = lambda L, U: np.logical_and(sdf > L, sdf < U)
     get_contour = lambda L, U: np.where(get_mask(L, U), img, 0)
-    sn.show(sn.resize(img, height=100, wrapx=True, wrapy=False))
     img -= get_contour(20, 30)
     img -= get_contour(60, 70)
     img -= get_contour(100, 110)
     sn.show(sn.resize(img, height=100, wrapx=True, wrapy=False))
     sn.show(sn.resize(np.hstack([img, img]), height=200, wrapx=True))
-    # sn.save(sn.resize(img, height=200), "~/Desktop/tweet.png")

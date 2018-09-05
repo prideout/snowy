@@ -108,7 +108,12 @@ def edt(f, d, z, v, n, wrap):
     # Go back through the parabolas in the envelope and evaluate them
     # in order to populate the distance values at each X coordinate.
     k = 0
-    for q in range(0, upper):
+    lower = n/2 if wrap else 0
+    upper = 3*n/2 if wrap else n
+    for q in range(lower, upper):
         while z[k + 1] < float(q):
             k = k + 1
-        d[q % n] = (q - v[k]) * (q - v[k]) + f[v[k] % n]
+        vmod = v[k] % n
+        qmod = q % n
+        dx = q - v[k]
+        d[qmod] = dx * dx + f[vmod]

@@ -82,3 +82,11 @@ def test_tileable_distance():
     stack2 = np.hstack([sdf, sdf, grad, grad])
 
     snowy.show(snowy.resize(np.vstack([stack2, stack2]), 600, 200))
+
+    get_mask = lambda L, U: np.logical_and(sdf > L, sdf < U)
+    get_contour = lambda L, U: np.where(get_mask(L, U), sdf, 0)
+    sdf -= get_contour(.20, .25)
+    sdf -= get_contour(.60, .65)
+    sdf -= get_contour(.90, .95)
+
+    snowy.show(snowy.resize(np.hstack([sdf, sdf, sdf, sdf]), height=300))
