@@ -101,8 +101,8 @@ def load(filename: str) -> np.ndarray:
     divided by 255.0 and extended to 4 color channels before being
     returned to the caller.
 
-    See also <a href="#reshape">reshape</a> (which this calls) and
-    <a href="#save">save</a>.
+    See also <a href="#reshape">reshape</a> and
+    <a href="#linearize">linearize</a>  (which this calls).
     """
     assert filename.endswith('.png') or filename.endswith('.jpeg') or \
             filename.endswith('.jpg') or filename.endswith('.exr')
@@ -113,8 +113,8 @@ def save(image: np.ndarray, filename: str, image_format: str=None):
 
     This function automatically multiplies PNG / JPEG images by 255.
 
-    See also <a href="#unshape">unshape</a> (which this calls) and
-    <a href="#load">load</a>.
+    See also <a href="#unshape">unshape</a> and
+    <a href="#delinearize">delinearize</a> (which this calls).
     """
     assert filename.endswith('.png') or filename.endswith('.jpeg') or \
             filename.endswith('.jpg') or filename.endswith('.exr')

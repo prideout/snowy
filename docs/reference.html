@@ -192,7 +192,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.3 ~ <a href="https://github.com/prideout/snowy/tree/75a0d28">75a0d28</a></small>
+<small>v0.0.3 ~ <a href="https://github.com/prideout/snowy/tree/691f8dd">691f8dd</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><a href="index.html">User's Guide</a> | <strong>API Reference</strong></p>
 <hr/>
@@ -467,7 +467,7 @@ Horizontally mirror the given image.
 </pre></div>
 <h3 id="hstack"><a href="#hstack">hstack</a></h3>
 <p>
-Horizontally concatenate a list of images with a border.  This is similar to numpy's <code>hstack</code> except that it adds a border around each image. The borders can be controlled with the optional <code>border_width</code> and <code>border_value</code> arguments. See also <a href="vstack"> vstack</a>.
+Horizontally concatenate a list of images with a border.  This is similar to numpy's <code>hstack</code> except that it adds a border around each image. The borders can be controlled with the optional <code>border_width</code> and <code>border_value</code> arguments. See also <a href="#vstack"> vstack</a>.
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">hstack</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">border_width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">border_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">border_width</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>
@@ -489,7 +489,7 @@ Transform colors from perceptually linear to physically linear.  This is automat
 </pre></div>
 <h3 id="load"><a href="#load">load</a></h3>
 <p>
-Create a numpy array from the given PNG, JPEG, or EXR image file.  Regardless of the pixel format on disk, PNG / JPEG images are always divided by 255.0 and extended to 4 color channels before being returned to the caller.  See also <a href="#reshape">reshape</a> (which this calls) and <a href="#save">save</a>.
+Create a numpy array from the given PNG, JPEG, or EXR image file.  Regardless of the pixel format on disk, PNG / JPEG images are always divided by 255.0 and extended to 4 color channels before being returned to the caller.  See also <a href="#reshape">reshape</a> and <a href="#linearize">linearize</a>  (which this calls).
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="k">assert</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.png'</span><span class="p">)</span> <span class="ow">or</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.jpeg'</span><span class="p">)</span> <span class="ow">or</span> \
@@ -544,7 +544,7 @@ Rotate image counter-clockwise by a multiple of 90 degrees.
 </pre></div>
 <h3 id="save"><a href="#save">save</a></h3>
 <p>
-Export a numpy array to a PNG, JPEG, or EXR image file.  This function automatically multiplies PNG / JPEG images by 255.  See also <a href="#unshape">unshape</a> (which this calls) and <a href="#load">load</a>.
+Export a numpy array to a PNG, JPEG, or EXR image file.  This function automatically multiplies PNG / JPEG images by 255.  See also <a href="#unshape">unshape</a> and <a href="#delinearize">delinearize</a> (which this calls).
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">save</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">image_format</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="k">assert</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.png'</span><span class="p">)</span> <span class="ow">or</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.jpeg'</span><span class="p">)</span> <span class="ow">or</span> \
@@ -608,7 +608,7 @@ Vertically mirror the given image.
 </pre></div>
 <h3 id="vstack"><a href="#vstack">vstack</a></h3>
 <p>
-Vertically concatenate a list of images with a border.  This is similar to numpy's <code>vstack</code> except that it adds a border around each image. The borders can be controlled with the optional <code>border_width</code> and <code>border_value</code> arguments. See also <a href="hstack"> hstack</a>.
+Vertically concatenate a list of images with a border.  This is similar to numpy's <code>vstack</code> except that it adds a border around each image. The borders can be controlled with the optional <code>border_width</code> and <code>border_value</code> arguments. See also <a href="#hstack"> hstack</a>.
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">vstack</span><span class="p">(</span><span class="n">images</span><span class="p">,</span> <span class="n">border_width</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">border_value</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">border_width</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span> <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="n">images</span><span class="p">)</span>

@@ -57,7 +57,7 @@ def hstack(images, border_width=2, border_value=0):
     This is similar to numpy's <code>hstack</code> except that it adds
     a border around each image. The borders can be controlled
     with the optional <code>border_width</code> and
-    <code>border_value</code> arguments. See also <a href="vstack">
+    <code>border_value</code> arguments. See also <a href="#vstack">
     vstack</a>.
     """
     if border_width == 0: return np.hstack(images)
@@ -74,7 +74,7 @@ def vstack(images, border_width=2, border_value=0):
     This is similar to numpy's <code>vstack</code> except that it adds
     a border around each image. The borders can be controlled
     with the optional <code>border_width</code> and
-    <code>border_value</code> arguments. See also <a href="hstack">
+    <code>border_value</code> arguments. See also <a href="#hstack">
     hstack</a>.
     """
     if border_width == 0: return np.vstack(images)

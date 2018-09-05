@@ -97,7 +97,7 @@ Snowy provides [compose](reference.html#compose) to make this easier:
 
 ```python
 icon = snowy.load('snowflake.png')
-icon = snow.resize(snowflake, height=100)
+icon = snowy.resize(snowflake, height=100)
 sunset[:100,200:300] = snowy.compose(sunset[:100,200:300], icon)
 snowy.show(sunset)
 ```
