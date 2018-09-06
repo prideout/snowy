@@ -192,7 +192,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.3 ~ <a href="https://github.com/prideout/snowy/tree/4944c4d">4944c4d</a></small>
+<small>v0.0.3 ~ <a href="https://github.com/prideout/snowy/tree/59954b6">59954b6</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><strong>User's Guide</strong> | <a href="reference.html">API Reference</a></p>
 <p>Snowy is a tiny module for manipulating and generating images.</p>
@@ -290,6 +290,8 @@ in [-1, +1]. Here we create a square noise image that can be tiled horizontally
 <span class="n">snowy</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="mf">0.5</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">n</span><span class="p">)</span>
 </pre></div>
 <img height="128px" src="noise.png"/>
+<p class="aside">If you're interested in other types of noise, or if you need a super-fast noise generator, you might
+want to try <a href="https://github.com/robbmcleod/pyfastnoisesimd">pyfastnoisesimd</a>.</p>
 <h3 id="distance_fields"><a href="#distance_fields">Distance fields</a></h3>
 <p>This example uses <code>generate_sdf</code> to create a signed distance field from a monochrome picture of two circles
 enclosed by a square. Note the usage of <code>unitize</code> to adjust the values into the <code>[0,1]</code> range.</p>

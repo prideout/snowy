@@ -143,6 +143,11 @@ snowy.show(0.5 + 0.5 * n)
 
 <img src="noise.png" height="128px">
 
+#### aside
+
+If you're interested in other types of noise, or if you need a super-fast noise generator, you might
+want to try [pyfastnoisesimd](https://github.com/robbmcleod/pyfastnoisesimd).
+
 ### Distance fields
 
 This example uses `generate_sdf` to create a signed distance field from a monochrome picture of two circles
