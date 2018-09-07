@@ -18,20 +18,32 @@ Painting and 2D paths are outside the scope of the library. See
 
 <!--
 
-  Improve the island gen example
-    https://twitter.com/prideout/status/981356407202050048
-    CPCF's
+  help(snowy) is not great.
+
+  API Change:
+    load / save should be import / export because they do a lot of manip
+      such as 4-channel extension, delinearization, etc.
+      Also: export should not take an imageio string. Instead it should have a bool
+    for delinearization.
 
   arbitrary rotation
-  reduce_colors and to_svg
+
+  CPCF's
+
+  height field AO
+
+  variable radius blur (radius multiplier is a fn not a constant)
+    test with a distance field + gradient
+
+  prefiltering as seen in docs/hoppe
+
+  ---
+
+  reduce_colors
   io can have create_movie
       heat wave example
       brownian loop zoom example
   io can have generate_gallery for making HTML, and optional forced width/height/filter
-  height field AO
-  variable radius blur (radius multiplier is a fn not a constant)
-    test with a distance field + gradient
-  prefiltering as seen in docs/hoppe
   pixel art scaling algorithm(s)
   add fractal.py
       mandelbrot example from numba
