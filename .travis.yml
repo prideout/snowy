@@ -3,11 +3,8 @@ python:
   - "3.6"
 cache: pip
 install:
-  - pip install numpy imageio numba
+  - pip install numpy imageio numba beautifulsoup4 Pygments CommonMark scipy
 script:
   - python -m pytest
-
-  - pip install beautifulsoup4 Pygments CommonMark scipy
   - python docs/generate.py
-
   - python3 setup.py sdist bdist_wheel
