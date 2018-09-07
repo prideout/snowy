@@ -6,7 +6,7 @@ from pygments import highlight
 from pygments.formatters import HtmlFormatter
 from pygments.lexers import PythonLexer
 
-import CommonMark
+import commonmark
 import inspect
 import numpy as np
 import os
@@ -230,7 +230,7 @@ def generate_page(sourcefile, resultfile, genref):
 
     # Generate html DOM from markdown.
     markdown = open(sourcefile).read()
-    htmldoc = CommonMark.commonmark(markdown)
+    htmldoc = commonmark.commonmark(markdown)
     soup = BeautifulSoup(htmldoc, 'html.parser')
 
     # Remove comments.
