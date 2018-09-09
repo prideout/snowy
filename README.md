@@ -18,8 +18,6 @@ Painting and 2D paths are outside the scope of the library. See
 
 <!--
 
-  better way to show sha in index.html?
-
   Make a video with iterm2 and ipython (or bpython or ptpython)
 
   CPCF's
@@ -51,9 +49,9 @@ Painting and 2D paths are outside the scope of the library. See
 Making a release:
 
   1. Update the version # in generate.py and setup.py, then run generate.py
-  2. git push
-  3. python3 setup.py sdist bdist_wheel
-  4. twine upload dist/*
+  2. python3 setup.py sdist bdist_wheel
+  3. twine upload dist/*
+  4. git push
 
   consider using travis for this:
       https://docs.travis-ci.com/user/deployment/pypi/

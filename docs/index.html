@@ -192,7 +192,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.3 ~ <a href="https://github.com/prideout/snowy/tree/59954b6">59954b6</a></small>
+<small>v0.0.4 ~ <a href="https://github.com/prideout/snowy/tree/ca942f6">ca942f6</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><strong>User's Guide</strong> | <a href="reference.html">API Reference</a></p>
 <p>Snowy is a tiny module for manipulating and generating images.</p>
@@ -219,7 +219,7 @@ images.</p>
 <span class="n">source</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s1">'poodle.png'</span><span class="p">)</span>
 <span class="n">source</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">resize</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">200</span><span class="p">)</span>
 <span class="n">blurry</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">blur</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">radius</span><span class="o">=</span><span class="mf">4.0</span><span class="p">)</span>
-<span class="n">snowy</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">snowy</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">source</span><span class="p">,</span> <span class="n">blurry</span><span class="p">]),</span> <span class="s1">'diptych.png'</span><span class="p">)</span>
+<span class="n">snowy</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">snowy</span><span class="o">.</span><span class="n">hstack</span><span class="p">([</span><span class="n">source</span><span class="p">,</span> <span class="n">blurry</span><span class="p">]),</span> <span class="s1">'diptych.png'</span><span class="p">)</span>
 </pre></div>
 <img height="150px" src="diptych.png"/>
 <p>The next snippet first magnifies an image using a nearest-neighbor filter, then using the default
@@ -323,7 +323,7 @@ The following example creates an elevation map for an imaginary island.</p>
     <span class="n">elevation</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">unitize</span><span class="p">(</span><span class="n">snowy</span><span class="o">.</span><span class="n">generate_sdf</span><span class="p">(</span><span class="n">mask</span><span class="p">))</span>
     <span class="k">return</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">mask</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">power</span><span class="p">(</span><span class="n">elevation</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)</span>
 
-<span class="n">snowy</span><span class="o">.</span><span class="n">save</span><span class="p">(</span><span class="n">create_island</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="s1">'island.png'</span><span class="p">)</span>
+<span class="n">snowy</span><span class="o">.</span><span class="n">export</span><span class="p">(</span><span class="n">create_island</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span> <span class="s1">'island.png'</span><span class="p">)</span>
 </pre></div>
 <p><img alt="" src="island.png"/></p>
 <h2 id="wrap_modes"><a href="#wrap_modes">Wrap modes</a></h2>
