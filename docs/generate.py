@@ -280,6 +280,9 @@ def generate_page(sourcefile, resultfile, genref):
             module = inspect.getmodule(value)
             if not module.__name__.startswith('snowy'):
                 continue
+            deprecated = name == 'save'
+            if deprecated:
+                continue
             doc = inspect.getdoc(value)
             src = inspect.getsource(value)
             dsbegin = src.find(r'"""')

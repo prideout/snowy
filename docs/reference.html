@@ -192,7 +192,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.4 ~ <a href="https://github.com/prideout/snowy/tree/ca942f6">ca942f6</a></small>
+<small>v0.0.4 ~ <a href="https://github.com/prideout/snowy/tree/bba4c99">bba4c99</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><a href="index.html">User's Guide</a> | <strong>API Reference</strong></p>
 <hr/>
@@ -286,10 +286,6 @@ C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 <td>Rotate image counter-clockwise by a multiple of 90 degrees.</td>
 <tr>
 <tr>
-<td><a href="#save">save</a></td>
-<td>Export a numpy array to a PNG, JPEG, or EXR image file.</td>
-<tr>
-<tr>
 <td><a href="#show">show</a></td>
 <td>Display an image in a platform-specific way.</td>
 <tr>
@@ -313,7 +309,7 @@ C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 <td><a href="#vstack">vstack</a></td>
 <td>Vertically concatenate a list of images with a border.</td>
 <tr>
-</tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></table>
+</tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></table>
 <hr/>
 <h3 id="add_border"><a href="#add_border">add_border</a></h3>
 <p>
@@ -554,15 +550,6 @@ Rotate image counter-clockwise by a multiple of 90 degrees.
     <span class="k">else</span><span class="p">:</span>
         <span class="k">assert</span> <span class="bp">False</span><span class="p">,</span> <span class="s1">'Angle must be a multiple of 90.'</span>
     <span class="k">return</span> <span class="n">result</span>
-</pre></div>
-<h3 id="save"><a href="#save">save</a></h3>
-<p>
-Export a numpy array to a PNG, JPEG, or EXR image file.  This function automatically multiplies PNG / JPEG images by 255.  See also <a href="#unshape">unshape</a> and <a href="#delinearize">delinearize</a> (which this calls).
-</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">export</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">delinearize</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
-    <span class="k">assert</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.png'</span><span class="p">)</span> <span class="ow">or</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.jpeg'</span><span class="p">)</span> <span class="ow">or</span> \
-            <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.jpg'</span><span class="p">)</span> <span class="ow">or</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.exr'</span><span class="p">)</span>
-    <span class="n">_export</span><span class="p">(</span><span class="n">image</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">delinearize</span><span class="p">)</span>
 </pre></div>
 <h3 id="show"><a href="#show">show</a></h3>
 <p>
