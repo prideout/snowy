@@ -277,6 +277,9 @@ def generate_page(sourcefile, resultfile, genref):
                 continue
             if not inspect.isfunction(value):
                 continue
+            module = inspect.getmodule(value)
+            if not module.__name__.startswith('snowy'):
+                continue
             doc = inspect.getdoc(value)
             src = inspect.getsource(value)
             dsbegin = src.find(r'"""')

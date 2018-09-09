@@ -48,10 +48,10 @@ def _noise(width, height, frequency, seed, wrapx, wrapy, offset):
             "wrapy requires frequency*width/height to be an integer"
         j0 = j0 % int(maxy)
         j1 = j1 % int(maxy)
-    grad00 = gradient(table, i0, j0)
-    grad01 = gradient(table, i0, j1)
-    grad10 = gradient(table, i1, j0)
-    grad11 = gradient(table, i1, j1)
+    grad00 = _gradient(table, i0, j0)
+    grad01 = _gradient(table, i0, j1)
+    grad10 = _gradient(table, i1, j0)
+    grad11 = _gradient(table, i1, j1)
 
     va = dot(x0, y0, grad00[0], grad00[1])
     vb = dot(x1, y0, grad10[0], grad10[1])
@@ -74,7 +74,7 @@ class Noise:
         theta = np.linspace(0, math.tau, self.size, endpoint=False)
         self.gradients = [np.cos(theta), np.sin(theta)]
 
-def gradient(table: Noise, i, j):
+def _gradient(table: Noise, i, j):
     perm, mask = table.indices, table.mask
     u, v = table.gradients
     hash = perm[np.bitwise_and(perm[np.bitwise_and(i, mask)] + j, mask)]

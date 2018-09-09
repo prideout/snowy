@@ -1,46 +1,49 @@
-"""Tiny module for manipulating and generating floating-point images."""
+"""Tiny module for manipulating and generating floating-point images.
 
-from . import filtering
-blur = filtering.blur
-resize = filtering.resize
-GAUSSIAN = filtering.GAUSSIAN
-HERMITE = filtering.HERMITE
-LANCZOS = filtering.LANCZOS
-MITCHELL = filtering.MITCHELL
-NEAREST = filtering.NEAREST
-TRIANGLE = filtering.TRIANGLE
+The Snowy API is intentionally flat and only defines functions, no
+classes. Users should simply import the top-level package, not any of
+its submodules.
+"""
 
-from . import io
-delinearize = io.delinearize
-ensure_alpha = io.ensure_alpha
-extract_alpha = io.extract_alpha
-extract_rgb = io.extract_rgb
-from_planar = io.from_planar
-linearize = io.linearize
-load = io.load
-reshape = io.reshape
-save = io.save
-show = io.show
-to_planar = io.to_planar
-unshape = io.unshape
-ColorSpace = io.ColorSpace
+from .filtering import *
+from .io import *
+from .ops import *
+from .distance import *
+from .noise import *
 
-from . import ops
-add_border = ops.add_border
-compose = ops.compose
-compose_premultiplied = ops.compose_premultiplied
-gradient = ops.gradient
-hflip = ops.hflip
-hstack = ops.hstack
-rotate = ops.rotate
-unitize = ops.unitize
-vflip = ops.vflip
-vstack = ops.vstack
+__all__ = '''
+GAUSSIAN HERMITE LANCZOS MITCHELL NEAREST TRIANGLE
+blur resize
 
-from . import distance
-generate_gdf = distance.generate_gdf
-generate_sdf = distance.generate_sdf
-generate_udf = distance.generate_udf
+LINEAR SRGB GAMMA
+delinearize
+ensure_alpha
+extract_alpha
+extract_rgb
+from_planar
+linearize
+load
+reshape
+save
+show
+to_planar
+unshape
+ColorSpace
 
-from . import noise
-generate_noise = noise.generate_noise
+add_border
+compose
+compose_premultiplied
+gradient
+hflip
+hstack
+rotate
+unitize
+vflip
+vstack
+
+generate_gdf
+generate_sdf
+generate_udf
+
+generate_noise
+'''.split()

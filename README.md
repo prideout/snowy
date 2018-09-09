@@ -18,13 +18,16 @@ Painting and 2D paths are outside the scope of the library. See
 
 <!--
 
-  help(snowy) is not great.
-
   API Change:
-    load / save should be import / export because they do a lot of manip
+    deprecate load/save, but do not remove
+    rename to import / export because they do a lot of manip
       such as 4-channel extension, delinearization, etc.
       Also: export should not take an imageio string. Instead it should have a bool
     for delinearization.
+
+  Make a video with iterm2 and ipython (or bpython or ptpython)
+
+  ---
 
   arbitrary rotation
 

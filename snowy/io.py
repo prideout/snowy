@@ -7,12 +7,9 @@ import platform
 import sys
 import tempfile
 
-from enum import Enum
-
-class ColorSpace(Enum):
-    LINEAR = 0
-    SRGB = 1
-    GAMMA = 2
+LINEAR = 0
+SRGB = 1
+GAMMA = 2
 
 def sRGB_to_linear(s):
    a = 0.055
@@ -28,23 +25,23 @@ def gamma_to_linear(s):
 def linear_to_gamma(s):
    return s ** (1/2.2)
 
-def linearize(image, target_space=ColorSpace.SRGB):
+def linearize(image, target_space=SRGB):
     """Transform colors from perceptually linear to physically linear.
     
     This is automatically performed when using <a href="#load">load</a>
     on a PNG or JPEG. See also <a href="#delinearize">delinearize</a>.
     """
-    if target_space == ColorSpace.SRGB:
+    if target_space == SRGB:
         return sRGB_to_linear(image)
     return gamma_to_linear(image)
 
-def delinearize(image, source_space=ColorSpace.SRGB):
+def delinearize(image, source_space=SRGB):
     """Transform colors from physically linear to perceptually linear.
     
     This is automatically performed when using <a href="#save">save</a>
     to a PNG or JPEG. See also <a href="#linearize">linearize</a>.
     """
-    if source_space == ColorSpace.SRGB:
+    if source_space == SRGB:
         return linear_to_sRGB(image)
     return linear_to_gamma(image)
 
