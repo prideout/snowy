@@ -1,4 +1,4 @@
-"""Define save, load, show, reshape and unshape."""
+"""Define export, load, show, reshape and unshape."""
 
 import imageio
 import numpy as np
@@ -38,17 +38,17 @@ def linearize(image, target_space=SRGB):
 def delinearize(image, source_space=SRGB):
     """Transform colors from physically linear to perceptually linear.
     
-    This is automatically performed when using <a href="#save">save</a>
+    This is automatically performed when using <a href="#export">export</a>
     to a PNG or JPEG. See also <a href="#linearize">linearize</a>.
     """
     if source_space == SRGB:
         return linear_to_sRGB(image)
     return linear_to_gamma(image)
 
-def show(image):
+def show(image, delinearize=True):
     """Display an image in a platform-specific way."""
     if isinstance(image, np.ndarray):
-        show_array(image)
+        show_array(image, delinearize)
     elif isinstance(image, str):
         show_filename(image)
     else:
@@ -72,41 +72,44 @@ def unshape(image):
         return np.reshape(image, image.shape[:2])
     return image
 
-def _to_linear(image):
-    return linearize(np.clip(np.float64(image) / 255, 0, None))
-
-def _from_linear(image):
-    image = delinearize(np.clip(image, 0, None))
-    return np.uint8(np.clip(image * 255, 0, 255))
-
-def _load(filename: str):
-    # PNG files are always loaded as RGBA because paletted byte-based
-    # images with transparency are problematic. Moreover with Snowy we
-    # expect the in-memory representation (floats) to not match the
-    # on-disk representation (bytes).
+def _load(filename: str, linear: bool):
     if filename.endswith('.png'):
-        return _to_linear(imageio.imread(filename, 'PNG-PIL',
-                pilmode='RGBA'))
+        img = imageio.imread(filename, 'PNG-PIL', pilmode='RGBA')
+        img = np.clip(np.float64(img) / 255, 0, None)    
+    elif filename.endswith('.jpg') or filename.endswith('.jpeg'):
+        img = imageio.imread(filename)
+        img = np.clip(np.float64(img) / 255, 0, None)
     elif filename.endswith('.exr'):
         imageio.plugins.freeimage.download()
-        return np.float64(imageio.imread(filename))
-    return _to_linear(imageio.imread(filename))
+        img = np.float64(imageio.imread(filename))
+    return linearize(img) if not linear else img
 
-def load(filename: str) -> np.ndarray:
+def load(filename: str, linearize=True) -> np.ndarray:
     """Create a numpy array from the given PNG, JPEG, or EXR image file.
 
     Regardless of the pixel format on disk, PNG / JPEG images are always
-    divided by 255.0 and extended to 4 color channels before being
-    returned to the caller.
+    divided by 255, and PNG images are extended to 4 color channels.
 
     See also <a href="#reshape">reshape</a> and
     <a href="#linearize">linearize</a>  (which this calls).
     """
     assert filename.endswith('.png') or filename.endswith('.jpeg') or \
             filename.endswith('.jpg') or filename.endswith('.exr')
-    return reshape(np.float64(_load(filename)))
+    return reshape(np.float64(_load(filename, not linearize)))
 
-def save(image: np.ndarray, filename: str, image_format: str=None):
+def _export(image: np.ndarray, filename: str, linear):
+    image_format = None
+    if linear:
+        image = delinearize(np.clip(image, 0, None))
+    if filename.endswith('.exr'):
+        imageio.plugins.freeimage.download()
+        image_format = 'EXR-FI'
+        image = np.float32(image)
+    else:
+        image = np.uint8(np.clip(image * 255, 0, 255))
+    imageio.imwrite(filename, unshape(image), image_format)
+
+def export(image: np.ndarray, filename: str, delinearize=True):
     """Export a numpy array to a PNG, JPEG, or EXR image file.
 
     This function automatically multiplies PNG / JPEG images by 255.
@@ -116,18 +119,12 @@ def save(image: np.ndarray, filename: str, image_format: str=None):
     """
     assert filename.endswith('.png') or filename.endswith('.jpeg') or \
             filename.endswith('.jpg') or filename.endswith('.exr')
-    if filename.endswith('.exr'):
-        imageio.plugins.freeimage.download()
-        image_format = 'EXR-FI'
-        image = np.float32(image)
-    else:
-        image = _from_linear(image)
-    imageio.imwrite(filename, unshape(image), image_format)
+    _export(image, filename, delinearize)
 
-def show_array(image: np.ndarray):
+def show_array(image: np.ndarray, delinearize):
     with tempfile.NamedTemporaryFile() as fp:
         filename = fp.name + '.png'
-        save(image, filename)
+        export(image, filename, delinearize)
         show_filename(filename)
 
 def show_filename(image: str):

@@ -37,7 +37,7 @@ import snowy
 source = snowy.load('poodle.png')
 source = snowy.resize(source, height=200)
 blurry = snowy.blur(source, radius=4.0)
-snowy.save(snowy.hstack([source, blurry]), 'diptych.png')
+snowy.export(snowy.hstack([source, blurry]), 'diptych.png')
 ```
 
 <img src="diptych.png" height="150px">
@@ -187,7 +187,7 @@ def create_island(seed, freq=3.5):
     elevation = snowy.unitize(snowy.generate_sdf(mask))
     return (1 - mask) * np.power(elevation, 3.0)
 
-snowy.save(create_island(10), 'island.png')
+snowy.export(create_island(10), 'island.png')
 ```
 
 ![](island.png)

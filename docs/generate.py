@@ -44,34 +44,34 @@ def create_wrap_figures():
     ground = snowy.load(qualify('ground.jpg'))
     hground = np.hstack([ground, ground])
     ground2x2 = np.vstack([hground, hground])
-    snowy.save(ground2x2, qualify('ground2x2.jpg'))
+    snowy.export(ground2x2, qualify('ground2x2.jpg'))
 
     ground = snowy.blur(ground, radius=14, filter=snowy.LANCZOS)
-    snowy.save(ground, qualify('blurry_ground_bad.jpg'))
+    snowy.export(ground, qualify('blurry_ground_bad.jpg'))
     hground = np.hstack([ground, ground])
     ground2x2 = np.vstack([hground, hground])
-    snowy.save(ground2x2, qualify('blurry_ground2x2_bad.jpg'))
+    snowy.export(ground2x2, qualify('blurry_ground2x2_bad.jpg'))
 
     ground = snowy.load(qualify('ground.jpg'))
 
     ground = snowy.blur(ground, radius=14, wrapx=True, wrapy=True,
             filter=snowy.LANCZOS)
-    snowy.save(ground, qualify('blurry_ground_good.jpg'))
+    snowy.export(ground, qualify('blurry_ground_good.jpg'))
     hground = np.hstack([ground, ground])
     ground2x2 = np.vstack([hground, hground])
-    snowy.save(ground2x2, qualify('blurry_ground2x2_good.jpg'))
+    snowy.export(ground2x2, qualify('blurry_ground2x2_good.jpg'))
 
     n = snowy.generate_noise(256, 512, frequency=4, seed=42, wrapx=False)
     n = 0.5 + 0.5 * np.sign(n) - n
     n = np.hstack([n, n])
     n = snowy.add_border(n, width=4)
-    snowy.save(n, qualify('tiled_noise_bad.png'))
+    snowy.export(n, qualify('tiled_noise_bad.png'))
 
     n = snowy.generate_noise(256, 512, frequency=4, seed=42, wrapx=True)
     n = 0.5 + 0.5 * np.sign(n) - n
     n = np.hstack([n, n])
     n = snowy.add_border(n, width=4)
-    snowy.save(n, qualify('tiled_noise_good.png'))
+    snowy.export(n, qualify('tiled_noise_good.png'))
 
     c0 = create_circle(400, 200, 0.3)
     c1 = create_circle(400, 200, 0.08, 0.8, 0.8)
@@ -81,13 +81,13 @@ def create_wrap_figures():
     sdf = np.hstack([sdf, sdf, sdf, sdf])
     sdf = snowy.resize(np.vstack([sdf, sdf]), width=512)
     sdf = snowy.add_border(sdf)
-    snowy.save(sdf, qualify('tiled_sdf_good.png'))
+    snowy.export(sdf, qualify('tiled_sdf_good.png'))
 
     sdf = snowy.unitize(snowy.generate_sdf(mask, wrapx=False, wrapy=False))
     sdf = np.hstack([sdf, sdf, sdf, sdf])
     sdf = snowy.resize(np.vstack([sdf, sdf]), width=512)
     sdf = snowy.add_border(sdf)
-    snowy.save(sdf, qualify('tiled_sdf_bad.png'))
+    snowy.export(sdf, qualify('tiled_sdf_bad.png'))
 
 create_wrap_figures()
 
@@ -329,7 +329,7 @@ gibbons180 = snowy.rotate(gibbons, 180)
 gibbons270 = snowy.rotate(gibbons, 270)
 hflipped = snowy.hflip(gibbons)
 vflipped = snowy.vflip(gibbons)
-snowy.save(snowy.hstack([gibbons, gibbons180, vflipped],
+snowy.export(snowy.hstack([gibbons, gibbons180, vflipped],
     border_width=4, border_value=[0.5,0,0]), qualify("xforms.png"))
 
 # Test noise generation
@@ -338,7 +338,7 @@ n = snowy.generate_noise(100, 100, frequency=4, seed=42, wrapx=True)
 n = np.hstack([n, n])
 n = 0.5 + 0.5 * n
 snowy.show(n)
-snowy.save(n, qualify('noise.png'))
+snowy.export(n, qualify('noise.png'))
 
 # First try minifying grayscale
 
@@ -349,7 +349,7 @@ gibbons = snowy.reshape(gibbons)
 source = snowy.resize(gibbons, height=200)
 blurry = snowy.blur(source, radius=4.0)
 diptych_filename = qualify('diptych.png')
-snowy.save(snowy.hstack([source, blurry]), diptych_filename)
+snowy.export(snowy.hstack([source, blurry]), diptych_filename)
 optimize(diptych_filename)
 snowy.show(diptych_filename)
 
@@ -359,7 +359,7 @@ gibbons = snowy.load(qualify('snowy.jpg'))
 source = snowy.resize(gibbons, height=200)
 blurry = snowy.blur(source, radius=4.0)
 diptych_filename = qualify('diptych.png')
-snowy.save(snowy.hstack([source, blurry]), diptych_filename)
+snowy.export(snowy.hstack([source, blurry]), diptych_filename)
 optimize(diptych_filename)
 snowy.show(diptych_filename)
 
@@ -372,16 +372,16 @@ mitchell = snowy.resize(parrot, height=26*scale)
 diptych_filename = qualify('diptych-parrot.png')
 parrot = snowy.hstack([nearest, mitchell])
 parrot = snowy.extract_rgb(parrot)
-snowy.save(parrot, diptych_filename)
+snowy.export(parrot, diptych_filename)
 optimize(diptych_filename)
 snowy.show(diptych_filename)
 
 # EXR cropping
 
-sunset = snowy.load(qualify('small.exr'))
+sunset = snowy.load(qualify('small.exr'), False)
 sunset = sunset[:100,:,:] / 50.0
 cropped_filename = qualify('cropped-sunset.png')
-snowy.save(sunset, cropped_filename)
+snowy.export(sunset, cropped_filename)
 optimize(cropped_filename)
 snowy.show(cropped_filename)
 
@@ -390,7 +390,7 @@ snowy.show(cropped_filename)
 icon = snowy.load(qualify('snowflake.png'))
 icon = snowy.resize(icon, height=100)
 sunset[:100,200:300] = snowy.compose(sunset[:100,200:300], icon)
-snowy.save(sunset, qualify('composed.png'))
+snowy.export(sunset, qualify('composed.png'))
 optimize(qualify('composed.png'))
 snowy.show(sunset)
 
@@ -408,7 +408,7 @@ shadow = snowy.compose(shadow, shadow)
 shadow = snowy.compose(shadow, shadow)
 
 dropshadow = snowy.compose(shadow, white)
-snowy.save(dropshadow, qualify('dropshadow.png'))
+snowy.export(dropshadow, qualify('dropshadow.png'))
 optimize(qualify('dropshadow.png'))
 
 STEPPED_PALETTE = [
@@ -461,7 +461,7 @@ c0 = np.clip(c0 + c1, 0, 1)
 circles = snowy.add_border(c0, value=1)
 sdf = snowy.unitize(snowy.generate_sdf(circles != 0.0))
 stack = snowy.hstack([circles, sdf])
-snowy.save(stack, qualify('sdf.png'))
+snowy.export(stack, qualify('sdf.png'))
 snowy.show(stack)
 
 # Islands
@@ -493,13 +493,13 @@ def createColorGradient(pal):
     return snowy.resize(img, 256, 32)
 
 gradient = createColorGradient(STEPPED_PALETTE)
-snowy.save(snowy.add_border(gradient), qualify('gradient.png'))
+snowy.export(snowy.add_border(gradient), qualify('gradient.png'))
 isles = []
 for i in range(6):
     isle = create_island(i * 5, gradient)
     isle = snowy.resize(isle, width=isle.shape[1] // 3)
     isles.append(isle)
-snowy.save(isles[2], qualify('island.png'))
+snowy.export(isles[2], qualify('island.png'))
 optimize(qualify('island.png'))
 isles = snowy.hstack(isles)
-snowy.save(isles, qualify('isles.png'))
+snowy.export(isles, qualify('isles.png'))

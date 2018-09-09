@@ -18,27 +18,20 @@ Painting and 2D paths are outside the scope of the library. See
 
 <!--
 
-  API Change:
-    deprecate load/save, but do not remove
-    rename to import / export because they do a lot of manip
-      such as 4-channel extension, delinearization, etc.
-      Also: export should not take an imageio string. Instead it should have a bool
-    for delinearization.
+  better way to show sha in index.html?
 
   Make a video with iterm2 and ipython (or bpython or ptpython)
-
-  ---
-
-  arbitrary rotation
 
   CPCF's
 
   height field AO
 
+  prefiltering as seen in docs/hoppe
+
+  arbitrary rotation
+
   variable radius blur (radius multiplier is a fn not a constant)
     test with a distance field + gradient
-
-  prefiltering as seen in docs/hoppe
 
   ---
 
