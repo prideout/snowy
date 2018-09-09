@@ -61,11 +61,11 @@ def test_range():
 
     with tempfile.NamedTemporaryFile() as fp:
         target = fp.name + '.png'
-        snowy.save(ground, target)
+        snowy.export(ground, target)
         show_filename(target)
 
     show_filename(source)
-    show_array(ground)
+    show_array(ground, True)
 
     blurred = snowy.blur(ground, radius=10)
     snowy.show(blurred)
@@ -81,5 +81,5 @@ def test_gamma():
     snowy.show(dalai_lama)
 
     small = snowy.resize(dalai_lama, height=32)
-    snowy.save(small, path('small_dalai_lama.png'))
+    snowy.export(small, path('small_dalai_lama.png'))
     snowy.show(small)

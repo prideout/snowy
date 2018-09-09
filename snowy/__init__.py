@@ -24,7 +24,7 @@ from_planar
 linearize
 load
 reshape
-save
+export
 show
 to_planar
 unshape
@@ -47,3 +47,6 @@ generate_udf
 
 generate_noise
 '''.split()
+
+# deprecated functions:
+save = export
