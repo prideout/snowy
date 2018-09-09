@@ -18,6 +18,8 @@ Painting and 2D paths are outside the scope of the library. See
 
 <!--
 
+  Replace "imageio" with "snowyio" which has minimal C code (tinyexr and stb_image)
+
   Make a video with iterm2 and ipython (or bpython or ptpython)
 
   CPCF's
