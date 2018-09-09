@@ -18,35 +18,41 @@ Painting and 2D paths are outside the scope of the library. See
 
 <!--
 
-  Replace "imageio" with "snowyio" which has minimal C code (tinyexr and stb_image)
+Replace "imageio" with "snowyio" which has minimal C code (tinyexr and stb_image)
 
-  Make a video with iterm2 and ipython (or bpython or ptpython)
+Make a video with iterm2 and ipython (or bpython or ptpython)
 
-  CPCF's
+CPCF's
 
-  height field AO
+height field AO
 
-  prefiltering as seen in docs/hoppe
+prefiltering as seen in docs/hoppe
 
-  arbitrary rotation
+arbitrary rotation
 
-  variable radius blur (radius multiplier is a fn not a constant)
-    test with a distance field + gradient
+variable radius blur (radius multiplier is a fn not a constant)
+test with a distance field + gradient
 
-  ---
+tile-based functions (see libvips)
 
-  reduce_colors
-  io can have create_movie
-      heat wave example
-      brownian loop zoom example
-  io can have generate_gallery for making HTML, and optional forced width/height/filter
-  pixel art scaling algorithm(s)
-  add fractal.py
-      mandelbrot example from numba
-      also this: https://en.wikipedia.org/wiki/Buddhabrot
-  generate voronoi or triangulations, like the little test images here:
-      http://agea.github.io/tutorial.md/
+reduce_colors
 
+io can have create_movie
+    heat wave example
+    brownian loop zoom example
+
+io can have generate_gallery for making HTML, and optional forced width/height/filter
+
+pixel art scaling algorithm(s)
+
+add fractal.py
+    mandelbrot example from numba
+    also this: https://en.wikipedia.org/wiki/Buddhabrot
+
+generate voronoi or triangulations, like the little test images here:
+    http://agea.github.io/tutorial.md/
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 Making a release:
 
@@ -61,8 +67,7 @@ Making a release:
 Testing a release:
 
   open https://pypi.org/project/snowy/
-  cd ~
-  python3 -m venv snowy_test
+  cd ~ ; python3 -m venv snowy_test
   source snowy_test/bin/activate
   pip install snowy
   python3
