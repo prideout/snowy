@@ -72,14 +72,14 @@ def unshape(image):
         return np.reshape(image, image.shape[:2])
     return image
 
-def _load(filename: str, linear: bool):
-    if filename.endswith('.png'):
+def _load(filename: str, extension: str, linear: bool):
+    if extension == '.png':
         img = imageio.imread(filename, 'PNG-PIL', pilmode='RGBA')
         img = np.clip(np.float64(img) / 255, 0, None)    
-    elif filename.endswith('.jpg') or filename.endswith('.jpeg'):
+    elif extension == '.jpg' or extension == '.jpeg':
         img = imageio.imread(filename)
         img = np.clip(np.float64(img) / 255, 0, None)
-    elif filename.endswith('.exr'):
+    elif extension == '.exr':
         imageio.plugins.freeimage.download()
         img = np.float64(imageio.imread(filename))
     return linearize(img) if not linear else img
@@ -93,9 +93,10 @@ def load(filename: str, linearize=True) -> np.ndarray:
     See also <a href="#reshape">reshape</a> and
     <a href="#linearize">linearize</a>  (which this calls).
     """
-    assert filename.endswith('.png') or filename.endswith('.jpeg') or \
-            filename.endswith('.jpg') or filename.endswith('.exr')
-    return reshape(np.float64(_load(filename, not linearize)))
+
+    ext = filename[filename.rfind('.'):]
+    assert ext == '.png' or ext == '.jpeg' or ext == '.jpg' or ext == '.exr'
+    return reshape(np.float64(_load(filename, ext, not linearize)))
 
 def _export(image: np.ndarray, filename: str, linear):
     image_format = None
