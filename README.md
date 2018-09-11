@@ -19,6 +19,7 @@ Painting and 2D paths are outside the scope of the library. See
 <!--
 
 Replace "imageio" with "snowyio" which has minimal C code (tinyexr and stb_image)
+    Try to support URL's in load
 
 Make a video with iterm2 and ipython (or bpython or ptpython)
 
@@ -29,6 +30,8 @@ height field AO
 prefiltering as seen in docs/hoppe
 
 arbitrary rotation
+    RShear: "A Fast Algorithm for General Raster Rotation" by Alan Paeth in Graphics Gems
+    http://www.leptonica.com/rotation.html
 
 variable radius blur (radius multiplier is a fn not a constant)
 test with a distance field + gradient
