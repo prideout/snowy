@@ -20,12 +20,15 @@ Painting and 2D paths are outside the scope of the library. See
 
 Replace "imageio" with "snowyio" which has minimal C code (tinyexr and stb_image)
     Try to support URL's in load
-
-Make a video with iterm2 and ipython (or bpython or ptpython)
+    Look at CairoSVG for inspiration, it takes url, fileobj, etc
 
 CPCF's
 
 height field AO
+
+Make a video with iterm2 and ipython (or bpython or ptpython)
+
+express the popular "notestrink.py" in terms of snowy operations
 
 prefiltering as seen in docs/hoppe
 

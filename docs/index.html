@@ -192,10 +192,10 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.4 ~ <a href="https://github.com/prideout/snowy/tree/bba4c99">bba4c99</a></small>
+<small>v0.0.4 ~ <a href="https://github.com/prideout/snowy/tree/a57ee46">a57ee46</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><strong>User's Guide</strong> | <a href="reference.html">API Reference</a></p>
-<p>Snowy is a tiny module for manipulating and generating images.</p>
+<p>Snowy is a tiny module for manipulating and generating floating-point images.</p>
 <ul>
 <li>Small and flat API (free functions only).</li>
 <li>Written purely in Python 3.</li>
@@ -207,6 +207,13 @@ numpy arrays</strong> in row-major order.</p>
 <p class="aside">For example, RGB images have shape <code>[height,width,3]</code> and grayscale images have shape
 <code>[height,width,1]</code>. Snowy provides some utility functions that make it easy to work with other
 modules (see <a href="#interop">interop</a>).</p>
+<p>Snowy is not an Image IO library, but for convenience it provides <a href="reference.html#load">load</a> and
+<a href="reference.html#export">export</a> functions that have limited support for PNG, EXR, and JPEG.</p>
+<p class="aside">If you're interested in tone mapping and other HDR operations, check out the
+<a href="https://github.com/tatsy/hydra">hydra</a> module. If you wish to simply load / store raw
+floating-point data, consider using npy files instead of image files. The relevant functions are
+<a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.load.html">numpy.load</a> and
+<a href="https://docs.scipy.org/doc/numpy/reference/generated/numpy.save.html">numpy.save</a>.</p>
 <h2 id="installing"><a href="#installing">Installing</a></h2>
 <p>To install and update snowy, do this:</p>
 <p><code>pip3 install -U snowy</code></p>
@@ -246,10 +253,6 @@ Mitchell filter.</p>
 <span class="n">cropped_sunrise</span> <span class="o">=</span> <span class="n">sunrise</span><span class="p">[:</span><span class="mi">100</span><span class="p">,:,:]</span>
 <span class="n">snowy</span><span class="o">.</span><span class="n">show</span><span class="p">(</span><span class="n">cropped_sunrise</span> <span class="o">/</span> <span class="mf">50.0</span><span class="p">)</span> <span class="c1"># darken the image</span>
 </pre></div>
-<p class="aside">By the way, if you're interested in tone mapping and other HDR operations, be sure to check
-out the <a href="https://github.com/tatsy/hydra">hydra</a> module. If you wish to simply load / store
-raw double-precision data, consider using npy files instead of image files. The relevant functions
-are <code>numpy.load(filename)</code> and <code>numpy.save(filename, array)</code>.</p>
 <img height="100px" src="cropped-sunset.png"/>
 <h3 id="alpha_composition"><a href="#alpha_composition">Alpha composition</a></h3>
 <p>To copy a section of one image into another, simply use numpy slicing.</p>

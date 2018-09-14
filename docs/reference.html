@@ -192,7 +192,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.4 ~ <a href="https://github.com/prideout/snowy/tree/bba4c99">bba4c99</a></small>
+<small>v0.0.4 ~ <a href="https://github.com/prideout/snowy/tree/a57ee46">a57ee46</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><a href="index.html">User's Guide</a> | <strong>API Reference</strong></p>
 <hr/>
@@ -501,9 +501,10 @@ Transform colors from perceptually linear to physically linear.  This is automat
 Create a numpy array from the given PNG, JPEG, or EXR image file.  Regardless of the pixel format on disk, PNG / JPEG images are always divided by 255, and PNG images are extended to 4 color channels.  See also <a href="#reshape">reshape</a> and <a href="#linearize">linearize</a>  (which this calls).
 </p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load</span><span class="p">(</span><span class="n">filename</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">linearize</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
-    <span class="k">assert</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.png'</span><span class="p">)</span> <span class="ow">or</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.jpeg'</span><span class="p">)</span> <span class="ow">or</span> \
-            <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.jpg'</span><span class="p">)</span> <span class="ow">or</span> <span class="n">filename</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">'.exr'</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">_load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="ow">not</span> <span class="n">linearize</span><span class="p">)))</span>
+
+    <span class="n">ext</span> <span class="o">=</span> <span class="n">filename</span><span class="p">[</span><span class="n">filename</span><span class="o">.</span><span class="n">rfind</span><span class="p">(</span><span class="s1">'.'</span><span class="p">):]</span>
+    <span class="k">assert</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">'.png'</span> <span class="ow">or</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">'.jpeg'</span> <span class="ow">or</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">'.jpg'</span> <span class="ow">or</span> <span class="n">ext</span> <span class="o">==</span> <span class="s1">'.exr'</span>
+    <span class="k">return</span> <span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">(</span><span class="n">_load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">ext</span><span class="p">,</span> <span class="ow">not</span> <span class="n">linearize</span><span class="p">)))</span>
 </pre></div>
 <h3 id="reshape"><a href="#reshape">reshape</a></h3>
 <p>

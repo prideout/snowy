@@ -2,7 +2,7 @@
 
 **User's Guide** | [API Reference](reference.html)
 
-Snowy is a tiny module for manipulating and generating images.
+Snowy is a tiny module for manipulating and generating floating-point images.
 
 - Small and flat API (free functions only).
 - Written purely in Python 3.
@@ -17,6 +17,17 @@ numpy arrays** in row-major order.
 For example, RGB images have shape `[height,width,3]` and grayscale images have shape
 `[height,width,1]`. Snowy provides some utility functions that make it easy to work with other
 modules (see [interop](#interop)).
+
+Snowy is not an Image IO library, but for convenience it provides [load](reference.html#load) and
+[export](reference.html#export) functions that have limited support for PNG, EXR, and JPEG.
+
+#### aside
+
+If you're interested in tone mapping and other HDR operations, check out the
+[hydra](https://github.com/tatsy/hydra) module. If you wish to simply load / store raw
+floating-point data, consider using npy files instead of image files. The relevant functions are
+[numpy.load](https://docs.scipy.org/doc/numpy/reference/generated/numpy.load.html) and
+[numpy.save](https://docs.scipy.org/doc/numpy/reference/generated/numpy.save.html).
 
 ## Installing
 
@@ -78,13 +89,6 @@ sunrise = snowy.load('sunrise.exr')
 cropped_sunrise = sunrise[:100,:,:]
 snowy.show(cropped_sunrise / 50.0) # darken the image
 ```
-
-#### aside
-
-By the way, if you're interested in tone mapping and other HDR operations, be sure to check
-out the [hydra](https://github.com/tatsy/hydra) module. If you wish to simply load / store
-raw double-precision data, consider using npy files instead of image files. The relevant functions
-are `numpy.load(filename)` and `numpy.save(filename, array)`.
 
 <img src="cropped-sunset.png" height="100px">
 
