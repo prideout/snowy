@@ -146,7 +146,7 @@ def create_ops(ntarget, nsource, filter: Filter, wrap) -> RowOps:
 
 SIG0 = "void(f8[:,:,:], f8[:,:,:], i4[:], i4[:], f8[:])"
 SIG1 = "(r0,c0,d),(r0,c1,d),(i),(i),(i)"
-@guvectorize([SIG0], SIG1, target='parallel')
+@guvectorize([SIG0], SIG1, target='parallel', cache=True)
 def jit_convolve(target, source, tinds, sinds, weights):
     nrows, nchan, nops = target.shape[0], target.shape[2], len(tinds)
     for c in range(nchan):

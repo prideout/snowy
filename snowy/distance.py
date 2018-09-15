@@ -7,7 +7,6 @@ image segmentation, antialiasing algorithms, and texture synthesis.
 """
 
 from numba import jit
-import numba
 import numpy as np
 from . import io
 
@@ -57,7 +56,7 @@ def _generate_edt(image, wrapx, wrapy):
     _generate_udf(width, height, d, z, v, result, wrapx, wrapy)
     return np.sqrt(io.reshape(result))
 
-@jit(nopython=True, fastmath=True)
+@jit(nopython=True, fastmath=True, cache=True)
 def _generate_udf(width, height, d, z, v, result, wrapx, wrapy):
     # Compute 1D distance fields for columns, then for rows.
     for x in range(width):
@@ -69,7 +68,7 @@ def _generate_udf(width, height, d, z, v, result, wrapx, wrapy):
         edt(f, d, z, v, width, wrapx)
         result[y,:] = d[:width]
 
-@jit(nopython=True, fastmath=True)
+@jit(nopython=True, fastmath=True, cache=True)
 def edt(f, d, z, v, n, wrap):
     # Find the lower envelope of a sequence of parabolas.
     #   f...source data (returns the Y of the parabola rooted at X)

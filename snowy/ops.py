@@ -1,7 +1,7 @@
 """Define add_border etc."""
 
 from snowy.io import *
-from numba import jit, guvectorize
+from numba import guvectorize
 import numpy as np
 
 def add_left(image: np.ndarray, T=2, V=0) -> np.ndarray:
@@ -151,7 +151,7 @@ def compose_premultiplied(dst: np.ndarray, src: np.ndarray):
 
 SIG0 = "void(f8[:,:,:], f8[:,:,:])"
 SIG1 = "(r,c,d),(c,r,d)"
-@guvectorize([SIG0], SIG1, target='parallel')
+@guvectorize([SIG0], SIG1, target='parallel', cache=True)
 def rotate90(result, source):
     nrows, ncols, nchan = source.shape
     for row in range(nrows):
@@ -162,7 +162,7 @@ def rotate90(result, source):
 
 SIG0 = "void(f8[:,:,:], f8[:,:,:])"
 SIG1 = "(r,c,d),(r,c,d)"
-@guvectorize([SIG0], SIG1, target='parallel')
+@guvectorize([SIG0], SIG1, target='parallel', cache=True)
 def rotate180(result, source):
     nrows, ncols, nchan = source.shape
     for row in range(nrows):
@@ -173,7 +173,7 @@ def rotate180(result, source):
 
 SIG0 = "void(f8[:,:,:], f8[:,:,:])"
 SIG1 = "(r,c,d),(c,r,d)"
-@guvectorize([SIG0], SIG1, target='parallel')
+@guvectorize([SIG0], SIG1, target='parallel', cache=True)
 def rotate270(result, source):
     nrows, ncols, nchan = source.shape
     for row in range(nrows):
@@ -184,7 +184,7 @@ def rotate270(result, source):
 
 SIG0 = "void(f8[:,:,:], f8[:,:,:])"
 SIG1 = "(r,c,d),(r,c,d)"
-@guvectorize([SIG0], SIG1, target='parallel')
+@guvectorize([SIG0], SIG1, target='parallel', cache=True)
 def jit_hflip(result, source):
     nrows, ncols, nchan = source.shape
     for row in range(nrows):
@@ -195,7 +195,7 @@ def jit_hflip(result, source):
 
 SIG0 = "void(f8[:,:,:], f8[:,:,:])"
 SIG1 = "(r,c,d),(r,c,d)"
-@guvectorize([SIG0], SIG1, target='parallel')
+@guvectorize([SIG0], SIG1, target='parallel', cache=True)
 def jit_vflip(result, source):
     nrows, ncols, nchan = source.shape
     for row in range(nrows):
