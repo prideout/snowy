@@ -1,13 +1,11 @@
 language: python
-python:
-  - "3.6"
-cache: pip
+python: "3.6"
 install:
-  - pip install numpy imageio numba
+  - pip install numpy imageio numba pytest
 script:
-  - python -m pytest
-
-  - pip install beautifulsoup4 Pygments CommonMark scipy
-  - python docs/generate.py
-
   - python setup.py sdist bdist_wheel
+  - python setup.py install
+  # - python setup.py test
+
+  #- pip install beautifulsoup4 Pygments CommonMark scipy
+  #- python docs/generate.py

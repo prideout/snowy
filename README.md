@@ -18,6 +18,8 @@ Painting and 2D paths are outside the scope of the library. See
 
 <!--
 
+Dithering
+
 Replace "imageio" with "snowyio" which has minimal C code (tinyexr and stb_image)
     Try to support URL's in load
     Look at CairoSVG for inspiration, it takes url, fileobj, etc
