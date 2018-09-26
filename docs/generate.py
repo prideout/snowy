@@ -114,11 +114,11 @@ header = '''
 <meta charset="utf-8">
 
 <meta property="og:image"
-    content="https://github.prideout.net/snowy/snowy2.png">
+    content="https://prideout.net/snowy/snowy2.png">
 <meta property="og:site_name" content="GitHub">
 <meta property="og:type" content="object">
 <meta property="og:title" content="prideout/snowy">
-<meta property="og:url" content="https://github.prideout.net/snowy/">
+<meta property="og:url" content="https://prideout.net/snowy/">
 <meta property="og:description"
 content="Small Python 3 module for manipulating and generating images.">
 
