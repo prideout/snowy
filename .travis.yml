@@ -8,6 +8,6 @@ script:
   - python -m pytest
 
   - pip install beautifulsoup4 Pygments CommonMark scipy
-  - python docs/generate.py
+  # - python docs/generate.py
 
   - python setup.py sdist bdist_wheel
