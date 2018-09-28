@@ -23,6 +23,36 @@ def create_circle(w, h, radius=0.4, cx=0.5, cy=0.5):
     result = 1 - smoothstep(radius-dp, radius+dp, np.sqrt(d2))
     return snowy.reshape(result)
 
+def test_cpcf():
+
+    w, h = 500, 500
+    def show(im):
+        snowy.show(snowy.resize(im, height=100, filter=None))
+
+    yellow = np.full((w, h, 3), (1, 1, 0))
+    red = np.full((w, h, 3), (1, 0, 0))
+
+    blue_border = np.full((w, h, 3), (0, 0, 1))
+    t = 5; blue_border[t:h-t,t:w-t] *= 0
+
+    c0 = create_circle(w, h, 0.3) * yellow * 100000
+    c1 = create_circle(w, h, 0.07, 0.8, 0.8) * red * 10000
+    circles = np.clip(c0 + c1 + blue_border, 0, 1)
+
+    r, g, b = circles.swapaxes(0, 2)
+    luma = snowy.reshape(r + g + b)
+
+    mask = luma != 0.0
+    sdf = snowy.unitize(np.abs(snowy.generate_sdf(mask)))
+    cpcf = snowy.generate_cpcf(mask)
+    voronoi = snowy.dereference_cpcf(circles, cpcf)
+
+    luma = np.dstack([luma, luma, luma])
+    sdf = np.dstack([sdf, sdf, sdf])
+    final = np.hstack([circles, luma, sdf, voronoi])
+    final = snowy.resize(final, height=400)
+    show(final)
+
 def test_sdf():
     c0 = create_circle(200, 200, 0.3)
     c1 = create_circle(200, 200, 0.08, 0.8, 0.8)

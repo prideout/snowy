@@ -44,6 +44,8 @@ vstack
 generate_gdf
 generate_sdf
 generate_udf
+generate_cpcf
+dereference_cpcf
 
 generate_noise
 '''.split()
