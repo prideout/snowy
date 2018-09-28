@@ -34,42 +34,48 @@ def generate_gdf(image: np.ndarray, wrapx=False, wrapy=False):
 
 def _generate_gdt(image, wrapx, wrapy):
     image = io.unshape(image)
-    height, width = image.shape
-    capacity = max(width, height)
-    if wrapx or wrapy: capacity *= 2
-    d = np.zeros([capacity])
-    z = np.zeros([capacity + 1])
-    v = np.zeros([capacity], dtype='i4')
     result = image.copy()
-    _generate_udf(width, height, d, z, v, result, wrapx, wrapy)
+    _generate_udf(result, wrapx, wrapy)
     return io.reshape(result)
 
 def _generate_edt(image, wrapx, wrapy):
     image = io.unshape(image)
-    height, width = image.shape
+    result = np.where(image, 0.0, INF)
+    _generate_udf(result, wrapx, wrapy)
+    return np.sqrt(io.reshape(result))
+
+def _generate_udf(result, wrapx, wrapy):
+
+    scratch = result
+    if wrapx: scratch = np.hstack([scratch, scratch, scratch])
+    if wrapy: scratch = np.vstack([scratch, scratch, scratch])
+
+    height, width = scratch.shape
     capacity = max(width, height)
-    if wrapx or wrapy: capacity *= 2
     d = np.zeros([capacity])
     z = np.zeros([capacity + 1])
     v = np.zeros([capacity], dtype='i4')
-    result = np.where(image, 0.0, INF)
-    _generate_udf(width, height, d, z, v, result, wrapx, wrapy)
-    return np.sqrt(io.reshape(result))
+    _generate_udf_native(width, height, d, z, v, scratch)
+
+    x0, x1 = width // 3, 2 * width // 3
+    y0, y1 = height // 3, 2 * height // 3
+    if wrapx: scratch = scratch[:,x0:x1]
+    if wrapy: scratch = scratch[y0:y1,:]
+    if wrapx or wrapy: np.copyto(result, scratch)
 
 @jit(nopython=True, fastmath=True, cache=True)
-def _generate_udf(width, height, d, z, v, result, wrapx, wrapy):
-    # Compute 1D distance fields for columns, then for rows.
+def _generate_udf_native(width, height, d, z, v, result):
     for x in range(width):
         f = result[:,x]
-        edt(f, d, z, v, height, wrapy)
+        edt(f, d, z, v, height)
         result[:,x] = d[:height]
     for y in range(height):
         f = result[y,:]
-        edt(f, d, z, v, width, wrapx)
+        edt(f, d, z, v, width)
         result[y,:] = d[:width]
 
 @jit(nopython=True, fastmath=True, cache=True)
-def edt(f, d, z, v, n, wrap):
+def edt(f, d, z, v, n):
     # Find the lower envelope of a sequence of parabolas.
     #   f...source data (returns the Y of the parabola rooted at X)
     #   d...destination data (final distance values are written here)
@@ -83,20 +89,19 @@ def edt(f, d, z, v, n, wrap):
     v[0] = 0
     z[0] = -INF
     z[1] = +INF
-    upper = 2*n if wrap else n
 
-    for q in range(1, upper):
+    for q in range(1, n):
 
         # If the new parabola is lower than the right-most parabola in
         # the envelope, remove it from the envelope. To make this
         # determination, find the X coordinate of the intersection (s)
         # between the parabolas rooted at (q,f[q]) and (p,f[p]).
         p = v[k]
-        s = ((f[q%n] + q*q) - (f[p%n] + p*p)) / (2.0*q - 2.0*p)
+        s = ((f[q] + q*q) - (f[p] + p*p)) / (2.0*q - 2.0*p)
         while s <= z[k]:
             k = k - 1
             p = v[k]
-            s = ((f[q%n] + q*q) - (f[p%n] + p*p)) / (2.0*q - 2.0*p)
+            s = ((f[q] + q*q) - (f[p] + p*p)) / (2.0*q - 2.0*p)
 
         # Add the new parabola to the envelope.
         k = k + 1
@@ -107,12 +112,8 @@ def edt(f, d, z, v, n, wrap):
     # Go back through the parabolas in the envelope and evaluate them
     # in order to populate the distance values at each X coordinate.
     k = 0
-    lower = n/2 if wrap else 0
-    upper = 3*n/2 if wrap else n
-    for q in range(lower, upper):
+    for q in range(n):
         while z[k + 1] < float(q):
             k = k + 1
-        vmod = v[k] % n
-        qmod = q % n
         dx = q - v[k]
-        d[qmod] = dx * dx + f[vmod]
+        d[q] = dx * dx + f[v[k]]
