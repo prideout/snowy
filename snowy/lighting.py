@@ -1,5 +1,5 @@
 from . import io
-from numba import jit
+from numba import prange, jit
 import math
 import numpy as np
 
@@ -11,30 +11,28 @@ SWEEP_DIRECTIONS = np.int16([
 ])
 
 def compute_skylight(elevation):
+    """Compute ambient occlusion from a height map."""
     height, width, nchan = elevation.shape
     assert nchan == 1
     elevation = elevation[:,:,0]
     result = np.zeros([height, width])
+    _compute_skylight(result, elevation)
+    result = 1.0 - result * 2.0 / np.pi
+    return io.reshape(result)
+
+def _compute_skylight(dst, src):
+    height, width = src.shape
 
     # TODO Fix allocation or explain the "3"
     seedpoints = np.empty([3 * max(width, height), 2], dtype='i2')
     maxpathlen = max(width, height) + 1
 
     for direction in SWEEP_DIRECTIONS:
-        nsweeps = _generate_seedpoints(elevation, direction, seedpoints)
-        print('Sweep: ', direction, nsweeps)
-
-        # Allocate stacks of 3D points for the horizon, one for each
-        # sweep. In a serial implementation we wouldn't need to allocate
-        # this much memory, but we're trying to make life easy for
-        # multithreading.
+        nsweeps = _generate_seedpoints(src, direction, seedpoints)
+        print('Horizon direction: ', direction)
         sweeps = np.empty([nsweeps, maxpathlen, 3])
-
-        pt = np.empty([3])
-        _horizon_scan(elevation, result, direction, seedpoints, sweeps, pt)
-
-    result = 1.0 - result * 2.0 / np.pi
-    return io.reshape(result)
+        pts = np.empty([nsweeps, 3])
+        _horizon_scan(src, dst, direction, seedpoints, sweeps, pts)
 
 # TODO This function needs to be rewritten or documented.
 def _generate_seedpoints(field, direction, seedpoints):
@@ -55,14 +53,15 @@ def _generate_seedpoints(field, direction, seedpoints):
     assert nsweeps == s
     return nsweeps
 
-@jit(nopython=True, fastmath=True)
-def _horizon_scan(heights, occlusion, direction, seedpoints, sweeps, pt):
+SIG0 = "void(f8[:,:], f8[:,:], i2[:], i2[:,:], f8[:,:,:], f8[:,:])"
+@jit([SIG0], nopython=True, fastmath=True, parallel=True)
+def _horizon_scan(heights, occlusion, direction, seedpoints, sweeps, pts):
     h, w = heights.shape[:2]
     cellw = 1 / max(w, h)
     cellh = 1 / max(w, h)
     nsweeps = len(sweeps)
-    thispt = pt
-    for sweep in range(nsweeps):
+    for sweep in prange(nsweeps):
+        thispt = pts[sweep]
         stack = sweeps[sweep]
         startpt = seedpoints[sweep]
         pathlen = 0
@@ -86,27 +85,31 @@ def _horizon_scan(heights, occlusion, direction, seedpoints, sweeps, pt):
             thispt[2] = heights[j][i]
 
             while stack_top > 0:
-                s1 = _azimuth_slope(thispt, stack[stack_top])
-                s2 = _azimuth_slope(thispt, stack[stack_top - 1])
+
+                a, b = thispt, stack[stack_top]
+                dx = b[0] - a[0]
+                dy = b[1] - a[1]
+                y = b[2] - a[2]
+                x = math.sqrt(dx * dx + dy * dy)
+                s1 = y / x
+
+                a, b = thispt, stack[stack_top - 1]
+                dx = b[0] - a[0]
+                dy = b[1] - a[1]
+                y = b[2] - a[2]
+                x = math.sqrt(dx * dx + dy * dy)
+                s2 = y / x
+
                 if s1 >= s2: break
                 stack_top -= 1
 
             horizonpt = stack[stack_top]
             stack_top += 1
             stack[stack_top] = thispt
-            occlusion[j][i] += _compute_occlusion(thispt, horizonpt)
+
+            d = horizonpt - thispt
+            dx = d[2] / np.linalg.norm(d)
+            occlusion[j][i] += math.atan(max(dx, 0))
+
             i += direction[0]
             j += direction[1]
-
-@jit(nopython=True, fastmath=True)
-def _azimuth_slope(a, b):
-    d = a - b
-    x = math.sqrt(d[0]**2 + d[1]**2)
-    y = b[2] - a[2]
-    return y / x
-
-@jit(nopython=True, fastmath=True)
-def _compute_occlusion(thispt, horizonpt):
-    d = horizonpt - thispt
-    dx = d[2] / np.linalg.norm(d)
-    return math.atan(max(dx, 0))
