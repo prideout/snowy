@@ -13,6 +13,7 @@ SWEEP_DIRECTIONS = np.int16([
 def compute_skylight(elevation):
     height, width, nchan = elevation.shape
     assert nchan == 1
+    elevation = elevation[:,:,0]
     result = np.zeros([height, width])
 
     # TODO Fix allocation or explain the "3"
@@ -29,7 +30,8 @@ def compute_skylight(elevation):
         # multithreading.
         sweeps = np.empty([nsweeps, maxpathlen, 3])
 
-        _horizon_scan(elevation, result, direction, seedpoints, sweeps)
+        pt = np.empty([3])
+        _horizon_scan(elevation, result, direction, seedpoints, sweeps, pt)
 
     result = 1.0 - result * 2.0 / np.pi
     return io.reshape(result)
@@ -53,45 +55,57 @@ def _generate_seedpoints(field, direction, seedpoints):
     assert nsweeps == s
     return nsweeps
 
-def _horizon_scan(heights, occlusion, direction, seedpoints, sweeps):
+@jit(nopython=True, fastmath=True)
+def _horizon_scan(heights, occlusion, direction, seedpoints, sweeps, pt):
     h, w = heights.shape[:2]
     cellw = 1 / max(w, h)
     cellh = 1 / max(w, h)
     nsweeps = len(sweeps)
-
+    thispt = pt
     for sweep in range(nsweeps):
         stack = sweeps[sweep]
         startpt = seedpoints[sweep]
         pathlen = 0
         i, j = startpt
-        ii, jj = np.clip(i, 0, w-1), np.clip(j, 0, h-1)
-        thispt = (i * cellw, j * cellh, heights[jj][ii])
+        ii, jj = min(max(0, i), w-1), min(max(0, j), h-1)
+
+        thispt[0] = i * cellw
+        thispt[1] = j * cellh
+        thispt[2] = heights[jj][ii]
+
         stack_top = 0
-        np.copyto(stack[stack_top], thispt)
+
+        stack[stack_top] = thispt
+
         i += direction[0]
         j += direction[1]
-        nsteps = 0
         while i >= 0 and i < w and j >= 0 and j < h:
-            thispt = (i * cellw, j * cellh, heights[j][i])
+
+            thispt[0] = i * cellw
+            thispt[1] = j * cellh
+            thispt[2] = heights[j][i]
+
             while stack_top > 0:
                 s1 = _azimuth_slope(thispt, stack[stack_top])
                 s2 = _azimuth_slope(thispt, stack[stack_top - 1])
                 if s1 >= s2: break
                 stack_top -= 1
+
             horizonpt = stack[stack_top]
             stack_top += 1
-            np.copyto(stack[stack_top], thispt)
+            stack[stack_top] = thispt
             occlusion[j][i] += _compute_occlusion(thispt, horizonpt)
             i += direction[0]
             j += direction[1]
-            nsteps += 1
 
+@jit(nopython=True, fastmath=True)
 def _azimuth_slope(a, b):
     d = a - b
     x = math.sqrt(d[0]**2 + d[1]**2)
     y = b[2] - a[2]
     return y / x
 
+@jit(nopython=True, fastmath=True)
 def _compute_occlusion(thispt, horizonpt):
     d = horizonpt - thispt
     dx = d[2] / np.linalg.norm(d)

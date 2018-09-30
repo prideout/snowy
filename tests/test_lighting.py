@@ -14,15 +14,16 @@ def path(filename: str):
 def test_ao():
 
     ref = sn.load(path('islands.png'))
-    sz, sz2 = 256, 512
+    sz, sz2 = 512, 1024
     ref = sn.resize(ref, height=sz)
     heightmap = ref[:,:sz,:]
     occlusion = ref[:,sz:sz2,:]
-    occlusion *= occlusion # <== make it more visually pronounced
+    occlusion = sn.unitize(occlusion)
     viz = sn.resize(np.hstack([heightmap, occlusion]), height=128)
     sn.show(viz)
 
     heightmap = heightmap[:,:,0:1]
-    occlusion = sn.unitize(sn.compute_skylight(heightmap))
+    occlusion = sn.compute_skylight(heightmap)
+    occlusion = sn.unitize(occlusion)
     viz = sn.resize(np.hstack([occlusion]), height=128)
     sn.show(viz)
