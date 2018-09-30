@@ -10,17 +10,17 @@ SWEEP_DIRECTIONS = np.int16([
     (1, 2), (1, -2), (-1, 2), (-1, -2) # Knight
 ])
 
-def compute_skylight(elevation):
+def compute_skylight(elevation, verbose=False):
     """Compute ambient occlusion from a height map."""
     height, width, nchan = elevation.shape
     assert nchan == 1
     elevation = elevation[:,:,0]
     result = np.zeros([height, width])
-    _compute_skylight(result, elevation)
+    _compute_skylight(result, elevation, verbose)
     result = np.clip(1.0 - result, 0, 1)
     return io.reshape(result)
 
-def _compute_skylight(dst, src):
+def _compute_skylight(dst, src, verbose):
     height, width = src.shape
     cnt = np.zeros(dst.shape, dtype='u8')
 
@@ -30,7 +30,8 @@ def _compute_skylight(dst, src):
 
     for direction in SWEEP_DIRECTIONS:
         nsweeps = _generate_seedpoints(src, direction, seedpoints)
-        print('Horizon direction: ', direction)
+        if verbose:
+            print('Horizon direction: ', direction)
         sweeps = np.empty([nsweeps, maxpathlen, 3])
         pts = np.empty([nsweeps, 3])
         _horizon_scan(src, dst, cnt, direction, seedpoints, sweeps, pts)
@@ -57,8 +58,8 @@ def _generate_seedpoints(field, direction, seedpoints):
     assert nsweeps == s
     return nsweeps
 
-SIG0 = "void(f8[:,:], f8[:,:], u8[:,:], i2[:], i2[:,:], f8[:,:,:], f8[:,:])"
-@jit([SIG0], nopython=True, fastmath=True, parallel=True)
+SIG0 = "void(f8[:,:],f8[:,:],u8[:,:],i2[:],i2[:,:],f8[:,:,:],f8[:,:])"
+@jit([SIG0], nopython=True, fastmath=True, parallel=True, cache=True)
 def _horizon_scan(heights, occlusion, counts, direction, seedpoints,
         sweeps, pts):
     h, w = heights.shape[:2]
