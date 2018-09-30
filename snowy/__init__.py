@@ -10,6 +10,7 @@ from .io import *
 from .ops import *
 from .distance import *
 from .noise import *
+from .lighting import *
 
 __all__ = '''
 GAUSSIAN HERMITE LANCZOS MITCHELL NEAREST TRIANGLE
@@ -48,6 +49,8 @@ generate_cpcf
 dereference_cpcf
 
 generate_noise
+
+compute_skylight
 '''.split()
 
 # deprecated functions:
