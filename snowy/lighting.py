@@ -17,11 +17,12 @@ def compute_skylight(elevation):
     elevation = elevation[:,:,0]
     result = np.zeros([height, width])
     _compute_skylight(result, elevation)
-    result = 1.0 - result * 2.0 / np.pi
+    result = np.clip(1.0 - result, 0, 1)
     return io.reshape(result)
 
 def _compute_skylight(dst, src):
     height, width = src.shape
+    cnt = np.zeros(dst.shape, dtype='u8')
 
     # TODO Fix allocation or explain the "3"
     seedpoints = np.empty([3 * max(width, height), 2], dtype='i2')
@@ -32,7 +33,10 @@ def _compute_skylight(dst, src):
         print('Horizon direction: ', direction)
         sweeps = np.empty([nsweeps, maxpathlen, 3])
         pts = np.empty([nsweeps, 3])
-        _horizon_scan(src, dst, direction, seedpoints, sweeps, pts)
+        _horizon_scan(src, dst, cnt, direction, seedpoints, sweeps, pts)
+
+    dst /= cnt
+    dst *= 4 / np.pi
 
 # TODO This function needs to be rewritten or documented.
 def _generate_seedpoints(field, direction, seedpoints):
@@ -53,9 +57,10 @@ def _generate_seedpoints(field, direction, seedpoints):
     assert nsweeps == s
     return nsweeps
 
-SIG0 = "void(f8[:,:], f8[:,:], i2[:], i2[:,:], f8[:,:,:], f8[:,:])"
+SIG0 = "void(f8[:,:], f8[:,:], u8[:,:], i2[:], i2[:,:], f8[:,:,:], f8[:,:])"
 @jit([SIG0], nopython=True, fastmath=True, parallel=True)
-def _horizon_scan(heights, occlusion, direction, seedpoints, sweeps, pts):
+def _horizon_scan(heights, occlusion, counts, direction, seedpoints,
+        sweeps, pts):
     h, w = heights.shape[:2]
     cellw = 1 / max(w, h)
     cellh = 1 / max(w, h)
@@ -110,6 +115,7 @@ def _horizon_scan(heights, occlusion, direction, seedpoints, sweeps, pts):
             d = horizonpt - thispt
             dx = d[2] / np.linalg.norm(d)
             occlusion[j][i] += math.atan(max(dx, 0))
+            counts[j][i] += 1
 
             i += direction[0]
             j += direction[1]
