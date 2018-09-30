@@ -18,12 +18,10 @@ def test_ao():
     ref = sn.resize(ref, height=sz)
     heightmap = ref[:,:sz,:]
     occlusion = ref[:,sz:sz2,:]
-    occlusion = sn.unitize(occlusion)
-    viz = sn.resize(np.hstack([heightmap, occlusion]), height=128)
+    viz = np.hstack([heightmap, occlusion])
     sn.show(viz)
 
     heightmap = heightmap[:,:,0:1]
     occlusion = sn.compute_skylight(heightmap)
-    occlusion = sn.unitize(occlusion)
-    viz = sn.resize(np.hstack([occlusion]), height=128)
+    viz = np.hstack([occlusion])
     sn.show(viz)
