@@ -51,6 +51,7 @@ dereference_cpcf
 generate_noise
 
 compute_skylight
+compute_normals
 '''.split()
 
 # deprecated functions:

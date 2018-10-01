@@ -20,6 +20,31 @@ def compute_skylight(elevation, verbose=False):
     result = np.clip(1.0 - result, 0, 1)
     return io.reshape(result)
 
+def compute_normals(elevation):
+    """Generate a vec3 field from a height map."""
+    h, w, nchan = elevation.shape
+    assert nchan == 1
+    normals = np.empty([h-1, w-1, 3])
+    _compute_normals(elevation[:,:,0], normals)
+    return normals
+
+@jit(nopython=True, fastmath=True, parallel=True)
+def _compute_normals(el, normals):
+    h, w = normals.shape[:2]
+    for row in prange(h):
+        for col in prange(w):
+            p =  np.float64((col / w, row / h, el[row][col]))
+            dx = np.float64(((col+1) / w, row / h, el[row][col+1]))
+            dy = np.float64((col / w, (row+1) / h, el[row+1][col]))
+            v1 = dx - p
+            v2 = dy - p
+            n = np.float64((
+                    (v1[1] * v2[2]) - (v1[2] * v2[1]),
+                    (v1[2] * v2[0]) - (v1[0] * v2[2]),
+                    (v1[0] * v2[1]) - (v1[1] * v2[0])))
+            isq = 1 / np.linalg.norm(n)
+            normals[row][col] = n * isq
+
 def _compute_skylight(dst, src, verbose):
     height, width = src.shape
     cnt = np.zeros(dst.shape, dtype='u8')
@@ -59,7 +84,7 @@ def _generate_seedpoints(field, direction, seedpoints):
     return nsweeps
 
 SIG0 = "void(f8[:,:],f8[:,:],u8[:,:],i2[:],i2[:,:],f8[:,:,:],f8[:,:])"
-@jit([SIG0], nopython=True, fastmath=True, parallel=True, cache=True)
+@jit([SIG0], nopython=True, fastmath=True, parallel=True)
 def _horizon_scan(heights, occlusion, counts, direction, seedpoints,
         sweeps, pts):
     h, w = heights.shape[:2]

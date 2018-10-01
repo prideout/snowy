@@ -48,4 +48,8 @@ def test_ao():
 
     isle = create_island(10)
     occlusion = sn.compute_skylight(isle)
-    sn.show(sn.resize(sn.hstack([isle, occlusion]), height=256))
+    normals = 0.5 * (sn.compute_normals(isle) + 1.0)
+    normals = sn.resize(normals, 750, 512)
+    isle = np.dstack([isle, isle, isle])
+    occlusion = np.dstack([occlusion, occlusion, occlusion])
+    sn.show(sn.resize(sn.hstack([isle, occlusion, normals]), height=256))
