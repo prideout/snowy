@@ -14,17 +14,19 @@ def compute_skylight(elevation, verbose=False):
     """Compute ambient occlusion from a height map."""
     height, width, nchan = elevation.shape
     assert nchan == 1
-    elevation = elevation[:,:,0]
     result = np.zeros([height, width])
-    _compute_skylight(result, elevation, verbose)
-    result = np.clip(1.0 - result, 0, 1)
-    return io.reshape(result)
+    _compute_skylight(result, elevation[:,:,0], verbose)
+    return io.reshape(np.clip(1.0 - result, 0, 1))
 
 def compute_normals(elevation):
-    """Generate a vec3 field from a height map."""
-    h, w, nchan = elevation.shape
+    """Generate a 3-channel normal map from a height map.
+
+    The normal components are in the range [-1,+1] and the size of the
+    normal map is (width-1, height-1) due to forward differencing.
+    """
+    height, width, nchan = elevation.shape
     assert nchan == 1
-    normals = np.empty([h-1, w-1, 3])
+    normals = np.empty([height - 1, width - 1, 3])
     _compute_normals(elevation[:,:,0], normals)
     return normals
 
@@ -32,7 +34,7 @@ def compute_normals(elevation):
 def _compute_normals(el, normals):
     h, w = normals.shape[:2]
     for row in prange(h):
-        for col in prange(w):
+        for col in range(w):
             p =  np.float64((col / w, row / h, el[row][col]))
             dx = np.float64(((col+1) / w, row / h, el[row][col+1]))
             dy = np.float64((col / w, (row+1) / h, el[row+1][col]))

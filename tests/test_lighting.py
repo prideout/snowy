@@ -46,9 +46,18 @@ def test_ao():
     viz = np.hstack([occlusion])
     sn.show(viz)
 
+def test_normals():
     isle = create_island(10)
     occlusion = sn.compute_skylight(isle)
-    normals = 0.5 * (sn.compute_normals(isle) + 1.0)
+
+    import timeit
+    height, width, nchan = isle.shape
+    normals = np.empty([height - 1, width - 1, 3])
+    seconds = timeit.timeit(lambda: np.copyto(normals,
+            sn.compute_normals(isle)), number=1)
+    print(f'\ncompute_normals took {seconds} seconds')
+
+    normals = 0.5 * (normals + 1.0)
     normals = sn.resize(normals, 750, 512)
     isle = np.dstack([isle, isle, isle])
     occlusion = np.dstack([occlusion, occlusion, occlusion])
