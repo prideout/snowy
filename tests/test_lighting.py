@@ -6,6 +6,7 @@
 import os
 import snowy as sn
 import numpy as np
+from scipy import interpolate
 
 def path(filename: str):
     scriptdir = os.path.dirname(os.path.realpath(__file__))
@@ -31,21 +32,6 @@ def create_island(seed, freq=3.5):
     elevation = sn.unitize(sn.generate_udf(mask))
     return np.power(elevation, 3.0)
 
-def test_ao():
-
-    ref = sn.load(path('islands.png'))
-    sz, sz2 = 128, 256
-    ref = sn.resize(ref, height=sz)
-    heightmap = ref[:,:sz,:]
-    occlusion = ref[:,sz:sz2,:]
-    viz = np.hstack([heightmap, occlusion])
-    sn.show(viz)
-
-    heightmap = heightmap[:,:,0:1]
-    occlusion = sn.compute_skylight(heightmap)
-    viz = np.hstack([occlusion])
-    sn.show(viz)
-
 def test_normals():
     isle = create_island(10)
     occlusion = sn.compute_skylight(isle)
@@ -57,8 +43,33 @@ def test_normals():
             sn.compute_normals(isle)), number=1)
     print(f'\ncompute_normals took {seconds} seconds')
 
-    normals = 0.5 * (normals + 1.0)
     normals = sn.resize(normals, 750, 512)
+
+    # Flatten the normals just a bit
+    normals += np.float64([0,0,1])
+    normals /= sn.reshape(np.sqrt(np.sum(normals * normals, 2)))
+
+    # Compute the lambertian diffuse factor
+    lightdir = np.float64([0.2, -0.2, 1])
+    lightdir /= np.linalg.norm(lightdir)
+    df = np.clip(np.sum(normals * lightdir, 2), 0, 1)
+    df = sn.reshape(df)
+    df *= occlusion
+
+    # Apply color LUT
+    gradient_image = sn.resize(sn.load(path('gradient.png')), width=1024)[:,:,:3]
+    def applyColorGradient(elevation):
+        xvals = np.arange(1024)
+        yvals = gradient_image[0]
+        apply_lut = interpolate.interp1d(xvals, yvals, axis=0)
+        el = np.clip(1023 * elevation, 0, 1023)
+        return apply_lut(sn.unshape(el))
+    albedo = applyColorGradient(isle * 0.5 + 0.55)
+    albedo *= df
+
+    # Visualize the lighting layers
+    normals = 0.5 * (normals + 1.0)
     isle = np.dstack([isle, isle, isle])
     occlusion = np.dstack([occlusion, occlusion, occlusion])
-    sn.show(sn.resize(sn.hstack([isle, occlusion, normals]), height=256))
+    df = np.dstack([df, df, df])
+    sn.show(sn.resize(sn.hstack([isle, occlusion, normals, df, albedo]), height=256))
