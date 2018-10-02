@@ -30,10 +30,10 @@ def compute_normals(elevation):
     _compute_normals(elevation[:,:,0], normals)
     return normals
 
-@jit(nopython=True, fastmath=True, parallel=True)
+@jit(nopython=True, fastmath=True, cache=True)
 def _compute_normals(el, normals):
     h, w = normals.shape[:2]
-    for row in prange(h):
+    for row in range(h):
         for col in range(w):
             p =  np.float64((col / w, row / h, el[row][col]))
             dx = np.float64(((col+1) / w, row / h, el[row][col+1]))

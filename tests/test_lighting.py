@@ -7,6 +7,7 @@ import os
 import snowy as sn
 import numpy as np
 from scipy import interpolate
+import timeit
 
 def path(filename: str):
     scriptdir = os.path.dirname(os.path.realpath(__file__))
@@ -28,16 +29,20 @@ def create_island(seed, freq=3.5):
     n3 = 0.250 * sn.generate_noise(w, h, freq*4, seed+2)
     n4 = 0.125 * sn.generate_noise(w, h, freq*8, seed+3)
     elevation = falloff * (falloff / 2 + n1 + n2 + n3 + n4)
-    mask = elevation < 0.4
-    elevation = sn.unitize(sn.generate_udf(mask))
-    return np.power(elevation, 3.0)
+    elevation = sn.generate_sdf(elevation < 0.4)
+    elmax = max(abs(np.amin(elevation)), abs(np.amax(elevation)))
+    return elevation / elmax
 
 def test_normals():
     isle = create_island(10)
-    occlusion = sn.compute_skylight(isle)
-
-    import timeit
+    print(np.amin(isle), np.amax(isle))
     height, width, nchan = isle.shape
+
+    occlusion = np.empty([height, width, 1])
+    seconds = timeit.timeit(lambda: np.copyto(occlusion,
+            sn.compute_skylight(isle)), number=1)
+    print(f'\ncompute_skylight took {seconds} seconds')
+
     normals = np.empty([height - 1, width - 1, 3])
     seconds = timeit.timeit(lambda: np.copyto(normals,
             sn.compute_normals(isle)), number=1)
@@ -45,8 +50,8 @@ def test_normals():
 
     normals = sn.resize(normals, 750, 512)
 
-    # Flatten the normals just a bit
-    normals += np.float64([0,0,1])
+    # Flatten the normals according to landmass versus sea.
+    normals += np.float64([0,0,100]) * np.where(isle < 0.0, 1.0, 0.005)
     normals /= sn.reshape(np.sqrt(np.sum(normals * normals, 2)))
 
     # Compute the lambertian diffuse factor
@@ -57,14 +62,14 @@ def test_normals():
     df *= occlusion
 
     # Apply color LUT
-    gradient_image = sn.resize(sn.load(path('gradient.png')), width=1024)[:,:,:3]
+    gradient_image = sn.resize(sn.load(path('terrain.png')), width=1024)[:,:,:3]
     def applyColorGradient(elevation):
         xvals = np.arange(1024)
         yvals = gradient_image[0]
         apply_lut = interpolate.interp1d(xvals, yvals, axis=0)
         el = np.clip(1023 * elevation, 0, 1023)
         return apply_lut(sn.unshape(el))
-    albedo = applyColorGradient(isle * 0.5 + 0.55)
+    albedo = applyColorGradient(isle * 0.5 + 0.5)
     albedo *= df
 
     # Visualize the lighting layers
