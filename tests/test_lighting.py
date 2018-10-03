@@ -35,7 +35,6 @@ def create_island(seed, freq=3.5):
 
 def test_normals():
     isle = create_island(10)
-    print(np.amin(isle), np.amax(isle))
     height, width, nchan = isle.shape
 
     occlusion = np.empty([height, width, 1])
@@ -77,4 +76,6 @@ def test_normals():
     isle = np.dstack([isle, isle, isle])
     occlusion = np.dstack([occlusion, occlusion, occlusion])
     df = np.dstack([df, df, df])
-    sn.show(sn.resize(sn.hstack([isle, occlusion, normals, df, albedo]), height=256))
+    island_strip = sn.resize(sn.hstack([occlusion, normals, df, albedo]), height=256)
+    sn.save(island_strip, 'docs/island_strip.png')
+    sn.show(island_strip)

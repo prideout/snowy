@@ -192,7 +192,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.4 ~ <a href="https://github.com/prideout/snowy/tree/2e4a289">2e4a289</a></small>
+<small>v0.0.5 ~ <a href="https://github.com/prideout/snowy/tree/34beebe">34beebe</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><a href="index.html">User's Guide</a> | <strong>API Reference</strong></p>
 <hr/>
@@ -214,8 +214,20 @@ C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 <td>Draw an image with premultiplied alpha over the destination.</td>
 <tr>
 <tr>
+<td><a href="#compute_normals">compute_normals</a></td>
+<td>Generate a 3-channel normal map from a height map.</td>
+<tr>
+<tr>
+<td><a href="#compute_skylight">compute_skylight</a></td>
+<td>Compute ambient occlusion from a height map.</td>
+<tr>
+<tr>
 <td><a href="#delinearize">delinearize</a></td>
 <td>Transform colors from physically linear to perceptually linear.</td>
+<tr>
+<tr>
+<td><a href="#dereference_cpcf">dereference_cpcf</a></td>
+<td>For each coordinate in the cpcf, make a lookup in th source.</td>
 <tr>
 <tr>
 <td><a href="#ensure_alpha">ensure_alpha</a></td>
@@ -236,6 +248,10 @@ C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 <tr>
 <td><a href="#from_planar">from_planar</a></td>
 <td>Create a channel-major image into row-major image.</td>
+<tr>
+<tr>
+<td><a href="#generate_cpcf">generate_cpcf</a></td>
+<td>Create closest point coordinate field from a boolean field.</td>
 <tr>
 <tr>
 <td><a href="#generate_gdf">generate_gdf</a></td>
@@ -309,7 +325,7 @@ C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 <td><a href="#vstack">vstack</a></td>
 <td>Vertically concatenate a list of images with a border.</td>
 <tr>
-</tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></table>
+</tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></table>
 <hr/>
 <h3 id="add_border"><a href="#add_border">add_border</a></h3>
 <p>
@@ -356,6 +372,28 @@ Draw an image with premultiplied alpha over the destination.
         <span class="k">return</span> <span class="n">extract_rgb</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">result</span>
 </pre></div>
+<h3 id="compute_normals"><a href="#compute_normals">compute_normals</a></h3>
+<p>
+Generate a 3-channel normal map from a height map.  The normal components are in the range [-1,+1] and the size of the normal map is (width-1, height-1) due to forward differencing.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_normals</span><span class="p">(</span><span class="n">elevation</span><span class="p">):</span>
+    <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">nchan</span> <span class="o">=</span> <span class="n">elevation</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">assert</span> <span class="n">nchan</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="n">normals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">([</span><span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
+    <span class="n">_compute_normals</span><span class="p">(</span><span class="n">elevation</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">normals</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">normals</span>
+</pre></div>
+<h3 id="compute_skylight"><a href="#compute_skylight">compute_skylight</a></h3>
+<p>
+Compute ambient occlusion from a height map.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_skylight</span><span class="p">(</span><span class="n">elevation</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">nchan</span> <span class="o">=</span> <span class="n">elevation</span><span class="o">.</span><span class="n">shape</span>
+    <span class="k">assert</span> <span class="n">nchan</span> <span class="o">==</span> <span class="mi">1</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">])</span>
+    <span class="n">_compute_skylight</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">elevation</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">verbose</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">result</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+</pre></div>
 <h3 id="delinearize"><a href="#delinearize">delinearize</a></h3>
 <p>
 Transform colors from physically linear to perceptually linear.  This is automatically performed when using <a href="#export">export</a> to a PNG or JPEG. See also <a href="#linearize">linearize</a>.
@@ -364,6 +402,18 @@ Transform colors from physically linear to perceptually linear.  This is automat
     <span class="k">if</span> <span class="n">source_space</span> <span class="o">==</span> <span class="n">SRGB</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">linear_to_sRGB</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">linear_to_gamma</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+</pre></div>
+<h3 id="dereference_cpcf"><a href="#dereference_cpcf">dereference_cpcf</a></h3>
+<p>
+For each coordinate in the cpcf, make a lookup in th source. This is useful for creating generalized voronoi diagrams.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">dereference_cpcf</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">cpcf</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">cpcf</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
+    <span class="k">assert</span> <span class="n">cpcf</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'Coordinate must be 2-tuples'</span>
+    <span class="n">voronoi</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">_deref_cpcf</span><span class="p">(</span><span class="n">voronoi</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">cpcf</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">voronoi</span>
 </pre></div>
 <h3 id="ensure_alpha"><a href="#ensure_alpha">ensure_alpha</a></h3>
 <p>
@@ -410,6 +460,16 @@ Create a channel-major image into row-major image.  This creates a copy, not a v
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">from_planar</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">dstack</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+</pre></div>
+<h3 id="generate_cpcf"><a href="#generate_cpcf">generate_cpcf</a></h3>
+<p>
+Create closest point coordinate field from a boolean field.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">generate_cpcf</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="n">image</span><span class="o">.</span><span class="n">dtype</span> <span class="o">==</span> <span class="s1">'bool'</span><span class="p">,</span> <span class="s1">'Pixel values must be boolean'</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
+    <span class="k">assert</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'Image must be grayscale'</span>
+    <span class="k">return</span> <span class="n">_generate_cpcf</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
 </pre></div>
 <h3 id="generate_gdf"><a href="#generate_gdf">generate_gdf</a></h3>
 <p>
