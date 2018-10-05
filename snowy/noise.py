@@ -13,6 +13,22 @@ def generate_noise(width, height, frequency, seed=1, wrapx=False,
     """
     return _noise(width, height, frequency, seed, wrapx, wrapy, offset)
 
+def generate_fBm(width, height, freq, layers, seed, lacunarity=2,
+        persistence=2, wrapx=False, wrapy=False):
+    """Generate 2D fractional brownian motion by adding layers of noise.
+
+    See also <a href="#generate_noise">generate_noise</a>.
+    """
+    noise = snowy.generate_noise
+    n = np.zeros([height, width, 1])
+    amplitude = 1
+    for f in range(layers):
+        lseed = seed + int(f)
+        n += amplitude * noise(width, height, freq, lseed, wrapx, wrapy)
+        freq *= lacunarity
+        amplitude /= persistence
+    return n
+
 def _noise(width, height, frequency, seed, wrapx, wrapy, offset):
     nrows, ncols = int(height), int(width)
     table = Noise(seed)

@@ -45,7 +45,9 @@ def test_cpcf():
     mask = luma != 0.0
     sdf = snowy.unitize(np.abs(snowy.generate_sdf(mask)))
     cpcf = snowy.generate_cpcf(mask)
-    voronoi = snowy.dereference_cpcf(circles, cpcf)
+
+    voronoi = np.empty(circles.shape)
+    np.copyto(voronoi, snowy.dereference_coords(circles, cpcf))
 
     luma = np.dstack([luma, luma, luma])
     sdf = np.dstack([sdf, sdf, sdf])

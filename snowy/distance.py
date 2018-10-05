@@ -39,22 +39,27 @@ def generate_cpcf(image: np.ndarray):
     assert image.shape[2] == 1, 'Image must be grayscale'
     return _generate_cpcf(image)
 
-def dereference_cpcf(source: np.ndarray, cpcf: np.ndarray):
+def dereference_coords(source: np.ndarray, coords: np.ndarray):
     """
-    For each coordinate in the cpcf, make a lookup in th source.
+    For each 2D value in the coord field, make a lookup in the source.
     This is useful for creating generalized voronoi diagrams.
     """
-    assert len(cpcf.shape) == 3, 'Shape is not rows x cols x channels'
+    assert len(coords.shape) == 3, 'Shape is not rows x cols x channels'
     assert len(source.shape) == 3, 'Shape is not rows x cols x channels'
-    assert cpcf.shape[2] == 2, 'Coordinate must be 2-tuples'
+    assert coords.shape[2] == 2, 'Coordinate must be 2-tuples'
     voronoi = source.copy()
-    _deref_cpcf(voronoi, source, cpcf)
+    height, width = source.shape[:2]
+    coords = coords.copy()
+    coords[:,:,0] = np.clip(coords[:,:,0], 0, width - 1)
+    coords[:,:,1] = np.clip(coords[:,:,1], 0, height - 1)
+    _deref_coords(voronoi, source, coords)
     return voronoi
 
-def _deref_cpcf(voronoi, source, cpcf):
-    for y in range(cpcf.shape[0]):
-        for x in range(cpcf.shape[1]):
-            i, j = cpcf[y][x]
+@jit(nopython=True, fastmath=True, cache=True)
+def _deref_coords(voronoi, source, coords):
+    for y in range(coords.shape[0]):
+        for x in range(coords.shape[1]):
+            i, j = coords[y][x]
             voronoi[y][x] = source[j][i]
 
 def _generate_gdt(image, wrapx, wrapy):
