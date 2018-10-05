@@ -11,6 +11,7 @@ from .ops import *
 from .distance import *
 from .noise import *
 from .lighting import *
+from .color import *
 
 __all__ = '''
 GAUSSIAN HERMITE LANCZOS MITCHELL NEAREST TRIANGLE
@@ -46,9 +47,10 @@ generate_gdf
 generate_sdf
 generate_udf
 generate_cpcf
-dereference_cpcf
+dereference_coords
 
 generate_noise
+generate_fBm
 
 compute_skylight
 compute_normals
@@ -56,3 +58,4 @@ compute_normals
 
 # deprecated functions:
 save = export
+dereference_cpcf = dereference_coords

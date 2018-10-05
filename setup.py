@@ -15,6 +15,7 @@ setuptools.setup(
         'imageio>=2.3',
         'numpy>=1.14',
         'numba>=0.39',
+        'scipy>=0.16',
     ],
     url="https://github.com/prideout/snowy",
     packages=setuptools.find_packages(),
