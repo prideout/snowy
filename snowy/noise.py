@@ -19,7 +19,7 @@ def generate_fBm(width, height, freq, layers, seed, lacunarity=2,
 
     See also <a href="#generate_noise">generate_noise</a>.
     """
-    noise = snowy.generate_noise
+    noise = generate_noise
     n = np.zeros([height, width, 1])
     amplitude = 1
     for f in range(layers):
