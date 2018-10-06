@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="snowy",
-    version="0.0.5",
+    version="0.0.6",
     author="Philip Rideout",
     description="Small Image Library for Python 3",
     long_description=long_description,

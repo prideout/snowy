@@ -192,7 +192,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.5 ~ <a href="https://github.com/prideout/snowy/tree/34beebe">34beebe</a></small>
+<small>v0.0.6 ~ <a href="https://github.com/prideout/snowy/tree/3ebc0a7">3ebc0a7</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><a href="index.html">User's Guide</a> | <strong>API Reference</strong></p>
 <hr/>
@@ -222,12 +222,20 @@ C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 <td>Compute ambient occlusion from a height map.</td>
 <tr>
 <tr>
+<td><a href="#compute_sobel">compute_sobel</a></td>
+<td>Apply Sobel operator for edge detection.</td>
+<tr>
+<tr>
 <td><a href="#delinearize">delinearize</a></td>
 <td>Transform colors from physically linear to perceptually linear.</td>
 <tr>
 <tr>
+<td><a href="#dereference_coords">dereference_coords</a></td>
+<td>For each 2D value in the coord field, make a lookup in the source.</td>
+<tr>
+<tr>
 <td><a href="#dereference_cpcf">dereference_cpcf</a></td>
-<td>For each coordinate in the cpcf, make a lookup in th source.</td>
+<td>For each 2D value in the coord field, make a lookup in the source.</td>
 <tr>
 <tr>
 <td><a href="#ensure_alpha">ensure_alpha</a></td>
@@ -252,6 +260,10 @@ C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 <tr>
 <td><a href="#generate_cpcf">generate_cpcf</a></td>
 <td>Create closest point coordinate field from a boolean field.</td>
+<tr>
+<tr>
+<td><a href="#generate_fBm">generate_fBm</a></td>
+<td>Generate 2D fractional brownian motion by adding layers of noise.</td>
 <tr>
 <tr>
 <td><a href="#generate_gdf">generate_gdf</a></td>
@@ -298,6 +310,10 @@ C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 <td>Create a new numpy image with the desired size.</td>
 <tr>
 <tr>
+<td><a href="#rgb_to_luminance">rgb_to_luminance</a></td>
+<td>Read the first three color planes and return a grayscale image.</td>
+<tr>
+<tr>
 <td><a href="#rotate">rotate</a></td>
 <td>Rotate image counter-clockwise by a multiple of 90 degrees.</td>
 <tr>
@@ -325,7 +341,7 @@ C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 <td><a href="#vstack">vstack</a></td>
 <td>Vertically concatenate a list of images with a border.</td>
 <tr>
-</tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></table>
+</tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></table>
 <hr/>
 <h3 id="add_border"><a href="#add_border">add_border</a></h3>
 <p>
@@ -394,6 +410,24 @@ Compute ambient occlusion from a height map.
     <span class="n">_compute_skylight</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">elevation</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">],</span> <span class="n">verbose</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">result</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
 </pre></div>
+<h3 id="compute_sobel"><a href="#compute_sobel">compute_sobel</a></h3>
+<p>
+Apply Sobel operator for edge detection.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">compute_sobel</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="s2">"Apply Sobel operator for edge detection."</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
+    <span class="k">assert</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'Image must be grayscale'</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">_compute_sobel</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+ <span class="n">compute_sobel</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="s2">"Apply Sobel operator for edge detection."</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
+    <span class="k">assert</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'Image must be grayscale'</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+    <span class="n">_compute_sobel</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">image</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">result</span>
+</pre></div>
 <h3 id="delinearize"><a href="#delinearize">delinearize</a></h3>
 <p>
 Transform colors from physically linear to perceptually linear.  This is automatically performed when using <a href="#export">export</a> to a PNG or JPEG. See also <a href="#linearize">linearize</a>.
@@ -403,16 +437,36 @@ Transform colors from physically linear to perceptually linear.  This is automat
         <span class="k">return</span> <span class="n">linear_to_sRGB</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">linear_to_gamma</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
 </pre></div>
+<h3 id="dereference_coords"><a href="#dereference_coords">dereference_coords</a></h3>
+<p>
+For each 2D value in the coord field, make a lookup in the source. This is useful for creating generalized voronoi diagrams.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">dereference_coords</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
+    <span class="k">assert</span> <span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'Coordinate must be 2-tuples'</span>
+    <span class="n">voronoi</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">coords</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">coords</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">coords</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">coords</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">coords</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">_deref_coords</span><span class="p">(</span><span class="n">voronoi</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">voronoi</span>
+</pre></div>
 <h3 id="dereference_cpcf"><a href="#dereference_cpcf">dereference_cpcf</a></h3>
 <p>
-For each coordinate in the cpcf, make a lookup in th source. This is useful for creating generalized voronoi diagrams.
+For each 2D value in the coord field, make a lookup in the source. This is useful for creating generalized voronoi diagrams.
 </p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">dereference_cpcf</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">cpcf</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
-    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">cpcf</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">dereference_coords</span><span class="p">(</span><span class="n">source</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">coords</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
-    <span class="k">assert</span> <span class="n">cpcf</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'Coordinate must be 2-tuples'</span>
+    <span class="k">assert</span> <span class="n">coords</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">2</span><span class="p">,</span> <span class="s1">'Coordinate must be 2-tuples'</span>
     <span class="n">voronoi</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
-    <span class="n">_deref_cpcf</span><span class="p">(</span><span class="n">voronoi</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">cpcf</span><span class="p">)</span>
+    <span class="n">height</span><span class="p">,</span> <span class="n">width</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">[:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">coords</span> <span class="o">=</span> <span class="n">coords</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">coords</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">coords</span><span class="p">[:,:,</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">width</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">coords</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">coords</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">_deref_coords</span><span class="p">(</span><span class="n">voronoi</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">voronoi</span>
 </pre></div>
 <h3 id="ensure_alpha"><a href="#ensure_alpha">ensure_alpha</a></h3>
@@ -470,6 +524,22 @@ Create closest point coordinate field from a boolean field.
     <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Shape is not rows x cols x channels'</span>
     <span class="k">assert</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">'Image must be grayscale'</span>
     <span class="k">return</span> <span class="n">_generate_cpcf</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+</pre></div>
+<h3 id="generate_fbm"><a href="#generate_fbm">generate_fBm</a></h3>
+<p>
+Generate 2D fractional brownian motion by adding layers of noise.  See also <a href="#generate_noise">generate_noise</a>.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">generate_fBm</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">layers</span><span class="p">,</span> <span class="n">seed</span><span class="p">,</span> <span class="n">lacunarity</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="n">persistence</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">wrapx</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">wrapy</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="n">noise</span> <span class="o">=</span> <span class="n">snowy</span><span class="o">.</span><span class="n">generate_noise</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">([</span><span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span>
+    <span class="n">amplitude</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">layers</span><span class="p">):</span>
+        <span class="n">lseed</span> <span class="o">=</span> <span class="n">seed</span> <span class="o">+</span> <span class="nb">int</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="n">n</span> <span class="o">+=</span> <span class="n">amplitude</span> <span class="o">*</span> <span class="n">noise</span><span class="p">(</span><span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="n">freq</span><span class="p">,</span> <span class="n">lseed</span><span class="p">,</span> <span class="n">wrapx</span><span class="p">,</span> <span class="n">wrapy</span><span class="p">)</span>
+        <span class="n">freq</span> <span class="o">*=</span> <span class="n">lacunarity</span>
+        <span class="n">amplitude</span> <span class="o">/=</span> <span class="n">persistence</span>
+    <span class="k">return</span> <span class="n">n</span>
 </pre></div>
 <h3 id="generate_gdf"><a href="#generate_gdf">generate_gdf</a></h3>
 <p>
@@ -589,6 +659,20 @@ Create a new numpy image with the desired size.  Either width or height can be n
     <span class="n">magnifying</span> <span class="o">=</span> <span class="n">width</span> <span class="o">&gt;</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
     <span class="k">if</span> <span class="nb">filter</span> <span class="o">==</span> <span class="bp">None</span><span class="p">:</span> <span class="nb">filter</span> <span class="o">=</span> <span class="n">MITCHELL</span> <span class="k">if</span> <span class="n">magnifying</span> <span class="k">else</span> <span class="n">LANCZOS</span>
     <span class="k">return</span> <span class="n">resample</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">height</span><span class="p">,</span> <span class="nb">filter</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">wrapx</span><span class="p">,</span> <span class="n">wrapy</span><span class="p">)</span>
+</pre></div>
+<h3 id="rgb_to_luminance"><a href="#rgb_to_luminance">rgb_to_luminance</a></h3>
+<p>
+Read the first three color planes and return a grayscale image.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">rgb_to_luminance</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="s2">"Read the first three color planes and return a grayscale image."</span>
+    <span class="k">assert</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span>
+    <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dsplit</span><span class="p">(</span><span class="n">image</span><span class="p">[:,:,:</span><span class="mi">3</span><span class="p">],</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+ <span class="n">rgb_to_luminance</span><span class="p">(</span><span class="n">image</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="s2">"Read the first three color planes and return a grayscale image."</span>
+    <span class="k">assert</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">3</span>
+    <span class="n">r</span><span class="p">,</span> <span class="n">g</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dsplit</span><span class="p">(</span><span class="n">image</span><span class="p">[:,:,:</span><span class="mi">3</span><span class="p">],</span> <span class="n">image</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+    <span class="k">return</span> <span class="n">io</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mf">0.2125</span> <span class="o">*</span> <span class="n">r</span> <span class="o">+</span> <span class="mf">0.7154</span> <span class="o">*</span> <span class="n">g</span> <span class="o">+</span> <span class="mf">0.0721</span> <span class="o">*</span> <span class="n">b</span><span class="p">)</span>
 </pre></div>
 <h3 id="rotate"><a href="#rotate">rotate</a></h3>
 <p>

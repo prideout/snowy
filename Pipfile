@@ -11,6 +11,8 @@ numpy = "*"
 imageio = "*"
 numba = "*"
 scipy = "*"
+pytest = "*"
+scikit-image = "*"
 
 [dev-packages]
 
