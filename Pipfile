@@ -13,6 +13,7 @@ numba = "*"
 scipy = "*"
 pytest = "*"
 scikit-image = "*"
+twine = "*"
 
 [dev-packages]
 
