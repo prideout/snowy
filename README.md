@@ -18,17 +18,10 @@ Painting and 2D paths are outside the scope of the library. See
 
 <!--
 
-color.py and test_color.py
-    rgb2gray and compute_sobel operators as seen in skimage
-        https://github.com/prideout/heman/blob/master/src/ops.c#L177
-        http://scikit-image.org/docs/dev/auto_examples/color_exposure/plot_adapt_rgb.html#sphx-glr-auto-examples-color-exposure-plot-adapt-rgb-py
-
 add new section to the doc "Coordinate fields" : mentions CPCF and Warping
     add generate_coords function (should take a dtype)
 
 add "apply_gradient" to color.py
-
-------------------------------------------------
 
 compute_skylight should take wrapx and wrapy
 

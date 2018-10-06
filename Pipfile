@@ -1,0 +1,18 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+"bs4" = "*"
+pygments = "*"
+commonmark = "*"
+numpy = "*"
+imageio = "*"
+numba = "*"
+scipy = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.7"
