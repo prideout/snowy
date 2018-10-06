@@ -54,6 +54,8 @@ generate_fBm
 
 compute_skylight
 compute_normals
+
+rgb_to_luminance
 '''.split()
 
 # deprecated functions:
