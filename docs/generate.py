@@ -283,6 +283,7 @@ def generate_page(sourcefile, resultfile, genref):
             deprecated = name == 'save'
             if deprecated:
                 continue
+            lname = name.lower()
             doc = inspect.getdoc(value)
             src = inspect.getsource(value)
             dsbegin = src.find(r'"""')
@@ -294,7 +295,7 @@ def generate_page(sourcefile, resultfile, genref):
             if doc:
                 doclines = doc.split('\n')
                 quickref += '<tr>\n'
-                quickref += f'<td><a href="#{name}">{name}</a></td>\n'
+                quickref += f'<td><a href="#{lname}">{name}</a></td>\n'
                 quickref += f'<td>{doclines[0]}</td>\n'
                 quickref += '<tr>\n'
                 htmlfile.write(f'<h3>{name}</h3>\n<p>\n')
