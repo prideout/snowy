@@ -12,6 +12,7 @@ from .distance import *
 from .noise import *
 from .lighting import *
 from .color import *
+from .draw import *
 
 __all__ = '''
 GAUSSIAN HERMITE LANCZOS MITCHELL NEAREST TRIANGLE
@@ -56,6 +57,10 @@ compute_skylight
 compute_normals
 
 rgb_to_luminance
+compute_sobel
+
+draw_triangle
+draw_polygon
 '''.split()
 
 # deprecated functions:
