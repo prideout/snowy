@@ -1,7 +1,7 @@
-from numba import jit
 from numba import guvectorize
+
 import numpy as np
-from . import io
+import math
 
 def draw_polygon(target: np.ndarray, source: np.ndarray,
               vertices: np.ndarray):
@@ -67,6 +67,18 @@ def draw_triangle(target: np.ndarray, source: np.ndarray,
     v2 = v2.astype(np.float32, copy=False)
     uv = uv.astype(np.float32, copy=False)
     w = w.astype(np.float32, copy=False)
+
+    maxx = math.ceil(max([v0[0], v1[0], v2[0]]))
+    maxy = math.ceil(max([v0[1], v1[1], v2[1]]))
+    minx = math.floor(min([v0[0], v1[0], v2[0]]))
+    miny = math.floor(min([v0[1], v1[1], v2[1]]))
+    target = target[miny:maxy+1,minx:maxx+1,:]
+    v0[0] -= minx
+    v1[0] -= minx
+    v2[0] -= minx
+    v0[1] -= miny
+    v1[1] -= miny
+    v2[1] -= miny
 
     _rasterize(target, source, area, v0, v1, v2, uv, w)
 
