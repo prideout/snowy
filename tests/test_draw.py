@@ -6,6 +6,7 @@
 import snowy
 import numpy as np
 import pytest
+import timeit
 
 w, h = 1920 / 4, 1080 / 4
 
@@ -74,10 +75,14 @@ def test_draw_quad():
     voronoi = snowy.dereference_coords(circles, cpcf)
     show(voronoi)
 
-    target = np.full((200, 400, 4), (0, 0, 0, 1), dtype=np.float32)
-    snowy.draw_polygon(target, voronoi, np.array([
+    target = np.full((2000, 4000, 4), (0, 0, 0, 1), dtype=np.float32)
+
+    seconds = timeit.timeit(lambda: snowy.draw_polygon(
+            target, voronoi, np.array([
         (-1., -1, 1., 0., 1.),
         (-.5, +1, 1., 0., 0.),
         (+.5, +1, 1., 1., 0.),
-        (+1., -1, 1., 1., 1.) ]))
+        (+1., -1, 1., 1., 1.) ])), number=1)
+
     show(target)
+    print(seconds)
