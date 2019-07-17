@@ -24,6 +24,7 @@ def create_circle(w, h, radius=0.4, cx=0.5, cy=0.5):
     result = 1 - smoothstep(radius-dp, radius+dp, np.sqrt(d2))
     return snowy.reshape(result)
 
+
 def test_draw_triangle():
 
     w, h = 100, 100
@@ -86,3 +87,33 @@ def test_draw_quad():
 
     show(target)
     print(seconds)
+
+
+def test_draw_quad2():
+
+    target = np.full((1080, 1920, 4), (0, 0, 0, 0), dtype=np.float32)
+    texture = snowy.load('tests/texture.png')
+
+    # These are in NDC so they span -W to +W
+    vertices = np.array([
+        [-0.67608007,  0.38439575,  1.7601049,   3.70544936],
+        [-0.10726266,  0.38439575,  0.60928749,  2.57742041],
+        [-0.10726266, -0.96069041,  0.60928749,  2.57742041],
+        [-0.67608007, -0.96069041,  1.7601049,   3.70544936]])
+
+    texcoords = np.array([
+        [0., 0.],
+        [1., 0.],
+        [1., 1.],
+        [0., 1.]])
+
+    x, y, w = vertices[:, 0], vertices[:, 1], vertices[:, 3]
+    u, v = texcoords[:, 0], texcoords[:, 1]
+
+    vertices = np.transpose(np.vstack([x, y, w, u, v]))
+    snowy.draw_polygon(target, texture, vertices)
+
+    overlay = snowy.load('tests/overlay.png')
+    im = snowy.compose(target, overlay)[400:770, 600:900]
+    target = snowy.resize(im, height = 100)
+    snowy.show(target)
