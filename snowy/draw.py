@@ -20,14 +20,10 @@ def draw_polygon(target: np.ndarray, source: np.ndarray,
     assert source.shape[2] == 4, 'Source must be RGBA.'
     assert vertices.shape[1] == 5, 'Vertices must be nx5.'
 
-    triverts = np.zeros((3, 5), dtype=np.float32)
-    np.copyto(triverts[0], vertices[0])
-
     n = vertices.shape[0]
     for tri in range(2, n):
-        np.copyto(triverts[1], vertices[tri - 1])
-        np.copyto(triverts[2], vertices[tri])
-        draw_triangle(target, source, triverts)
+        indices = np.array([0, tri - 1, tri])
+        draw_triangle(target, source, vertices[indices])
 
 def draw_triangle(target: np.ndarray, source: np.ndarray,
                   vertices: np.ndarray):
