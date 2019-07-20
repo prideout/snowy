@@ -192,7 +192,7 @@ L250,250 L250,0 Z"></path> <path class="octo-arm" d="M128.3,109.0 C113.8,99.7 11
 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 141.6,141.9 141.8,141.8 Z" fill="currentColor"></path></svg></a>
 <style>.github-corner:hover svg { fill: #19529d }</style>
-<small>v0.0.7 ~ <a href="https://github.com/prideout/snowy/tree/8378e37">8378e37</a></small>
+<small>v0.0.8 ~ <a href="https://github.com/prideout/snowy/tree/910c99f">910c99f</a></small>
 <h1>Snowy <img height="64px" src="snowy2.png" style="vertical-align:text-bottom;margin-left:10px"/></h1>
 <p><a href="index.html">User's Guide</a> | <strong>API Reference</strong></p>
 <hr/>
@@ -236,6 +236,14 @@ C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 <tr>
 <td><a href="#dereference_cpcf">dereference_cpcf</a></td>
 <td>For each 2D value in the coord field, make a lookup in the source.</td>
+<tr>
+<tr>
+<td><a href="#draw_polygon">draw_polygon</a></td>
+<td>Draw a textured convex polygon into the target image.</td>
+<tr>
+<tr>
+<td><a href="#draw_triangle">draw_triangle</a></td>
+<td>Draw a textured triangle into the target image.</td>
 <tr>
 <tr>
 <td><a href="#ensure_alpha">ensure_alpha</a></td>
@@ -341,7 +349,7 @@ C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7
 <td><a href="#vstack">vstack</a></td>
 <td>Vertically concatenate a list of images with a border.</td>
 <tr>
-</tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></table>
+</tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></tr></table>
 <hr/>
 <h3 id="add_border"><a href="#add_border">add_border</a></h3>
 <p>
@@ -468,6 +476,61 @@ For each 2D value in the coord field, make a lookup in the source. This is usefu
     <span class="n">coords</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">coords</span><span class="p">[:,:,</span><span class="mi">1</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">height</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">_deref_coords</span><span class="p">(</span><span class="n">voronoi</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">coords</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">voronoi</span>
+</pre></div>
+<h3 id="draw_polygon"><a href="#draw_polygon">draw_polygon</a></h3>
+<p>
+Draw a textured convex polygon into the target image.  The vertices are specified with a nx5 array where each row is XYWUV. The UV coordinates address the source image in [0,+1] with +V going downward. The XY coordinates are in the range [-1,+1] and their domain is the entire target image with +Y going upward. The W coordinate is to allow for perspective-correct interpolation. If you don't know what that means, then set W to 1.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">draw_polygon</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+              <span class="n">vertices</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Target shape must be 3D.'</span>
+    <span class="k">assert</span> <span class="n">target</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'Target must be RGBA.'</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Source shape must be 3D.'</span>
+    <span class="k">assert</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'Source must be RGBA.'</span>
+    <span class="k">assert</span> <span class="n">vertices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">5</span><span class="p">,</span> <span class="s1">'Vertices must be nx5.'</span>
+
+    <span class="n">n</span> <span class="o">=</span> <span class="n">vertices</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">tri</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">tri</span> <span class="o">-</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tri</span><span class="p">])</span>
+        <span class="n">triangle</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span>
+        <span class="n">draw_triangle</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">triangle</span><span class="p">)</span>
+</pre></div>
+<h3 id="draw_triangle"><a href="#draw_triangle">draw_triangle</a></h3>
+<p>
+Draw a textured triangle into the target image.  The vertices are specified with a 3x5 array where each row is XYWUV. The UV coordinates address the source image in [0,+1] with +V going downward. The XY coordinates are in the range [-1,+1] and their domain is the entire target image with +Y going upward. The W coordinate is to allow for perspective-correct interpolation. If you don't know what that means, then set W to 1.
+</p>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">draw_triangle</span><span class="p">(</span><span class="n">target</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">source</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+                  <span class="n">vertices</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Target shape must be 3D.'</span>
+    <span class="k">assert</span> <span class="n">target</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'Target must be RGBA.'</span>
+    <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">3</span><span class="p">,</span> <span class="s1">'Source shape must be 3D.'</span>
+    <span class="k">assert</span> <span class="n">source</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="mi">4</span><span class="p">,</span> <span class="s1">'Source must be RGBA.'</span>
+    <span class="k">assert</span> <span class="n">vertices</span><span class="o">.</span><span class="n">shape</span> <span class="o">==</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span> <span class="s1">'Vertices must be 3x5.'</span>
+
+    <span class="n">vertices</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">vertices</span><span class="p">)</span>
+    <span class="n">xy</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>
+    <span class="n">uv</span> <span class="o">=</span> <span class="n">vertices</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">:]</span>
+
+    <span class="n">w</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">w</span>
+    <span class="n">xy</span> <span class="o">*=</span> <span class="n">w</span>
+    <span class="n">uv</span> <span class="o">*=</span> <span class="n">w</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">height</span><span class="p">,</span> <span class="n">width</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">shape</span>
+    <span class="n">xy</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">xy</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">width</span>
+    <span class="n">xy</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">height</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">-</span><span class="p">(</span><span class="n">xy</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">height</span>
+
+    <span class="n">v0</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span> <span class="o">=</span> <span class="n">xy</span>
+    <span class="n">area</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">/</span> <span class="n">edge</span><span class="p">(</span><span class="n">v0</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span>
+
+    <span class="n">source</span> <span class="o">=</span> <span class="n">source</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">target</span><span class="o">.</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">v0</span> <span class="o">=</span> <span class="n">v0</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">v1</span> <span class="o">=</span> <span class="n">v1</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">v2</span> <span class="o">=</span> <span class="n">v2</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">uv</span> <span class="o">=</span> <span class="n">uv</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">w</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">copy</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">_rasterize</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">source</span><span class="p">,</span> <span class="n">area</span><span class="p">,</span> <span class="n">v0</span><span class="p">,</span> <span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">,</span> <span class="n">uv</span><span class="p">,</span> <span class="n">w</span><span class="p">)</span>
 </pre></div>
 <h3 id="ensure_alpha"><a href="#ensure_alpha">ensure_alpha</a></h3>
 <p>

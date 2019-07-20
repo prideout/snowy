@@ -229,7 +229,7 @@ See the seams? Now let's blur it with `wrapx` and `wrapy` set to `True` when we 
 
 <img src="blurry_ground2x2_good.jpg" height="256px">
 
-### Wrappable Gradient Noise
+### Wrappable gradient noise
 
 The wrap arguments are also useful for 2D noise. One way of making tileable gradient noise is to
 sample 3D noise on the surface of a cylinder, torus, or cube. However Snowy can do this more
@@ -245,7 +245,7 @@ Here's another tiling of gradient noise, but this time the tile was generated wi
 
 <img src="tiled_noise_good.png" height="256px">
 
-### Wrappable Distance Fields
+### Wrappable distance fields
 
 Snowy's [generate_sdf](reference.html#generate_sdf) function also takes wrap arguments. For example
 here's a distance field in a 4x2 tiling:
@@ -255,6 +255,28 @@ here's a distance field in a 4x2 tiling:
 Here's the same distance field, this time with wrapx and wrapy set to `True`:
 
 <img src="tiled_sdf_good.png" height="128px">
+
+## Drawing quads
+
+Snowy can also rasterize convex textured polygons. For example:
+
+```python
+verts = np.array([
+    [-0.67,  0.38,  3.70,  0., 0. ],
+    [-0.10,  0.38,  2.57,  1., 0. ],
+    [-0.10, -0.96,  2.57,  1., 1. ],
+    [-0.67, -0.96,  3.70,  0., 1. ]])
+texture = snowy.load('texture.png')
+background = np.full((1080, 1920, 4), (0.54, 0.54, 0.78, 1.00))
+snowy.draw_polygon(background, texture, verts)
+snowy.show(background)
+```
+
+<img src="quad.png" height="128px">
+
+Each vertex is specified as a 5-tuple to enable perspective-correct
+interpolation. For more information see
+[draw_polygon](reference.html#draw_polygon).
 
 ## Interop
 

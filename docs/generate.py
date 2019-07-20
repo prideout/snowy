@@ -94,7 +94,7 @@ create_wrap_figures()
 result = subprocess.run('git rev-parse HEAD'.split(), stdout=subprocess.PIPE)
 sha = result.stdout.strip().decode("utf-8")[:7]
 sha = f'<a href="https://github.com/prideout/snowy/tree/{sha}">{sha}</a>'
-version = f'<small>v0.0.7 ~ {sha}</small>'
+version = f'<small>v0.0.9 ~ {sha}</small>'
 
 header = '''
 <!DOCTYPE html>
@@ -507,3 +507,20 @@ snowy.export(isles[2], qualify('island.png'))
 optimize(qualify('island.png'))
 isles = snowy.hstack(isles)
 snowy.export(isles, qualify('isles.png'))
+
+def draw_quad():
+    verts = np.array([[-0.67608007,  0.38439575,  3.70544936,  0., 0. ],
+        [-0.10726266,  0.38439575,  2.57742041,  1., 0. ],
+        [-0.10726266, -0.96069041,  2.57742041,  1., 1. ],
+        [-0.67608007, -0.96069041,  3.70544936,  0., 1. ]])
+    texture = snowy.load(qualify('../tests/texture.png'))
+    target = np.full((1080, 1920, 4), (0.54, 0.54, 0.78, 1.00),
+            dtype=np.float32)
+    snowy.draw_polygon(target, texture, verts)
+    target = snowy.resize(target[400:770, 700:1000], height = 256)
+    texture = snowy.resize(texture, height = 256)
+    quad = snowy.hstack([texture, target])
+    snowy.export(quad, qualify('quad.png'))
+    snowy.show(quad)
+
+draw_quad()

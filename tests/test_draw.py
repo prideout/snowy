@@ -111,6 +111,7 @@ def test_draw_quad2():
     u, v = texcoords[:, 0], texcoords[:, 1]
 
     vertices = np.transpose(np.vstack([x, y, w, u, v]))
+    print(vertices)
     snowy.draw_polygon(target, texture, vertices)
 
     overlay = snowy.load('tests/overlay.png')
